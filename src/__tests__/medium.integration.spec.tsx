@@ -48,7 +48,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     await saveSchedule(user, {
       title: '새 회의',
-      date: '2024-10-15',
+      date: '2025-10-15',
       startTime: '14:00',
       endTime: '15:00',
       description: '프로젝트 진행 상황 논의',
@@ -58,7 +58,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     const eventList = within(screen.getByTestId('event-list'));
     expect(eventList.getByText('새 회의')).toBeInTheDocument();
-    expect(eventList.getByText('2024-10-15')).toBeInTheDocument();
+    expect(eventList.getByText('2025-10-15')).toBeInTheDocument();
     expect(eventList.getByText('14:00 - 15:00')).toBeInTheDocument();
     expect(eventList.getByText('프로젝트 진행 상황 논의')).toBeInTheDocument();
     expect(eventList.getByText('회의실 A')).toBeInTheDocument();
@@ -101,7 +101,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
 describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
-    // ! 현재 시스템 시간 2024-10-01
+    // ! 현재 시스템 시간 2025-10-01
     const { user } = setup(<App />);
 
     await user.selectOptions(screen.getByLabelText('view'), 'week');
@@ -119,7 +119,7 @@ describe('일정 뷰', () => {
     const { user } = setup(<App />);
     await saveSchedule(user, {
       title: '이번주 팀 회의',
-      date: '2024-10-02',
+      date: '2025-10-02',
       startTime: '09:00',
       endTime: '10:00',
       description: '이번주 팀 회의입니다.',
@@ -134,7 +134,7 @@ describe('일정 뷰', () => {
   });
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
-    vi.setSystemTime(new Date('2024-01-01'));
+    vi.setSystemTime(new Date('2025-01-01'));
 
     setup(<App />);
 
@@ -151,7 +151,7 @@ describe('일정 뷰', () => {
     const { user } = setup(<App />);
     await saveSchedule(user, {
       title: '이번달 팀 회의',
-      date: '2024-10-02',
+      date: '2025-10-02',
       startTime: '09:00',
       endTime: '10:00',
       description: '이번달 팀 회의입니다.',
@@ -164,7 +164,7 @@ describe('일정 뷰', () => {
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
-    vi.setSystemTime(new Date('2024-01-01'));
+    vi.setSystemTime(new Date('2025-01-01'));
     setup(<App />);
 
     const monthView = screen.getByTestId('month-view');
@@ -184,7 +184,7 @@ describe('검색 기능', () => {
             {
               id: 1,
               title: '팀 회의',
-              date: '2024-10-15',
+              date: '2025-10-15',
               startTime: '09:00',
               endTime: '10:00',
               description: '주간 팀 미팅',
@@ -196,7 +196,7 @@ describe('검색 기능', () => {
             {
               id: 2,
               title: '프로젝트 계획',
-              date: '2024-10-16',
+              date: '2025-10-16',
               startTime: '14:00',
               endTime: '15:00',
               description: '새 프로젝트 계획 수립',
@@ -258,7 +258,7 @@ describe('일정 충돌', () => {
       {
         id: '1',
         title: '기존 회의',
-        date: '2024-10-15',
+        date: '2025-10-15',
         startTime: '09:00',
         endTime: '10:00',
         description: '기존 팀 미팅',
@@ -273,7 +273,7 @@ describe('일정 충돌', () => {
 
     await saveSchedule(user, {
       title: '새 회의',
-      date: '2024-10-15',
+      date: '2025-10-15',
       startTime: '09:30',
       endTime: '10:30',
       description: '설명',
@@ -283,7 +283,7 @@ describe('일정 충돌', () => {
 
     expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
     expect(screen.getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
-    expect(screen.getByText('기존 회의 (2024-10-15 09:00-10:00)')).toBeInTheDocument();
+    expect(screen.getByText('기존 회의 (2025-10-15 09:00-10:00)')).toBeInTheDocument();
   });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
@@ -304,12 +304,12 @@ describe('일정 충돌', () => {
 
     expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
     expect(screen.getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
-    expect(screen.getByText('기존 회의 (2024-10-15 09:00-10:00)')).toBeInTheDocument();
+    expect(screen.getByText('기존 회의 (2025-10-15 09:00-10:00)')).toBeInTheDocument();
   });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-  vi.setSystemTime(new Date('2024-10-15 08:49:59'));
+  vi.setSystemTime(new Date('2025-10-15 08:49:59'));
 
   setup(<App />);
 
