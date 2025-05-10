@@ -4,11 +4,17 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  // 유효하지 않은 월일 경우 0을 반환
+  if (month < 1 || month > 12) {
+    return 0;
+  }
+
   return new Date(year, month, 0).getDate();
 }
 
 /**
  * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.
+ * TODO: 로직대로라면 주의 시작은 일요일이고, 주의 끝은 토요일임.
  */
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
@@ -23,6 +29,9 @@ export function getWeekDates(date: Date): Date[] {
   return weekDates;
 }
 
+/**
+ * 주어진 날짜가 속한 달의 모든 주를 반환합니다.
+ */
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -51,10 +60,17 @@ export function getWeeksAtMonth(currentDate: Date) {
   return weeks;
 }
 
+/**
+ * 주어진 날짜에 해당하는 이벤트를 반환합니다.
+ */
 export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜에 해당하는 주 정보를 반환합니다.
+ * 마지막 주 계산 시, 목요일을 포함하는 달의 주차를 반환함.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
@@ -63,6 +79,7 @@ export function formatWeek(targetDate: Date) {
 
   const year = thursday.getFullYear();
   const month = thursday.getMonth() + 1;
+  console.log(year, month);
 
   const firstDayOfMonth = new Date(thursday.getFullYear(), thursday.getMonth(), 1);
 
@@ -99,6 +116,6 @@ export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),
     fillZero(currentDate.getMonth() + 1),
-    fillZero(day ?? currentDate.getDate()),
+    fillZero(day ?? currentDate.getDate()), // TODO: 이걿 하는 목적이 뭔데
   ].join('-');
 }
