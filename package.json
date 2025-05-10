@@ -1,8 +1,9 @@
 {
-  "name": "assignment-7",
+  "name": "front_5th_chapter3-1",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://anveloper.github.io/front_5th_chapter3-1/",
   "scripts": {
     "server": "node server.js",
     "server:watch": "node --watch server.js",
