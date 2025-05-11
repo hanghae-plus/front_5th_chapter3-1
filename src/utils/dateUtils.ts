@@ -69,6 +69,10 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜의 주 정보를 "YYYY년 M월 W주" 형식으로 반환합니다.
+ * 목요일을 기준으로 주를 계산합니다.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
