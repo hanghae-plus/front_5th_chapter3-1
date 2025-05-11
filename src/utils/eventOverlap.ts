@@ -29,6 +29,9 @@ export function isOverlapping(event1: Event | EventForm, event2: Event | EventFo
   return start1 < end2 && start2 < end1;
 }
 
+/**
+ * 주어진 이벤트와 겹치는 모든 이벤트를 찾습니다.
+ */
 export function findOverlappingEvents(newEvent: Event | EventForm, events: Event[]) {
   return events.filter(
     (event) => event.id !== (newEvent as Event).id && isOverlapping(event, newEvent)
