@@ -9,7 +9,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-import { mockTestData } from '../data/mockTestData';
+import { mockTestDataList } from '../data/mockTestData';
 
 const toYMD = (d: Date) => [d.getFullYear(), d.getMonth() + 1, d.getDate()];
 
@@ -164,7 +164,7 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  const sampleEvents = mockTestData;
+  const sampleEvents = mockTestDataList;
 
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
     const result = getEventsForDay(sampleEvents, 1);
