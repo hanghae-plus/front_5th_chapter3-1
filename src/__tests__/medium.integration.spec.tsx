@@ -4,6 +4,12 @@ import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
+import {
+  setupMockHandlerAppend,
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerUpdateById,
+} from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
@@ -11,6 +17,13 @@ import { Event } from '../types';
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const user = userEvent.setup();
+    const { getByPlaceholderText, getByText } = render(<App />);
+    const input = getByPlaceholderText('일정 제목을 입력하세요');
+    await user.type(input, '새로운 일정');
+    await user.click(getByText('추가'));
+
+    expect(getByText('새로운 일정')).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
