@@ -8,6 +8,10 @@ export function parseDateTime(date: string, time: string) {
   return new Date(`${date}T${time}`);
 }
 
+/**
+ * 주어진 이벤트 또는 이벤트 폼을 날짜 범위로 변환합니다.
+ * 잘못된 날짜 형식이나 시간 형식이면 Invalid Date를 반환합니다.
+ */
 export function convertEventToDateRange({ date, startTime, endTime }: Event | EventForm) {
   return {
     start: parseDateTime(date, startTime),
