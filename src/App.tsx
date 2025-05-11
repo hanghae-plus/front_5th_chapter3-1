@@ -165,6 +165,7 @@ function App() {
     }
   };
 
+  // 일정 보기 주 단위
   const renderWeekView = () => {
     const weekDates = getWeekDates(currentDate);
     return (
@@ -217,6 +218,7 @@ function App() {
     );
   };
 
+  // 일정 보기 월 단위
   const renderMonthView = () => {
     const weeks = getWeeksAtMonth(currentDate);
 
@@ -294,8 +296,9 @@ function App() {
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
         <VStack w="400px" spacing={5} align="stretch">
+          {/* 일정을 수정하는 경우 이 split view가 일정 수정으로 변경 */}
           <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
-
+          {/* 일정 추가 폼 */}
           <FormControl>
             <FormLabel>제목</FormLabel>
             <Input value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -417,6 +420,7 @@ function App() {
           </Button>
         </VStack>
 
+        {/* 일정 보기 월 or 주 */}
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
 
@@ -445,6 +449,7 @@ function App() {
           {view === 'month' && renderMonthView()}
         </VStack>
 
+        {/* 일정 검색 view*/}
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
           <FormControl>
             <FormLabel>일정 검색</FormLabel>
@@ -517,6 +522,7 @@ function App() {
         </VStack>
       </Flex>
 
+      {/* 일정 겹침 토스트 */}
       <AlertDialog
         isOpen={isOverlapDialogOpen}
         leastDestructiveRef={cancelRef}
