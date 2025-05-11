@@ -46,10 +46,12 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.12",
     "eslint-plugin-vitest": "^0.2.6",
-    "vite-plugin-eslint": "^1.8.1",
+    "gitmoji-cli": "^9.5.0",
     "jsdom": "^25.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
+    "vite-plugin-eslint": "^1.8.1",
     "vitest": "^2.0.2"
-  }
+  },
+  "packageManager": "pnpm@9.15.3+sha512.1f79bc245a66eb0b07c5d4d83131240774642caaa86ef7d0434ab47c0d16f66b04e21e0c086eb61e62c77efc4d7f7ec071afad3796af64892fae66509173893a"
 }
