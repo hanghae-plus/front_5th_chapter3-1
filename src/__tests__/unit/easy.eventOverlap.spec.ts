@@ -106,9 +106,54 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  const event1: Event = {
+    id: '1',
+    title: '점심 약속',
+    date: '2025-05-21',
+    startTime: '12:30',
+    endTime: '16:30',
+    description: '동료와 점심 식사',
+    location: '회사 근처 식당',
+    category: '개인',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  };
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+  const event2: Event = {
+    id: '2',
+    title: '점심 약속',
+    date: '2025-05-21',
+    startTime: '14:30',
+    endTime: '17:30',
+    description: '동료와 점심 식사',
+    location: '회사 근처 식당',
+    category: '개인',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  };
+
+  const event3: Event = {
+    id: '3',
+    title: '점심 약속',
+    date: '2025-05-21',
+    startTime: '18:30',
+    endTime: '20:30',
+    description: '동료와 점심 식사',
+    location: '회사 근처 식당',
+    category: '개인',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  };
+
+  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+    const result = isOverlapping(event1, event2);
+    expect(result).toBe(true);
+  });
+
+  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+    const result = isOverlapping(event1, event3);
+    expect(result).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {
