@@ -10,20 +10,41 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+type ttt = Event;
 
 describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('1월은 31일 수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 1)).toBe(31);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 4)).toBe(30);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    expect(getDaysInMonth(2024, 2)).toBe(29); // 윤년
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    expect(getDaysInMonth(2025, 2)).toBe(28);
+  });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it('유효하지 않은 월에 대해 적절히 처리한다', () => {
+    // type number인 값
+    expect(getDaysInMonth(2025, Infinity)).toBeNaN();
+    expect(getDaysInMonth(2025, -Infinity)).toBeNaN();
+    expect(getDaysInMonth(2025, NaN)).toBeNaN();
+    expect(getDaysInMonth(2025, Number.MAX_VALUE)).toBeNaN();
+    expect(getDaysInMonth(2025, Number.MIN_VALUE)).toBeNaN();
+    // 범위 초과
+    expect(getDaysInMonth(2025, -1)).toBe(30); // 11월
+    expect(getDaysInMonth(2025, 0)).toBe(31); // 12월
+    expect(getDaysInMonth(2025, 13)).toBe(31); // 1월
+  });
 });
 
 describe('getWeekDates', () => {
+  getWeekDates;
   it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
 
   it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
@@ -40,10 +61,12 @@ describe('getWeekDates', () => {
 });
 
 describe('getWeeksAtMonth', () => {
+  getWeeksAtMonth;
   it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
 });
 
 describe('getEventsForDay', () => {
+  getEventsForDay;
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
@@ -54,6 +77,7 @@ describe('getEventsForDay', () => {
 });
 
 describe('formatWeek', () => {
+  formatWeek;
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {});
 
   it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {});
@@ -68,10 +92,12 @@ describe('formatWeek', () => {
 });
 
 describe('formatMonth', () => {
+  formatMonth;
   it("2025년 7월 10일을 '2025년 7월'로 반환한다", () => {});
 });
 
 describe('isDateInRange', () => {
+  isDateInRange;
   const rangeStart = new Date('2025-07-01');
   const rangeEnd = new Date('2025-07-31');
 
@@ -89,6 +115,7 @@ describe('isDateInRange', () => {
 });
 
 describe('fillZero', () => {
+  fillZero;
   test("5를 2자리로 변환하면 '05'를 반환한다", () => {});
 
   test("10을 2자리로 변환하면 '10'을 반환한다", () => {});
@@ -109,6 +136,7 @@ describe('fillZero', () => {
 });
 
 describe('formatDate', () => {
+  formatDate;
   it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {});
 
   it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {});
