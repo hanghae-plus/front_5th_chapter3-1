@@ -1,4 +1,3 @@
-import realEvents from '../../__mocks__/response/realEvents.json';
 import { Event } from '../../types';
 import { getFilteredEvents } from '../../utils/eventUtils';
 
