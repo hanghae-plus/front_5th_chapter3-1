@@ -49,8 +49,8 @@ describe('convertEventToDateRange', () => {
 
   it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
     const event = eventsData.events[0] as Event;
-    event.date = '9999-99-99';
-    const result = convertEventToDateRange(event);
+    const invalidEvent = { ...event, date: '9999-99-99' } as Event;
+    const result = convertEventToDateRange(invalidEvent);
     expect(result).toEqual({
       start: new Date('Invalid Date'),
       end: new Date('Invalid Date'),
@@ -59,9 +59,8 @@ describe('convertEventToDateRange', () => {
 
   it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
     const event = eventsData.events[0] as Event;
-    event.startTime = '99:60';
-    event.endTime = '99:99';
-    const result = convertEventToDateRange(event);
+    const invalidEvent = { ...event, startTime: '99:60', endTime: '99:99' } as Event;
+    const result = convertEventToDateRange(invalidEvent);
     expect(result).toEqual({
       start: new Date('Invalid Date'),
       end: new Date('Invalid Date'),
@@ -70,9 +69,19 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+    const event1 = eventsData.events[0] as Event;
+    const event2 = { ...eventsData.events[1], date: '2025-05-01' } as Event;
+    const result = isOverlapping(event1, event2);
+    expect(result).toBe(true);
+  });
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+    const event1 = eventsData.events[0] as Event;
+    const event2 = eventsData.events[1] as Event;
+    const result = isOverlapping(event1, event2);
+    expect(result).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {
