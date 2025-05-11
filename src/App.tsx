@@ -137,7 +137,7 @@ function App() {
       });
       return;
     }
-    console.log('addOrUpdateEvent 실행', { editingEvent, title, date, startTime, endTime });
+
     const eventData: Event | EventForm = {
       id: editingEvent ? editingEvent.id : undefined,
       title,

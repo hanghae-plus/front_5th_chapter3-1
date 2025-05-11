@@ -48,9 +48,6 @@ const addOrUpdateEvent = async (
   const endTimeInput = screen.getByLabelText(/종료 시간/i);
   const descriptionInput = screen.getByLabelText(/설명/i);
 
-  // 생성 시에는 input이 비어있으므로 바로 type
-  // 수정 시에는 테스트 코드에서 fireEvent.change 등으로 값을 비운 뒤 type
-
   await user.type(titleInput, event.title);
   await user.type(dateInput, event.date);
   await user.type(startTimeInput, event.startTime);
@@ -61,7 +58,7 @@ const addOrUpdateEvent = async (
   await user.click(saveButton);
 };
 
-describe('일정 CRUD 및 기본 기능', () => {
+describe('일정 CUD 기능', () => {
   it('새로운 일정을 등록하면 캘릭더와 일정 목록에서 확인할 수 있다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
@@ -83,7 +80,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+  it('일정을 수정하면 캘린더와 일정 목록에서 확인할 수 있다.', async () => {
     const user = userEvent.setup();
 
     renderApp();
@@ -141,7 +138,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+  it('일정을 삭제하면 캘린더와 일정 목록에서 확인할 수 없다.', async () => {
     const user = userEvent.setup();
 
     renderApp();
@@ -161,7 +158,21 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    // 1. 주간 뷰로 전환
+    const viewSelect = screen.getByLabelText('view');
+    await user.selectOptions(viewSelect, 'week');
+
+    // 2. 주간 뷰가 나타나는지 확인
+    const weekView = screen.getByTestId('week-view');
+    expect(weekView).toBeInTheDocument();
+
+    // 3. 일정이 있는지 확인
+  });
 
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
 
