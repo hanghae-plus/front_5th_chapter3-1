@@ -106,7 +106,7 @@ function App() {
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
   );
-
+  //
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
