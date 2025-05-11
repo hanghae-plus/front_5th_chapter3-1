@@ -102,19 +102,3 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
-
-export const WEEKDAY_INDEX = {
-  SUNDAY: 0,
-  MONDAY: 1,
-  TUESDAY: 2,
-  WEDNESDAY: 3,
-  THURSDAY: 4,
-  FRIDAY: 5,
-  SATURDAY: 6,
-} as const;
-
-export function getThisWeeksDay(targetDay: (typeof WEEKDAY_INDEX)[keyof typeof WEEKDAY_INDEX]) {
-  const now = new Date();
-
-  return new Date(new Date().setDate(now.getDate() - now.getDay() + targetDay));
-}
