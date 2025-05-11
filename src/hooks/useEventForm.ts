@@ -54,6 +54,7 @@ export const useEventForm = (initialEvent?: Event) => {
   };
 
   const editEvent = (event: Event) => {
+    console.log('🚀 ~ editEvent ~ event:', event);
     setEditingEvent(event);
     setTitle(event.title);
     setDate(event.date);

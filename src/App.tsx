@@ -137,7 +137,7 @@ function App() {
       });
       return;
     }
-
+    console.log('addOrUpdateEvent 실행', { editingEvent, title, date, startTime, endTime });
     const eventData: Event | EventForm = {
       id: editingEvent ? editingEvent.id : undefined,
       title,
@@ -500,11 +500,13 @@ function App() {
                   </VStack>
                   <HStack>
                     <IconButton
+                      data-testid={`edit-event-button-${event.id}`}
                       aria-label="Edit event"
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
+                      data-testid={`delete-event-button-${event.id}`}
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}

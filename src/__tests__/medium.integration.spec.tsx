@@ -1,17 +1,10 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, act, waitFor, fireEvent } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
-import {
-  setupMockHandlerAppend,
-  setupMockHandlerCreation,
-  setupMockHandlerDeletion,
-  setupMockHandlerUpdateById,
-} from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 const renderApp = () => {
@@ -22,45 +15,63 @@ const renderApp = () => {
   );
 };
 
+const createCurrentMonthEvent = () => {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1
+  const currentDay = currentDate.getDate();
+
+  const newEvent = {
+    title: '테스트 일정',
+    date: `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`,
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '테스트 일정 설명',
+  };
+
+  return newEvent;
+};
+
+const addOrUpdateEvent = async (
+  user: ReturnType<typeof userEvent.setup>,
+  event: {
+    title: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    description: string;
+  }
+) => {
+  const titleInput = screen.getByLabelText(/제목/i);
+  const dateInput = screen.getByLabelText(/날짜/i);
+  const startTimeInput = screen.getByLabelText(/시작 시간/i);
+  const endTimeInput = screen.getByLabelText(/종료 시간/i);
+  const descriptionInput = screen.getByLabelText(/설명/i);
+
+  // 생성 시에는 input이 비어있으므로 바로 type
+  // 수정 시에는 테스트 코드에서 fireEvent.change 등으로 값을 비운 뒤 type
+
+  await user.type(titleInput, event.title);
+  await user.type(dateInput, event.date);
+  await user.type(startTimeInput, event.startTime);
+  await user.type(endTimeInput, event.endTime);
+  await user.type(descriptionInput, event.description);
+
+  const saveButton = screen.getByTestId('event-submit-button');
+  await user.click(saveButton);
+};
+
 describe('일정 CRUD 및 기본 기능', () => {
   it('새로운 일정을 등록하면 캘릭더와 일정 목록에서 확인할 수 있다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
 
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1
-    const currentDay = currentDate.getDate();
-
-    const NEW_EVENT = {
-      id: '1',
-      title: '테스트 일정',
-      date: `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`,
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '테스트 일정 설명',
-    };
-
     renderApp();
 
-    // 1. 폼 필드 입력
-    const titleInput = screen.getByLabelText(/제목/i);
-    const dateInput = screen.getByLabelText(/날짜/i);
-    const startTimeInput = screen.getByLabelText(/시작 시간/i);
-    const endTimeInput = screen.getByLabelText(/종료 시간/i);
-    const descriptionInput = screen.getByLabelText(/설명/i);
+    const NEW_EVENT = createCurrentMonthEvent();
 
-    await user.type(titleInput, NEW_EVENT.title);
-    await user.type(dateInput, NEW_EVENT.date);
-    await user.type(startTimeInput, NEW_EVENT.startTime);
-    await user.type(endTimeInput, NEW_EVENT.endTime);
-    await user.type(descriptionInput, NEW_EVENT.description);
+    await addOrUpdateEvent(user, NEW_EVENT);
 
-    // 2. 저장 버튼 클릭
-    const saveButton = screen.getByRole('button', { name: /일정 추가/i });
-    await user.click(saveButton);
-
-    // 3. 저장된 일정 확인
     await waitFor(() => {
       // 캘린더 뷰에서 확인
       const monthView = screen.getByTestId('month-view');
@@ -72,7 +83,63 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    const NEW_EVENT = createCurrentMonthEvent();
+
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    const editButton = screen.getByTestId('edit-event-button-2');
+
+    await user.click(editButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(/제목/i)).toHaveValue('테스트 일정');
+    });
+
+    const UPDATED_EVENT = {
+      ...NEW_EVENT,
+      id: '2',
+      title: '수정된 일정',
+      description: '수정된 일정 설명',
+    };
+
+    // 각 input을 직접 비우고 type으로 입력
+    const titleInput = screen.getByLabelText(/제목/i);
+    const dateInput = screen.getByLabelText(/날짜/i);
+    const startTimeInput = screen.getByLabelText(/시작 시간/i);
+    const endTimeInput = screen.getByLabelText(/종료 시간/i);
+    const descriptionInput = screen.getByLabelText(/설명/i);
+
+    fireEvent.change(titleInput, { target: { value: '' } });
+    await user.type(titleInput, UPDATED_EVENT.title);
+
+    fireEvent.change(dateInput, { target: { value: '' } });
+    await user.type(dateInput, UPDATED_EVENT.date);
+
+    fireEvent.change(startTimeInput, { target: { value: '' } });
+    await user.type(startTimeInput, UPDATED_EVENT.startTime);
+
+    fireEvent.change(endTimeInput, { target: { value: '' } });
+    await user.type(endTimeInput, UPDATED_EVENT.endTime);
+
+    fireEvent.change(descriptionInput, { target: { value: '' } });
+    await user.type(descriptionInput, UPDATED_EVENT.description);
+
+    const saveButton = screen.getByTestId('event-submit-button');
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      const monthView = screen.getByTestId('month-view');
+      expect(within(monthView).getByText(UPDATED_EVENT.title)).toBeInTheDocument();
+
+      const eventList = screen.getByTestId('event-list');
+      expect(within(eventList).getByText(UPDATED_EVENT.title)).toBeInTheDocument();
+    });
+  });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
 });
