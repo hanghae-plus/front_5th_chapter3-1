@@ -113,6 +113,9 @@ export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boo
   return date >= rangeStart && date <= rangeEnd;
 }
 
+/**
+ * 주어진 숫자를 지정된 크기의 문자열로 변환하고, 필요한 경우 앞에 0을 추가합니다.
+ */
 export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
