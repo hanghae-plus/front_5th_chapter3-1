@@ -141,7 +141,23 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    const NEW_EVENT = createCurrentMonthEvent();
+
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    const deleteButton = screen.getByTestId('delete-event-button-2');
+    await user.click(deleteButton);
+
+    await waitFor(() => {
+      const eventList = screen.getByTestId('event-list');
+      expect(within(eventList).queryByText(NEW_EVENT.title)).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {
