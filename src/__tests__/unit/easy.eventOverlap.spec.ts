@@ -1,3 +1,4 @@
+import eventsData from '../../__mocks__/response/events.json';
 import { Event } from '../../types';
 import {
   convertEventToDateRange,
@@ -37,11 +38,35 @@ describe('parseDateTime', () => {
 });
 
 describe('convertEventToDateRange', () => {
-  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {});
+  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
+    const event = eventsData.events[0] as Event;
+    const result = convertEventToDateRange(event);
+    expect(result).toEqual({
+      start: new Date('2025-05-01T09:00:00'),
+      end: new Date('2025-05-01T10:00:00'),
+    });
+  });
 
-  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    const event = eventsData.events[0] as Event;
+    event.date = '9999-99-99';
+    const result = convertEventToDateRange(event);
+    expect(result).toEqual({
+      start: new Date('Invalid Date'),
+      end: new Date('Invalid Date'),
+    });
+  });
 
-  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    const event = eventsData.events[0] as Event;
+    event.startTime = '99:60';
+    event.endTime = '99:99';
+    const result = convertEventToDateRange(event);
+    expect(result).toEqual({
+      start: new Date('Invalid Date'),
+      end: new Date('Invalid Date'),
+    });
+  });
 });
 
 describe('isOverlapping', () => {
