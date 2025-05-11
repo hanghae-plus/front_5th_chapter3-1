@@ -82,6 +82,7 @@ describe('getFilteredEvents', () => {
     expect(result).toEqual([events[1]]);
   });
 
+
   it('주간 뷰에서 2025-07-01 주의 이벤트만 반환한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-01'), 'week');
     expect(result).toEqual([events[0], events[1], events[2]]);
