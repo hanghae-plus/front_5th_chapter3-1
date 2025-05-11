@@ -62,7 +62,7 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  const common: Event = {
+  const event: Event = {
     id: '1',
     title: '111',
     date: '2025-05-11',
@@ -76,13 +76,13 @@ describe('isOverlapping', () => {
   } as const;
 
   it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
-    const events = [common, { ...common, id: '2', startTime: '10:30', endTime: '11:30' }];
-    expect(isOverlapping(events[0], events[1])).toBe(true);
+    const other = { ...event, id: '2', startTime: '10:30', endTime: '11:30' };
+    expect(isOverlapping(event, other)).toBe(true);
   });
 
   it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
-    const events = [common, { ...common, id: '2', startTime: '11:00', endTime: '12:30' }];
-    expect(isOverlapping(events[0], events[1])).toBe(false);
+    const other = { ...event, id: '2', startTime: '11:00', endTime: '12:30' };
+    expect(isOverlapping(event, other)).toBe(false);
   });
 });
 
