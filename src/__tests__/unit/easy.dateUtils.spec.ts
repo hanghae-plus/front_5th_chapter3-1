@@ -245,23 +245,50 @@ describe('isDateInRange', () => {
 });
 
 describe('fillZero', () => {
-  test("5를 2자리로 변환하면 '05'를 반환한다", () => {});
+  test("5를 2자리로 변환하면 '05'를 반환한다", () => {
+    const result = fillZero(5, 2);
+    expect(result).toBe('05');
+  });
 
-  test("10을 2자리로 변환하면 '10'을 반환한다", () => {});
+  test("10을 2자리로 변환하면 '10'을 반환한다", () => {
+    const result = fillZero(10, 2);
+    expect(result).toBe('10');
+  });
 
-  test("3을 3자리로 변환하면 '003'을 반환한다", () => {});
+  test("3을 3자리로 변환하면 '003'을 반환한다", () => {
+    const result = fillZero(3, 3);
+    expect(result).toBe('003');
+  });
 
-  test("100을 2자리로 변환하면 '100'을 반환한다", () => {});
+  test("100을 2자리로 변환하면 '100'을 반환한다", () => {
+    const result = fillZero(100, 2);
+    expect(result).toBe('100');
+  });
 
-  test("0을 2자리로 변환하면 '00'을 반환한다", () => {});
+  test("0을 2자리로 변환하면 '00'을 반환한다", () => {
+    const result = fillZero(0, 2);
+    expect(result).toBe('00');
+  });
 
-  test("1을 5자리로 변환하면 '00001'을 반환한다", () => {});
+  test("1을 5자리로 변환하면 '00001'을 반환한다", () => {
+    const result = fillZero(1, 5);
+    expect(result).toBe('00001');
+  });
 
-  test("소수점이 있는 3.14를 5자리로 변환하면 '03.14'를 반환한다", () => {});
+  test("소수점이 있는 3.14를 5자리로 변환하면 '03.14'를 반환한다", () => {
+    const result = fillZero(3.14, 5);
+    expect(result).toBe('03.14');
+  });
 
-  test('size 파라미터를 생략하면 기본값 2를 사용한다', () => {});
+  test('size 파라미터를 생략하면 기본값 2를 사용한다', () => {
+    const result = fillZero(1, 2);
+    expect(result).toBe('01');
+  });
 
-  test('value가 지정된 size보다 큰 자릿수를 가지면 원래 값을 그대로 반환한다', () => {});
+  test('value가 지정된 size보다 큰 자릿수를 가지면 원래 값을 그대로 반환한다', () => {
+    const result = fillZero(12345, 2);
+    expect(result).toBe('12345');
+  });
 });
 
 describe('formatDate', () => {
