@@ -1,14 +1,34 @@
 import { act, renderHook } from '@testing-library/react';
+import { vi } from 'vitest';
 
 import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
+beforeAll(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-10-01'));
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
+
 describe('초기 상태', () => {
-  it('view는 "month"이어야 한다', () => {});
+  it('view는 "month"이어야 한다', () => {
+    const { result } = renderHook(() => useCalendarView());
+    expect(result.current.view).toBe('month');
+  });
 
-  it('currentDate는 오늘 날짜인 "2025-10-01"이어야 한다', () => {});
+  it('currentDate는 오늘 날짜인 "2025-10-01"이어야 한다', () => {
+    const { result } = renderHook(() => useCalendarView());
+    expect(result.current.currentDate.toString()).toBe(new Date('2025-10-01').toString());
+  });
 
-  it('holidays는 10월 휴일인 개천절, 한글날이 지정되어 있어야 한다', () => {});
+  it('holidays는 10월 휴일인 개천절, 한글날이 지정되어 있어야 한다', () => {
+    const { result } = renderHook(() => useCalendarView());
+    expect(result.current.holidays).toHaveProperty('2025-10-03', '개천절');
+    expect(result.current.holidays).toHaveProperty('2025-10-09', '한글날');
+  });
 });
 
 it("view를 'week'으로 변경 시 적절하게 반영된다", () => {});
