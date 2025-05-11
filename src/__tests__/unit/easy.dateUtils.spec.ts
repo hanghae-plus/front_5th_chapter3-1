@@ -188,7 +188,11 @@ describe('formatWeek', () => {
 });
 
 describe('formatMonth', () => {
-  it("2025년 7월 10일을 '2025년 7월'로 반환한다", () => {});
+  it("2025년 7월 10일을 '2025년 7월'로 반환한다", () => {
+    const input = new Date(2025, 6, 10);
+    const expected = '2025년 7월';
+    expect(formatMonth(input)).toBe(expected);
+  });
 });
 
 describe('isDateInRange', () => {
@@ -271,11 +275,27 @@ describe('fillZero', () => {
 });
 
 describe('formatDate', () => {
-  it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {});
+  it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {
+    const input = new Date(2025, 6, 10);
+    const expected = '2025-07-10';
+    expect(formatDate(input)).toBe(expected);
+  });
 
-  it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {});
+  it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {
+    const input = new Date(2025, 6, 10);
+    const expected = '2025-07-10';
+    expect(formatDate(input, 10)).toBe(expected);
+  });
 
-  it('월이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {});
+  it('월이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
+    const input = new Date(2025, 6, 10);
+    const expected = '2025-07-10';
+    expect(formatDate(input)).toBe(expected);
+  });
 
-  it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {});
+  it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
+    const input = new Date(2025, 6, 1);
+    const expected = '2025-07-01';
+    expect(formatDate(input)).toBe(expected);
+  });
 });
