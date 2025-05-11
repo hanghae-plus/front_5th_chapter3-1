@@ -11,6 +11,8 @@ import {
   isDateInRange,
 } from '../../utils/dateUtils';
 
+const toYMD = (d: Date) => [d.getFullYear(), d.getMonth() + 1, d.getDate()];
+
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
     expect(getDaysInMonth(2025, 1)).toBe(31);
@@ -40,8 +42,6 @@ describe('getDaysInMonth', () => {
 });
 
 describe('getWeekDates', () => {
-  const toYMD = (d: Date) => [d.getFullYear(), d.getMonth() + 1, d.getDate()];
-
   it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
     const input = new Date(2025, 4, 14); // 2025-5-14 수
     const week = getWeekDates(input);
@@ -149,7 +149,18 @@ describe('getWeekDates', () => {
 });
 
 describe('getWeeksAtMonth', () => {
-  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
+  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {
+    const input = new Date(2025, 6, 1); // 2025-7-1 월
+    const week = getWeeksAtMonth(input);
+    const expected = [
+      [null, null, 1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10, 11, 12],
+      [13, 14, 15, 16, 17, 18, 19],
+      [20, 21, 22, 23, 24, 25, 26],
+      [27, 28, 29, 30, 31, null, null],
+    ];
+    expect(week).toEqual(expected);
+  });
 });
 
 describe('getEventsForDay', () => {
