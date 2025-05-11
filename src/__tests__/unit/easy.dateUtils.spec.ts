@@ -10,6 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { mockTestData } from '../data/mockTestData';
 
 const toYMD = (d: Date) => [d.getFullYear(), d.getMonth() + 1, d.getDate()];
 
@@ -164,20 +165,27 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
+  const sampleEvents = mockTestData;
+
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
-    const events = [
-      { date: '2025-07-01', title: '이벤트1' },
-      { date: '2025-07-02', title: '이벤트2' },
-      { date: '2025-07-03', title: '이벤트3' },
-    ];
-    const day = 1;
+    const result = getEventsForDay(sampleEvents, 1);
+    expect(result.map((e) => e.id)).toEqual(['1', '3']);
   });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(sampleEvents, 3);
+    expect(result.length).toBe(0);
+  });
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(sampleEvents, 0);
+    expect(result.length).toBe(0);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(sampleEvents, 32);
+    expect(result.length).toBe(0);
+  });
 });
 
 describe('formatWeek', () => {

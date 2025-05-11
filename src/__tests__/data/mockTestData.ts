@@ -1,0 +1,40 @@
+import { Event } from '../../types';
+
+export const mockTestData: Event[] = [
+  {
+    id: '1',
+    date: '2025-05-01',
+    title: 'Event A',
+    startTime: '',
+    endTime: '',
+    description: '',
+    location: '',
+    category: '',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  } as Event,
+  {
+    id: '2',
+    date: '2025-05-02',
+    title: 'Event B',
+    startTime: '',
+    endTime: '',
+    description: '',
+    location: '',
+    category: '',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  } as Event,
+  {
+    id: '3',
+    date: '2025-05-01',
+    title: 'Event C',
+    startTime: '',
+    endTime: '',
+    description: '',
+    location: '',
+    category: '',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  } as Event,
+];
