@@ -120,6 +120,9 @@ export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
 
+/**
+ * 주어진 날짜를 YYYY-MM-DD 형식으로 포맷팅합니다.
+ */
 export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),
