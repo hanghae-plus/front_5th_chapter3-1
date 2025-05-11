@@ -1,4 +1,3 @@
-import { Event } from '../../types';
 import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
 import { mockTestData, mockTestDataList } from '../data/mockTestData';
 
