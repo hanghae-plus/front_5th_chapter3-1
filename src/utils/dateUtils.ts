@@ -106,6 +106,10 @@ export function formatMonth(date: Date): string {
  * 주어진 날짜가 특정 범위 내에 있는지 확인합니다.
  */
 export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boolean {
+  if (rangeStart > rangeEnd) {
+    return false;
+  }
+
   return date >= rangeStart && date <= rangeEnd;
 }
 
