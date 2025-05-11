@@ -11,6 +11,7 @@ import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 
 // ? Medium: 아래 toastFn과 mock과 이 fn은 무엇을 해줄까요?
+// Answer: 실제 토스트를 띄우지 않고, "토스트를 띄우는 코드가 실행됐는지" 확인할 수 있도록 해준다.
 const toastFn = vi.fn();
 
 vi.mock('@chakra-ui/react', async () => {
