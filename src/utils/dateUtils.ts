@@ -88,7 +88,11 @@ export function formatMonth(date: Date): string {
  * 주어진 날짜가 특정 범위 내에 있는지 확인합니다.
  */
 export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boolean {
-  return date >= rangeStart && date <= rangeEnd;
+  // rangeEnd 다음날 0시 0분 0초 이전인지로 비교해야함
+  const nextDay = new Date(rangeEnd);
+  nextDay.setDate(nextDay.getDate() + 1);
+  nextDay.setHours(0, 0, 0, 0);
+  return date >= rangeStart && date < nextDay;
 }
 
 export function fillZero(value: number, size = 2) {
