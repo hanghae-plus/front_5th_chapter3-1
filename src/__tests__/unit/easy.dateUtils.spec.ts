@@ -12,15 +12,31 @@ import {
 } from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('1월은 31일 수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 1)).toBe(31);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 4)).toBe(30);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  test.each([
+    [2024, 2, 29], // 윤년 2월
+    [2000, 2, 29], // 세기 윤년 (400의 배수)
+  ])('윤년의 2월에 대해 29일을 반환한다', (year, month, expected) => {
+    expect(getDaysInMonth(year, month)).toBe(expected);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  test.each([
+    [2025, 2, 28], // 평년 2월
+    [1900, 2, 28], // 세기 평년 (100의 배수지만 400의 배수 아님)
+  ])('평년의 2월에 대해 28일을 반환한다', (year, month, expected) => {
+    expect(getDaysInMonth(year, month)).toBe(expected);
+  });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it.each([0, 13, -5, 100])('유효하지 않은 월에 대해 적절히 처리한다', (invalidMonth) => {
+    expect(() => getDaysInMonth(2025, invalidMonth)).toThrow(RangeError);
+  });
 });
 
 describe('getWeekDates', () => {

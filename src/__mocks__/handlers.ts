@@ -34,11 +34,11 @@ export const handlers = [
 
   http.put('/api/events/:id', async ({ params, request }) => {
     const { id } = params;
-    const updatedEvent = await request.json();
+    const updatedEvent = (await request.json()) as EventForm;
 
     const eventIndex = events.findIndex((event) => event.id === id);
     if (eventIndex > -1) {
-      const newEvents = [...events];
+      const newEvents = events;
       newEvents[eventIndex] = { ...events[eventIndex], ...updatedEvent };
       return HttpResponse.json(newEvents[eventIndex]);
     }
