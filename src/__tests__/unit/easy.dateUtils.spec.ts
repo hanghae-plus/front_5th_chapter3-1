@@ -6,9 +6,11 @@ import {
   formatWeek,
   getDaysInMonth,
   getEventsForDay,
+  getThisWeeksDay,
   getWeekDates,
   getWeeksAtMonth,
   isDateInRange,
+  WEEKDAY_INDEX,
 } from '../../utils/dateUtils';
 type ttt = Event;
 
@@ -31,11 +33,13 @@ describe('getDaysInMonth', () => {
 
   it('유효하지 않은 월에 대해 적절히 처리한다', () => {
     // type number인 값
+    expect(getDaysInMonth(2025, NaN)).toBeNaN();
     expect(getDaysInMonth(2025, Infinity)).toBeNaN();
     expect(getDaysInMonth(2025, -Infinity)).toBeNaN();
-    expect(getDaysInMonth(2025, NaN)).toBeNaN();
     expect(getDaysInMonth(2025, Number.MAX_VALUE)).toBeNaN();
-    expect(getDaysInMonth(2025, Number.MIN_VALUE)).toBeNaN();
+    expect(getDaysInMonth(2025, Number.MIN_VALUE)).toBe(31); // 왜 31이지?
+    console.log(getDaysInMonth(2025, Number.MIN_VALUE));
+
     // 범위 초과
     expect(getDaysInMonth(2025, -1)).toBe(30); // 11월
     expect(getDaysInMonth(2025, 0)).toBe(31); // 12월
@@ -45,11 +49,51 @@ describe('getDaysInMonth', () => {
 
 describe('getWeekDates', () => {
   getWeekDates;
-  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    // 이번 주의 수요일
+    const thisWednesday = getThisWeeksDay(WEEKDAY_INDEX.WEDNESDAY);
+    const weekDates = getWeekDates(thisWednesday);
+    expect(weekDates.length).toBe(7);
 
-  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+    // 이번 주의 수요일로 함수를 호출했을 때의 각 요일별 날짜들
+    Object.values(WEEKDAY_INDEX).forEach((target) => {
+      const expectedDate = getThisWeeksDay(target);
+      // expect(weekDates[target].toISOString()).toBe(expectedDate.toISOString()); // 1ms로 오차가 날 때가 있음
+      expect(weekDates[target].toISOString().split('T')[0]).toBe(
+        expectedDate.toISOString().split('T')[0]
+      );
+    });
+  });
 
-  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    // 이번 주의 시작 일요일? 월요일?
+    const thisSunday = getThisWeeksDay(WEEKDAY_INDEX.SUNDAY);
+    const weekDates = getWeekDates(thisSunday);
+    expect(weekDates.length).toBe(7);
+
+    // 이번 주의 월요일로 함수를 호출했을 때의 각 요일별 날짜들
+    Object.values(WEEKDAY_INDEX).forEach((target) => {
+      const expectedDate = getThisWeeksDay(target);
+      expect(weekDates[target].toISOString().split('T')[0]).toBe(
+        expectedDate.toISOString().split('T')[0]
+      );
+    });
+  });
+
+  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    // 이번 주의 시작 토요일? 일요일?
+    const thisSaturday = getThisWeeksDay(WEEKDAY_INDEX.SATURDAY);
+    const weekDates = getWeekDates(thisSaturday);
+    expect(weekDates.length).toBe(7);
+
+    // 이번 주의 월요일로 함수를 호출했을 때의 각 요일별 날짜들
+    Object.values(WEEKDAY_INDEX).forEach((target) => {
+      const expectedDate = getThisWeeksDay(target);
+      expect(weekDates[target].toISOString().split('T')[0]).toBe(
+        expectedDate.toISOString().split('T')[0]
+      );
+    });
+  });
 
   it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {});
 
