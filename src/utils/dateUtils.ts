@@ -58,6 +58,11 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜의 주 정보를 "YYYY년 M월 W주" 형식으로 반환합니다.
+ * ChatGPT의 말:
+ * ISO 8601 주차 계산 방식에서는, 한 주가 어느 해(또는 월)에 속하는지를 결정할 때 “그 주 안에 목요일이 들어가면 그 해(월)의 주”로 간주합니다.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;

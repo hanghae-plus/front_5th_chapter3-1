@@ -164,7 +164,14 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const events = [
+      { date: '2025-07-01', title: '이벤트1' },
+      { date: '2025-07-02', title: '이벤트2' },
+      { date: '2025-07-03', title: '이벤트3' },
+    ];
+    const day = 1;
+  });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
 
@@ -174,17 +181,41 @@ describe('getEventsForDay', () => {
 });
 
 describe('formatWeek', () => {
-  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2025, 6, 10);
+    const expected = '2025년 7월 2주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 
-  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2025, 6, 1);
+    const expected = '2025년 7월 1주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 
-  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2025, 6, 31);
+    const expected = '2025년 7월 5주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 
-  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2025, 11, 31);
+    const expected = '2026년 1월 1주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 
-  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2024, 1, 29);
+    const expected = '2024년 2월 5주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 
-  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const input = new Date(2025, 2, 31);
+    const expected = '2025년 4월 1주';
+    expect(formatWeek(input)).toBe(expected);
+  });
 });
 
 describe('formatMonth', () => {
