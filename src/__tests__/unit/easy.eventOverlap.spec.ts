@@ -85,7 +85,17 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const newEvent = { ...eventsData.events[0], id: '999' } as Event;
+    const events = eventsData.events as Event[];
+    const result = findOverlappingEvents(newEvent, events);
+    expect(result).toEqual([eventsData.events[0]]);
+  });
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const newEvent = { ...eventsData.events[0], date: '2025-06-01', id: '999' } as Event;
+    const events = eventsData.events as Event[];
+    const result = findOverlappingEvents(newEvent, events);
+    expect(result).toEqual([]);
+  });
 });
