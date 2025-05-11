@@ -4,11 +4,14 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (month < 1 || month > 12) return 0;
   return new Date(year, month, 0).getDate();
 }
 
 /**
  * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.
+ * @param date
+ * @returns
  */
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
@@ -23,6 +26,11 @@ export function getWeekDates(date: Date): Date[] {
   return weekDates;
 }
 
+/**
+ * 주어진 날짜가 속한 월의 모든 주의 날짜를 반환합니다.
+ * @param currentDate
+ * @returns
+ */
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
