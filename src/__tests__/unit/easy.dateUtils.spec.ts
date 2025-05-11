@@ -1,4 +1,3 @@
-import { Event } from '../../types';
 import {
   fillZero,
   formatDate,
