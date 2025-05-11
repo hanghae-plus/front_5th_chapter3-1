@@ -157,7 +157,41 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  const event1: Event = {
+    id: '1',
+    title: '점심 약속',
+    date: '2025-05-21',
+    startTime: '12:30',
+    endTime: '16:30',
+    description: '동료와 점심 식사',
+    location: '회사 근처 식당',
+    category: '개인',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  };
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  const event2: Event = {
+    id: '2',
+    title: '점심 약속',
+    date: '2025-05-21',
+    startTime: '14:30',
+    endTime: '17:30',
+    description: '동료와 점심 식사',
+    location: '회사 근처 식당',
+    category: '개인',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  };
+
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const pastEvents = realEvents.events as Event[];
+    const result = findOverlappingEvents(event1, pastEvents);
+    expect(result.length).toBe(1);
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const pastEvents = realEvents.events as Event[];
+    const result = findOverlappingEvents(event2, pastEvents);
+    expect(result.length).toBe(0);
+  });
 });
