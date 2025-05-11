@@ -262,17 +262,43 @@ describe('isDateInRange', () => {
   const rangeStart = new Date('2025-07-01');
   const rangeEnd = new Date('2025-07-31');
 
-  it('범위 내의 날짜 2025-07-10에 대해 true를 반환한다', () => {});
+  it('범위 내의 날짜 2025-07-10에 대해 true를 반환한다', () => {
+    const date = new Date('2025-07-10');
+    const isInRange = isDateInRange(date, rangeStart, rangeEnd);
+    expect(isInRange).toBe(true);
+  });
 
-  it('범위의 시작일 2025-07-01에 대해 true를 반환한다', () => {});
+  it('범위의 시작일 2025-07-01에 대해 true를 반환한다', () => {
+    const date = new Date('2025-07-01');
+    const isInRange = isDateInRange(date, rangeStart, rangeEnd);
+    expect(isInRange).toBe(true);
+  });
 
-  it('범위의 종료일 2025-07-31에 대해 true를 반환한다', () => {});
+  it('범위의 종료일 2025-07-31에 대해 true를 반환한다', () => {
+    const date = new Date('2025-07-31');
+    const isInRange = isDateInRange(date, rangeStart, rangeEnd);
+    expect(isInRange).toBe(true);
+  });
 
-  it('범위 이전의 날짜 2025-06-30에 대해 false를 반환한다', () => {});
+  it('범위 이전의 날짜 2025-06-30에 대해 false를 반환한다', () => {
+    const date = new Date('2025-06-30');
+    const isInRange = isDateInRange(date, rangeStart, rangeEnd);
+    expect(isInRange).toBe(false);
+  });
 
-  it('범위 이후의 날짜 2025-08-01에 대해 false를 반환한다', () => {});
+  it('범위 이후의 날짜 2025-08-01에 대해 false를 반환한다', () => {
+    const date = new Date('2025-08-01');
+    const isInRange = isDateInRange(date, rangeStart, rangeEnd);
+    expect(isInRange).toBe(false);
+  });
 
-  it('시작일이 종료일보다 늦은 경우 모든 날짜에 대해 false를 반환한다', () => {});
+  it('시작일이 종료일보다 늦은 경우 모든 날짜에 대해 false를 반환한다', () => {
+    const date = new Date('2025-07-31');
+    const newRangeStart = new Date('2025-08-01');
+    const newRangeEnd = new Date('2025-07-01');
+    const isInRange = isDateInRange(date, newRangeStart, newRangeEnd);
+    expect(isInRange).toBe(false);
+  });
 });
 
 describe('fillZero', () => {
