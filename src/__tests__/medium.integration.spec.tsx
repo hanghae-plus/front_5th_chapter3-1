@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
@@ -14,16 +14,62 @@ import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
+const renderApp = () => {
+  return render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
+
 describe('일정 CRUD 및 기본 기능', () => {
-  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+  it('새로운 일정을 등록하면 캘릭더와 일정 목록에서 확인할 수 있다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
-    const { getByPlaceholderText, getByText } = render(<App />);
-    const input = getByPlaceholderText('일정 제목을 입력하세요');
-    await user.type(input, '새로운 일정');
-    await user.click(getByText('추가'));
 
-    expect(getByText('새로운 일정')).toBeInTheDocument();
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1
+    const currentDay = currentDate.getDate();
+
+    const NEW_EVENT = {
+      id: '1',
+      title: '테스트 일정',
+      date: `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`,
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '테스트 일정 설명',
+    };
+
+    renderApp();
+
+    // 1. 폼 필드 입력
+    const titleInput = screen.getByLabelText(/제목/i);
+    const dateInput = screen.getByLabelText(/날짜/i);
+    const startTimeInput = screen.getByLabelText(/시작 시간/i);
+    const endTimeInput = screen.getByLabelText(/종료 시간/i);
+    const descriptionInput = screen.getByLabelText(/설명/i);
+
+    await user.type(titleInput, NEW_EVENT.title);
+    await user.type(dateInput, NEW_EVENT.date);
+    await user.type(startTimeInput, NEW_EVENT.startTime);
+    await user.type(endTimeInput, NEW_EVENT.endTime);
+    await user.type(descriptionInput, NEW_EVENT.description);
+
+    // 2. 저장 버튼 클릭
+    const saveButton = screen.getByRole('button', { name: /일정 추가/i });
+    await user.click(saveButton);
+
+    // 3. 저장된 일정 확인
+    await waitFor(() => {
+      // 캘린더 뷰에서 확인
+      const monthView = screen.getByTestId('month-view');
+      expect(within(monthView).getByText(NEW_EVENT.title)).toBeInTheDocument();
+
+      // 이벤트 리스트에서 확인
+      const eventList = screen.getByTestId('event-list');
+      expect(within(eventList).getByText(NEW_EVENT.title)).toBeInTheDocument();
+    });
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
