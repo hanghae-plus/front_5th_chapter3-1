@@ -5,6 +5,7 @@ import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import App from '../App';
+import { server } from '../setupTests';
 import { Event } from '../types';
 
 const renderApp = () => {
@@ -15,18 +16,18 @@ const renderApp = () => {
   );
 };
 
-const createCurrentMonthEvent = () => {
+const createCurrentMonthEvent = (title = '테스트 일정', description = '테스트 일정 설명') => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1
   const currentDay = currentDate.getDate();
 
   const newEvent = {
-    title: '테스트 일정',
+    title,
     date: `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(currentDay).padStart(2, '0')}`,
     startTime: '10:00',
     endTime: '11:00',
-    description: '테스트 일정 설명',
+    description,
   };
 
   return newEvent;
@@ -89,9 +90,18 @@ describe('일정 CUD 기능', () => {
 
     await addOrUpdateEvent(user, NEW_EVENT);
 
-    const editButton = screen.getByTestId('edit-event-button-2');
+    // 이벤트 리스트에서 "테스트 일정"이 포함된 div를 찾음
+    const eventList = screen.getByTestId('event-list');
+    const eventItem = within(eventList).getByText(NEW_EVENT.title).closest('div');
+    const parent = eventItem?.parentElement;
+    const parentDiv = parent?.parentElement;
+    // 해당 div 내의 edit 버튼을 찾고, data-testid에서 id 추출
+    const editButton = within(parentDiv!).getByRole('button', { name: 'Edit event' });
+    const editButtonTestId = editButton.getAttribute('data-testid');
+    const id = editButtonTestId?.split('-').pop();
 
-    await user.click(editButton);
+    const editButtonById = screen.getByTestId(`edit-event-button-${id}`);
+    await user.click(editButtonById);
 
     await waitFor(() => {
       expect(screen.getByLabelText(/제목/i)).toHaveValue('테스트 일정');
@@ -99,7 +109,6 @@ describe('일정 CUD 기능', () => {
 
     const UPDATED_EVENT = {
       ...NEW_EVENT,
-      id: '2',
       title: '수정된 일정',
       description: '수정된 일정 설명',
     };
@@ -111,6 +120,8 @@ describe('일정 CUD 기능', () => {
     const endTimeInput = screen.getByLabelText(/종료 시간/i);
     const descriptionInput = screen.getByLabelText(/설명/i);
 
+    // 커스텀 컴포넌트에서는 jsdom 환경에서 focus/clear가 제대로 동작하지 않을 수 있다.
+    // fireEvent로 강제로 값과 change 이벤트 발생시켜서 input을 비운다.
     fireEvent.change(titleInput, { target: { value: '' } });
     await user.type(titleInput, UPDATED_EVENT.title);
 
@@ -147,7 +158,11 @@ describe('일정 CUD 기능', () => {
 
     await addOrUpdateEvent(user, NEW_EVENT);
 
-    const deleteButton = screen.getByTestId('delete-event-button-2');
+    const eventList = screen.getByTestId('event-list');
+    const eventItem = within(eventList).getByText(NEW_EVENT.title).closest('div');
+    const parent = eventItem?.parentElement;
+    const parentDiv = parent?.parentElement;
+    const deleteButton = within(parentDiv!).getByRole('button', { name: 'Delete event' });
     await user.click(deleteButton);
 
     await waitFor(() => {
@@ -161,34 +176,169 @@ describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     const user = userEvent.setup();
 
+    // 1. 주간 뷰에 일정이 없는 경우 응답
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({
+          events: [],
+        });
+      })
+    );
+
     renderApp();
 
-    // 1. 주간 뷰로 전환
+    // 2. 주간 뷰로 전환
     const viewSelect = screen.getByLabelText('view');
     await user.selectOptions(viewSelect, 'week');
 
-    // 2. 주간 뷰가 나타나는지 확인
+    // 3. 주간 뷰가 나타나는지 확인
     const weekView = screen.getByTestId('week-view');
     expect(weekView).toBeInTheDocument();
 
-    // 3. 일정이 있는지 확인
+    // 4. 일정이 있는지 확인
+    // 일정이 있는지 확인하는 방법....
+    // 셀렉트가 변경될때 네트워크 요청되는것이 아님
+    const allTds = weekView.querySelectorAll('td');
+
+    allTds.forEach((td) => {
+      expect(td.querySelector('div')).toBeNull();
+    });
   });
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const user = userEvent.setup();
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    renderApp();
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const NEW_EVENT = createCurrentMonthEvent();
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    // 2. 주간 뷰로 전환
+    const viewSelect = screen.getByLabelText('view');
+    await user.selectOptions(viewSelect, 'week');
+
+    const weekView = screen.getByTestId('week-view');
+    expect(within(weekView).getByText(NEW_EVENT.title)).toBeInTheDocument();
+
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).getByText(NEW_EVENT.title)).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    const user = userEvent.setup();
+
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({
+          events: [],
+        });
+      })
+    );
+
+    renderApp();
+
+    const NEW_EVENT = createCurrentMonthEvent();
+
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    const viewSelect = screen.getByLabelText('view');
+    await user.selectOptions(viewSelect, 'month');
+
+    const monthView = screen.getByTestId('month-view');
+    expect(monthView).toBeInTheDocument();
+
+    const allTds = monthView.querySelectorAll('td');
+
+    allTds.forEach((td) => {
+      expect(td.querySelector('div')).toBeNull();
+    });
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    const NEW_EVENT = createCurrentMonthEvent();
+
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    const viewSelect = screen.getByLabelText('view');
+    await user.selectOptions(viewSelect, 'month');
+
+    const monthView = screen.getByTestId('month-view');
+    expect(within(monthView).getByText(NEW_EVENT.title)).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    // 공휴일로 표시 -> 색상
+    // 공휴일 색상 전역적으로 사용할 수 있게 수정할 수 있을까?
+    // 다른 방법이 있을까?
+    const holidayColor = 'css-19gpx6';
+
+    // currentDate를 1월 1일로 설정
+    const currentDate = new Date('2025-01-01');
+    vi.spyOn(global, 'Date').mockImplementation(() => currentDate);
+
+    renderApp();
+
+    const monthView = screen.getByTestId('month-view');
+    const holidayElement = within(monthView).getByText('신정');
+
+    expect(holidayElement.className).toContain(holidayColor);
+  });
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const user = userEvent.setup();
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    renderApp();
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    const searchInput = screen.getByTestId('search-input');
+    await user.type(searchInput, '트랄라레오트랄랄라.');
+
+    expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    // 이미 events에 있지만 날짜를 고려해서 생성
+    const createEvent = createCurrentMonthEvent('팀 회의');
+    await addOrUpdateEvent(user, createEvent);
+
+    const searchInput = screen.getByTestId('search-input');
+    await user.type(searchInput, '팀 회의');
+
+    const items = screen.getAllByText('팀 회의');
+    expect(items.length).toBeGreaterThan(0);
+  });
+
+  it('검색어를 지우면 모든 일정이 리스트에 다시 표시되어야 한다', async () => {
+    // "모든일정"의 기준은?
+    const user = userEvent.setup();
+
+    renderApp();
+
+    // 1. 초기 상태에서 일정 개수 저장
+    const eventList = screen.getByTestId('event-list');
+    const initialAllEvents = await waitFor(() => within(eventList).getAllByTestId('event-item'));
+    const initialCount = initialAllEvents.length;
+
+    // 2. 검색어 입력 후, 다시 지움
+    const searchInput = screen.getByTestId('search-input');
+    await user.type(searchInput, '아무 검색어');
+    fireEvent.change(searchInput, { target: { value: '' } });
+
+    // 3. 모든 일정이 다시 표시되는지 확인
+    await screen.findByTestId('event-list');
+    const allEvents = await waitFor(() => within(eventList).getAllByTestId('event-item'));
+    expect(allEvents.length).toBe(initialCount);
+  });
 });
 
 describe('일정 충돌', () => {

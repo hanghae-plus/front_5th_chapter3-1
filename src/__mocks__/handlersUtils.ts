@@ -23,6 +23,6 @@ export function createMockHandlersUtils(initEvents: Event[] = []) {
     setupMockHandlerDeletion: (id: string) => {
       eventStore = eventStore.filter((event) => event.id !== id);
     },
-    getEventStore: () => eventStore, // 필요시 현재 상태 확인용
+    getEventStore: () => eventStore,
   };
 }
