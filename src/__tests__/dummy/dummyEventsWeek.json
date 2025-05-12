@@ -1,0 +1,64 @@
+{
+  "events": [
+    {
+      "id": "WEEKLY001",
+      "title": "주간 기획 회의 (주간 테스트용)",
+      "description": "이번 주 신규 기능 기획안 논의",
+      "location": "기획실",
+      "date": "2025-11-03",
+      "startTime": "10:00",
+      "endTime": "11:30",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "WEEKLY002",
+      "title": "개발팀 데일리 스크럼 (주간 테스트용)",
+      "description": "어제 진행사항 및 오늘 계획 공유",
+      "location": "개발팀 사무실",
+      "date": "2025-11-04",
+      "startTime": "09:30",
+      "endTime": "10:00",
+      "category": "업무",
+      "repeat": { "type": "daily", "interval": 1 },
+      "notificationTime": 5
+    },
+    {
+      "id": "WEEKLY003",
+      "title": "디자인 검토 회의 (주간 테스트용)",
+      "description": "새로운 UI/UX 시안 검토",
+      "location": "디자인팀 회의실",
+      "date": "2025-11-05",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 15
+    },
+    {
+      "id": "WEEKLY004",
+      "title": "외부 강사 초청 세미나 (주간 테스트용)",
+      "description": "최신 기술 트렌드 교육",
+      "location": "대강당",
+      "date": "2025-11-06",
+      "startTime": "16:00",
+      "endTime": "18:00",
+      "category": "교육",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 60
+    },
+    {
+      "id": "WEEKLY005",
+      "title": "금요 팀 점심 (주간 테스트용)",
+      "description": "한 주 마무리 및 다음 주 계획 브리핑",
+      "location": "회사 근처 식당",
+      "date": "2025-11-07",
+      "startTime": "12:00",
+      "endTime": "13:30",
+      "category": "개인",
+      "repeat": { "type": "weekly", "interval": 1 },
+      "notificationTime": 10
+    }
+  ]
+}

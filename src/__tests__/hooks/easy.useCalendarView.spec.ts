@@ -5,7 +5,7 @@ import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
 describe('useCalendarView Hook', () => {
-  const MOCK_INITIAL_DATE = new Date(2025, 9, 1); // 2025년 10월 1일
+  const MOCK_INITIAL_DATE = new Date(2025, 9, 1);
 
   beforeEach(() => {
     vi.useFakeTimers();
