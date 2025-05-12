@@ -69,7 +69,11 @@ describe('getFilteredEvents', () => {
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
     const result = getFilteredEvents(mockEvents, '이벤트 2', new Date('2025-07-01'), 'month');
     expect(result).toEqual([mockEvents[1]]);
-    const resultUpperCase = getFilteredEvents(mockEvents, '이벤트 2'.toUpperCase(), new Date('2025-07-01'), 'month');
+    const resultUpperCase = getFilteredEvents(
+      mockEvents,
+      '이벤트 2'.toUpperCase(),
+      new Date('2025-07-01'),
+      'month');
     expect(resultUpperCase).toEqual([mockEvents[1]]);
   });
 
@@ -86,7 +90,12 @@ describe('getFilteredEvents', () => {
       repeat: { type: 'none', interval: 1 },
       notificationTime: 15,
     };
-    const result = getFilteredEvents([boundaryEvent, ...mockEvents], '', new Date('2025-07-01'), 'month');
+    const result = getFilteredEvents(
+      [boundaryEvent, ...mockEvents],
+      '',
+      new Date('2025-07-01'),
+      'month'
+    );
     expect(result).toEqual(mockEvents); // 6월 30일은 7월 뷰에 포함되지 않음
   });
 
