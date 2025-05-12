@@ -3,6 +3,9 @@ import '@testing-library/jest-dom';
 
 import { handlers } from './__mocks__/handlers';
 
+// timezone 설정
+vi.stubEnv('TZ', 'UTC');
+
 /* msw */
 export const server = setupServer(...handlers);
 
