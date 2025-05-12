@@ -73,7 +73,8 @@ describe('getFilteredEvents', () => {
       mockEvents,
       '이벤트 2'.toUpperCase(),
       new Date('2025-07-01'),
-      'month');
+      'month'
+    );
     expect(resultUpperCase).toEqual([mockEvents[1]]);
   });
 

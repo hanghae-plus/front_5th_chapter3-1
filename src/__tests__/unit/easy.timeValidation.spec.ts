@@ -35,8 +35,8 @@ describe('getTimeErrorMessage >', () => {
     const result = getTimeErrorMessage('', '');
     expect(result.startTimeError).toBeNull();
     expect(result.endTimeError).toBeNull();
-  })
-})
+  });
+});
 
 // toBeNull()은 값이 null인지 확인
 
