@@ -1,5 +1,11 @@
 import { Event, EventForm } from '../types';
 
+/**
+ * Date 객체로 변환
+ * @param date
+ * @param time
+ * @returns
+ */
 export function parseDateTime(date: string, time: string) {
   return new Date(`${date}T${time}`);
 }
