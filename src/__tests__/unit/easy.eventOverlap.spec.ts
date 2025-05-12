@@ -44,8 +44,8 @@ describe('convertEventToDateRange', () => {
 
   it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
     const event = convertEventToDateRange(common);
-    expect(event.start.toISOString()).toBe('2025-05-11T01:00:00.000Z');
-    expect(event.end.toISOString()).toBe('2025-05-11T02:00:00.000Z');
+    expect(event.start.toISOString()).toEqual(new Date('2025-05-11T10:00:00').toISOString());
+    expect(event.end.toISOString()).toEqual(new Date('2025-05-11T11:00:00').toISOString());
   });
 
   it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
