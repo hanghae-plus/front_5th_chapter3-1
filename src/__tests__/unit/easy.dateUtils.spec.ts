@@ -153,13 +153,285 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '이벤트1',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '이벤트1 설명',
+        location: '이벤트1 장소',
+        category: '이벤트1 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '2',
+        title: '이벤트2',
+        date: '2025-07-01',
+        startTime: '12:00',
+        endTime: '13:00',
+        description: '이벤트2 설명',
+        location: '이벤트2 장소',
+        category: '이벤트2 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '3',
+        title: '이벤트3',
+        date: '2025-07-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '이벤트3 설명',
+        location: '이벤트3 장소',
+        category: '이벤트3 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '4',
+        title: '이벤트4',
+        date: '2025-07-03',
+        startTime: '16:00',
+        endTime: '17:00',
+        description: '이벤트4 설명',
+        location: '이벤트4 장소',
+        category: '이벤트4 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+    ];
+    const date = 1;
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+    const eventsForDay = getEventsForDay(events, date);
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+    expect(eventsForDay).toEqual([events[0], events[1]]);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '이벤트1',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '이벤트1 설명',
+        location: '이벤트1 장소',
+        category: '이벤트1 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '2',
+        title: '이벤트2',
+        date: '2025-07-01',
+        startTime: '12:00',
+        endTime: '13:00',
+        description: '이벤트2 설명',
+        location: '이벤트2 장소',
+        category: '이벤트2 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '3',
+        title: '이벤트3',
+        date: '2025-07-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '이벤트3 설명',
+        location: '이벤트3 장소',
+        category: '이벤트3 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '4',
+        title: '이벤트4',
+        date: '2025-07-03',
+        startTime: '16:00',
+        endTime: '17:00',
+        description: '이벤트4 설명',
+        location: '이벤트4 장소',
+        category: '이벤트4 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+    ];
+    const date = 4;
+
+    const eventsForDay = getEventsForDay(events, date);
+
+    expect(eventsForDay).toEqual([]);
+  });
+
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '이벤트1',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '이벤트1 설명',
+        location: '이벤트1 장소',
+        category: '이벤트1 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '2',
+        title: '이벤트2',
+        date: '2025-07-01',
+        startTime: '12:00',
+        endTime: '13:00',
+        description: '이벤트2 설명',
+        location: '이벤트2 장소',
+        category: '이벤트2 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '3',
+        title: '이벤트3',
+        date: '2025-07-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '이벤트3 설명',
+        location: '이벤트3 장소',
+        category: '이벤트3 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '4',
+        title: '이벤트4',
+        date: '2025-07-03',
+        startTime: '16:00',
+        endTime: '17:00',
+        description: '이벤트4 설명',
+        location: '이벤트4 장소',
+        category: '이벤트4 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+    ];
+    const date = 0;
+
+    const eventsForDay = getEventsForDay(events, date);
+
+    expect(eventsForDay).toEqual([]);
+  });
+
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '이벤트1',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '이벤트1 설명',
+        location: '이벤트1 장소',
+        category: '이벤트1 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '2',
+        title: '이벤트2',
+        date: '2025-07-01',
+        startTime: '12:00',
+        endTime: '13:00',
+        description: '이벤트2 설명',
+        location: '이벤트2 장소',
+        category: '이벤트2 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '3',
+        title: '이벤트3',
+        date: '2025-07-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '이벤트3 설명',
+        location: '이벤트3 장소',
+        category: '이벤트3 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+      {
+        id: '4',
+        title: '이벤트4',
+        date: '2025-07-03',
+        startTime: '16:00',
+        endTime: '17:00',
+        description: '이벤트4 설명',
+        location: '이벤트4 장소',
+        category: '이벤트4 카테고리',
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+        notificationTime: 1,
+      },
+    ];
+    const date = 32;
+
+    const eventsForDay = getEventsForDay(events, date);
+
+    expect(eventsForDay).toEqual([]);
+  });
 });
 
 describe('formatWeek', () => {
