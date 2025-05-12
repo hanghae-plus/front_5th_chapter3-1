@@ -1,0 +1,52 @@
+{
+  "events": [
+    {
+      "id": "DUMMY001",
+      "title": "더미 회의 1 (테스트용)",
+      "description": "이것은 테스트를 위한 더미 회의입니다.",
+      "location": "테스트 회의실",
+      "date": "2025-11-01",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "DUMMY002",
+      "title": "더미 점심 약속",
+      "description": "테스트용 점심 식사",
+      "location": "테스트 식당",
+      "date": "2025-11-01",
+      "startTime": "12:30",
+      "endTime": "13:30",
+      "category": "개인",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    },
+    {
+      "id": "DUMMY003",
+      "title": "월간 테스트 보고 회의",
+      "description": "더미 데이터 보고",
+      "location": "온라인",
+      "date": "2025-11-10",
+      "startTime": "15:00",
+      "endTime": "16:00",
+      "category": "업무",
+      "repeat": { "type": "monthly", "interval": 1 },
+      "notificationTime": 60
+    },
+    {
+      "id": "DUMMY004",
+      "title": "아무것도 없는 이벤트",
+      "description": "",
+      "location": "",
+      "date": "2025-12-25",
+      "startTime": "00:00",
+      "endTime": "23:59",
+      "category": "기타",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 0
+    }
+  ]
+}
