@@ -1,6 +1,11 @@
 import { Event, EventForm } from '../types';
 
 export function parseDateTime(date: string, time: string) {
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  const timeRegex = /^\d{2}:\d{2}$/;
+  if (!dateRegex.test(date) || !timeRegex.test(time)) {
+    return new Date('Invalid Date');
+  }
   return new Date(`${date}T${time}`);
 }
 
