@@ -4,6 +4,9 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (month < 0 || month > 12) {
+    return 0;
+  }
   return new Date(year, month, 0).getDate();
 }
 
@@ -57,20 +60,18 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
 
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
-  const diffToThursday = 4 - dayOfWeek;
-  const thursday = new Date(targetDate);
-  thursday.setDate(targetDate.getDate() + diffToThursday);
+  const diffToSaturday = 6 - dayOfWeek;
+  const saturday = new Date(targetDate);
+  saturday.setDate(targetDate.getDate() + diffToSaturday);
 
-  const year = thursday.getFullYear();
-  const month = thursday.getMonth() + 1;
+  const year = saturday.getFullYear();
+  const month = saturday.getMonth() + 1;
 
-  const firstDayOfMonth = new Date(thursday.getFullYear(), thursday.getMonth(), 1);
-
-  const firstThursday = new Date(firstDayOfMonth);
-  firstThursday.setDate(1 + ((4 - firstDayOfMonth.getDay() + 7) % 7));
-
+  const firstDayOfMonth = new Date(saturday.getFullYear(), saturday.getMonth(), 1);
+  const firstSaturday = new Date(firstDayOfMonth);
+  firstSaturday.setDate(1 + ((6 - firstDayOfMonth.getDay() + 7) % 7));
   const weekNumber: number =
-    Math.floor((thursday.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+    Math.floor((saturday.getTime() - firstSaturday.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
 
   return `${year}년 ${month}월 ${weekNumber}주`;
 }
