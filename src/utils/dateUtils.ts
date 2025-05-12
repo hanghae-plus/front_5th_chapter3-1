@@ -128,6 +128,12 @@ export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boo
   return date >= rangeStart && date <= rangeEnd;
 }
 
+/**
+ * 한자리 숫자앞에 0을 붙힙니다.
+ * @param value
+ * @param size
+ * @returns
+ */
 export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
