@@ -61,7 +61,7 @@ it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이
 });
 
 it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다', () => {
-  const { result: weekRslt } = renderHook(() => 
+  const { result: weekRslt } = renderHook(() =>
     useSearch(sampleEvents, new Date('2024-10-02'), 'week')
   );
   act(() => {
@@ -75,13 +75,10 @@ it("검색어를 '회의'에서 '점심'으로 변경하면 필터링된 결과�
   act(() => {
     result.current.setSearchTerm('회의');
   });
-
   expect(result.current.filteredEvents).toEqual([]);
 
   act(() => {
     result.current.setSearchTerm('점심');
   });
-
   expect(result.current.filteredEvents).toEqual([sampleEvents[1]]);
 });
-
