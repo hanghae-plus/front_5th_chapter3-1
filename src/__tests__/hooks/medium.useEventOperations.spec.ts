@@ -47,7 +47,36 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
   });
 });
 
-// it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
+it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  const mockSavedEvent = { id: '1', name: '저장된 이벤트' };
+
+  const fetchMock = vi
+    .fn()
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ events: [] }) })
+    .mockResolvedValueOnce({ ok: true })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ events: [mockSavedEvent] }) });
+
+  vi.stubGlobal('fetch', fetchMock);
+
+  const { result } = renderHook(() => useEventOperations(false));
+
+  await act(async () => {
+    await result.current.saveEvent({
+      id: '1',
+      title: '저장된 이벤트',
+      date: '2025-05-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: 'Test Desc',
+      location: 'Test Loc',
+      category: 'Test Cat',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    });
+  });
+
+  expect(result.current.events).toEqual([mockSavedEvent]);
+});
 
 // it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
 
