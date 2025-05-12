@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import {
@@ -6,11 +6,31 @@ import {
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../../__mocks__/handlersUtils.ts';
+import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 
-it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {});
+const mockToast = vi.fn();
+vi.mock('@chakra-ui/react', () => ({
+  useToast: () => mockToast,
+}));
+
+it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  const { result } = renderHook(() => useEventOperations(false));
+
+  // 데이터 fetch
+  await waitFor(() => {
+    expect(result.current.events).toEqual(events);
+  });
+
+  // toast
+  expect(mockToast).toHaveBeenCalledWith({
+    title: '일정 로딩 완료!',
+    status: 'info',
+    duration: 1000,
+  });
+});
 
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
 
