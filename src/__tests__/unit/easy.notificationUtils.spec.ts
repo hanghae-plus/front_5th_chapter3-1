@@ -90,5 +90,20 @@ describe('getUpcomingEvents', () => {
 });
 
 describe('createNotificationMessage', () => {
-  it('올바른 알림 메시지를 생성해야 한다', () => {});
+  it('올바른 알림 메시지를 생성해야 한다', () => {
+    const event: Event = {
+      notificationTime: 30,
+      title: '사랑의 하츄핑',
+      id: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      description: '',
+      location: '',
+      category: '',
+    };
+    const result = createNotificationMessage(event);
+
+    expect(result).toBe('30분 후 사랑의 하츄핑 일정이 시작됩니다.');
+  });
 });

@@ -18,6 +18,11 @@ export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: st
   });
 }
 
+/**
+ * 올바른 알림 메시지를 생성
+ * @param param0
+ * @returns
+ */
 export function createNotificationMessage({ notificationTime, title }: Event) {
   return `${notificationTime}분 후 ${title} 일정이 시작됩니다.`;
 }
