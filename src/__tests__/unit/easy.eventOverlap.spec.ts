@@ -37,8 +37,8 @@ describe('convertEventToDateRange', () => {
   it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
     const result = convertEventToDateRange(dummyEvents.events[0] as Event);
     expect(result).toEqual({
-      start: new Date('2025-11-03T10:00:00'),
-      end: new Date('2025-11-03T11:30:00'),
+      start: new Date('2025-11-01T10:00:00'),
+      end: new Date('2025-11-01T11:00:00'),
     });
   });
 
