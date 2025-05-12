@@ -10,7 +10,12 @@ export const handlers = [
     return HttpResponse.json(events);
   }),
 
-  http.post('/api/events', async ({ request }) => {}),
+  http.post('/api/events', async ({ request }) => {
+    const event = (await request.json()) as Event;
+    const lastId = Number(events[events.length - 1].id);
+    event.id = String(lastId + 1);
+    return HttpResponse.json(event, { status: 201 });
+  }),
 
   http.put('/api/events/:id', async () => {}),
 
