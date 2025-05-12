@@ -91,7 +91,7 @@
       "startTime": "09:00",
       "endTime": "10:00",
       "description": "월말결산 설명",
-      "location": "회의실 B",
+      "location": "회의실 C",
       "category": "업무",
       "repeat": { "type": "none", "interval": 0 },
       "notificationTime": 10
