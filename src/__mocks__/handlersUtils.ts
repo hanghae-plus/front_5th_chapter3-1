@@ -1,9 +1,33 @@
-import { Event } from '../types';
+import { http, HttpResponse } from 'msw';
 
-// ! Hard
-// ! 이벤트는 생성, 수정 되면 fetch를 다시 해 상태를 업데이트 합니다. 이를 위한 제어가 필요할 것 같은데요. 어떻게 작성해야 테스트가 병렬로 돌아도 안정적이게 동작할까요?
-// ! 아래 이름을 사용하지 않아도 되니, 독립적이게 테스트를 구동할 수 있는 방법을 찾아보세요. 그리고 이 로직을 PR에 설명해주세요.
-export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {};
+import { server } from '../setupTests';
+import type { Event } from '../types';
+
+// 어떻게 해야할지 모르겠어서 여기는 배꼈습니다 .. medium에 잘나와있네요 .. ㅎ
+export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
+  const mockEvents = [...initEvents];
+
+  server.use(
+    http.get('/api/events', () => {
+      console.group('🚀 GET /api/events ( setupMockHandlerCreation )');
+      console.log('🚀 events >> ', mockEvents);
+      console.groupEnd();
+
+      return HttpResponse.json({ events: mockEvents });
+    }),
+    http.post<{}, Event>('/api/events', async ({ request }) => {
+      const newEvent = await request.json();
+      newEvent.id = String(mockEvents.length + 1);
+      mockEvents.push(newEvent);
+
+      console.group('🚀 POST /api/events ( setupMockHandlerCreation )');
+      console.log('🚀 newEvent >> ', newEvent);
+      console.groupEnd();
+
+      return HttpResponse.json(newEvent, { status: 201 });
+    })
+  );
+};
 
 export const setupMockHandlerUpdating = () => {};
 

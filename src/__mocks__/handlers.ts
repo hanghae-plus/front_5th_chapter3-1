@@ -10,9 +10,10 @@ interface FindByIdParams {
 export const handlers = [
   http.get('/api/events', () => {
     console.group('🚀 GET /api/events');
+    console.log('🚀 events >> ', events);
     console.groupEnd();
 
-    return HttpResponse.json(events);
+    return HttpResponse.json({ events });
   }),
   http.post<{}, Event>('/api/events', async ({ request }) => {
     const newEvent = await request.json();
