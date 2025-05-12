@@ -1,26 +1,26 @@
-import { Event } from '../../types';
-import {
-  fillZero,
-  formatDate,
-  formatMonth,
-  formatWeek,
-  getDaysInMonth,
-  getEventsForDay,
-  getWeekDates,
-  getWeeksAtMonth,
-  isDateInRange,
-} from '../../utils/dateUtils';
+import { getDaysInMonth } from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('1월은 31일 수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 1)).toBe(31);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    expect(getDaysInMonth(2025, 4)).toBe(30);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    expect(getDaysInMonth(2024, 2)).toBe(29);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    expect(getDaysInMonth(2023, 2)).toBe(28);
+  });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it('유효하지 않은 월에 대해 적절히 처리한다', () => {
+    expect(getDaysInMonth(2025, -1)).toBe(30);
+    expect(getDaysInMonth(2025, 14)).toBe(28);
+  });
 });
 
 describe('getWeekDates', () => {
