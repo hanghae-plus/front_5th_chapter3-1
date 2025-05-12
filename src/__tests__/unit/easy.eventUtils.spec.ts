@@ -1,7 +1,7 @@
 import { Event } from '../../types';
 import { getFilteredEvents } from '../../utils/eventUtils';
 
-describe('getFilteredEvents', () => {
+describe.skip('getFilteredEvents', () => {
   it("검색어 '이벤트 2'에 맞는 이벤트만 반환한다", () => {});
 
   it('주간 뷰에서 2025-07-01 주의 이벤트만 반환한다', () => {});
