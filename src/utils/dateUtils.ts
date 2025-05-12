@@ -68,17 +68,31 @@ export function getWeeksAtMonth(currentDate: Date) {
  */
 export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => {
-    const parsed = new Date(event.date);
-    return !isNaN(parsed.getTime()) && new Date(event.date).getDate() === date;
+    if (!isValidDateString(event.date)) return false;
+    return new Date(event.date).getDate() === date;
   });
 }
 
 /**
- *
+ * 정귝식 전환 체크 ISO 형식만 허용 (YYYY-MM-DD)
+ * @param str
+ * @returns
+ */
+function isValidDateString(str: string): boolean {
+  // 1. 정규식으로 형식 체크
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
+
+  // 2. 날짜로 파싱해서 유효한지 확인
+  const date = new Date(str);
+  return !isNaN(date.getTime()) && str === date.toISOString().slice(0, 10);
+}
+
+/**
+ * 월정보 반환
  * @param targetDate
  * @returns
  */
-export function formatWeek(targetDate: Date) {
+export function formatWeek(targetDate: Date): string {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
   const thursday = new Date(targetDate);
