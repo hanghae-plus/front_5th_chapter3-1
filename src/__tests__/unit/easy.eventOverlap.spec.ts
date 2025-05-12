@@ -42,8 +42,8 @@ describe('convertEventToDateRange', () => {
     const event = eventsData.events[0] as Event;
     const result = convertEventToDateRange(event);
     expect(result).toEqual({
-      start: new Date('2025-05-01T09:00:00'),
-      end: new Date('2025-05-01T10:00:00'),
+      start: new Date('2025-07-01T09:00:00'),
+      end: new Date('2025-07-01T10:00:00'),
     });
   });
 
@@ -71,7 +71,7 @@ describe('convertEventToDateRange', () => {
 describe('isOverlapping', () => {
   it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
     const event1 = eventsData.events[0] as Event;
-    const event2 = { ...eventsData.events[1], date: '2025-05-01' } as Event;
+    const event2 = { ...eventsData.events[1], date: '2025-07-01' } as Event;
     const result = isOverlapping(event1, event2);
     expect(result).toBe(true);
   });
