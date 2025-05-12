@@ -14,32 +14,42 @@ setupMockHandlerCreation(events as Event[]);
 
 export const handlers = [
   http.get('/api/events', () => {
-    return HttpResponse.json({ events: setupMockHandlerFetch() });
+    try {
+      const events = setupMockHandlerFetch();
+      return HttpResponse.json({ events });
+    } catch (error) {
+      return new HttpResponse(null, { status: 500 });
+    }
   }),
 
   http.post('/api/events', async ({ request }) => {
-    const event = (await request.json()) as Event;
-    const newEvent = { ...event, id: String(events.length + 1) };
-    setupMockHandlerAppend(newEvent);
-    return HttpResponse.json(newEvent);
+    try {
+      const eventData = (await request.json()) as Omit<Event, 'id'>;
+      const newEvent = setupMockHandlerAppend(eventData);
+      return HttpResponse.json({ event: newEvent });
+    } catch (error) {
+      return new HttpResponse(null, { status: 400 });
+    }
   }),
 
   http.put('/api/events/:id', async ({ request, params }) => {
-    const id = params.id as string;
-    const update = (await request.json()) as Event;
-
-    const updatedEvent = events.map(
-      (event): Event =>
-        Number(event.id) === Number(id) ? ({ ...event, ...update } as Event) : (event as Event)
-    );
-    setupMockHandlerUpdateById(updatedEvent);
-    return HttpResponse.json(updatedEvent);
+    try {
+      const id = params.id as string;
+      const update = (await request.json()) as Partial<Event>;
+      const updatedEvent = setupMockHandlerUpdateById(id, update);
+      return HttpResponse.json({ event: updatedEvent });
+    } catch (error) {
+      return new HttpResponse(null, { status: 404 });
+    }
   }),
 
   http.delete('/api/events/:id', ({ params }) => {
-    const id = params.id as string;
-    const filteredEvents = events.filter((event) => Number(event.id) !== Number(id));
-    setupMockHandlerDeletion(id);
-    return HttpResponse.json(filteredEvents);
+    try {
+      const id = params.id as string;
+      setupMockHandlerDeletion(id);
+      return new HttpResponse(null, { status: 204 });
+    } catch (error) {
+      return new HttpResponse(null, { status: 404 });
+    }
   }),
 ];
