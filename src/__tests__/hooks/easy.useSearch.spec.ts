@@ -68,12 +68,34 @@ describe('검색 (useSearch)', () => {
     expect(result.current.filteredEvents).toEqual([events[1]]);
   });
 
-  it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이벤트를 반환해야 한다', () => {
+  it('검색어가 제목의 해당하는 이벤트를 반환해야 한다', () => {
+    const currentDate = new Date('2025-05-12');
+    const { result } = renderHook(() => useSearch(events, currentDate, 'month'));
+
+    act(() => {
+      result.current.setSearchTerm('이벤트 1');
+    });
+
+    expect(result.current.filteredEvents).toEqual([events[0]]);
+  });
+
+  it('검색어가 설명의 해당하는 이벤트를 반환해야 한다', () => {
     const currentDate = new Date('2025-05-12');
     const { result } = renderHook(() => useSearch(events, currentDate, 'month'));
 
     act(() => {
       result.current.setSearchTerm('1 설명');
+    });
+
+    expect(result.current.filteredEvents).toEqual([events[0]]);
+  });
+
+  it('검색어가 위치의 해당하는 이벤트를 반환해야 한다', () => {
+    const currentDate = new Date('2025-05-12');
+    const { result } = renderHook(() => useSearch(events, currentDate, 'month'));
+
+    act(() => {
+      result.current.setSearchTerm('1 위치');
     });
 
     expect(result.current.filteredEvents).toEqual([events[0]]);
