@@ -21,6 +21,19 @@ vi.mock('@chakra-ui/react', async () => {
   };
 });
 
+const event: Event = {
+  id: '1',
+  title: '회의',
+  date: '2025-10-01',
+  startTime: '10:00',
+  endTime: '11:00',
+  description: '팀 회의',
+  location: '회의실 A',
+  category: '업무',
+  repeat: { type: 'none', interval: 0 },
+  notificationTime: 10,
+};
+
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
   setupMockHandlerCreation();
   const { result } = renderHook(() => useEventOperations(false));
@@ -32,18 +45,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   const { result } = renderHook(() => useEventOperations(false));
 
   await act(async () => {
-    await result.current.saveEvent({
-      id: '1',
-      title: '회의',
-      date: '2025-10-01',
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '팀 회의',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    });
+    await result.current.saveEvent(event);
   });
 
   expect(toastFn).toHaveBeenCalledWith(
@@ -56,18 +58,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
   const { result } = renderHook(() => useEventOperations(true));
 
   await act(async () => {
-    await result.current.saveEvent({
-      id: '1',
-      title: '회의',
-      date: '2025-10-01',
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '팀 회의',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    });
+    await result.current.saveEvent(event);
   });
 
   expect(toastFn).toHaveBeenCalledWith(
