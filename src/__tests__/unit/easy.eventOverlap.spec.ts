@@ -86,9 +86,41 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+    const eventFirst = {
+      date: '2025-07-01',
+      startTime: '14:30',
+      endTime: '16:00',
+    } as EventForm;
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+    const eventSecound = {
+      date: '2025-07-01', // ✅ 같은 날로 변경
+      startTime: '14:30',
+      endTime: '16:00',
+    } as EventForm;
+
+    const result = isOverlapping(eventFirst, eventSecound);
+
+    expect(result).toBe(true);
+  });
+
+  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+    const eventFirst = {
+      date: '2025-08-01',
+      startTime: '14:30',
+      endTime: '16:00',
+    } as EventForm;
+
+    const eventSecound = {
+      date: '2025-07-01', // ✅ 같은 날로 변경
+      startTime: '14:30',
+      endTime: '16:00',
+    } as EventForm;
+
+    const result = isOverlapping(eventFirst, eventSecound);
+
+    expect(result).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {

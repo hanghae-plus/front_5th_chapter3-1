@@ -22,6 +22,12 @@ export function convertEventToDateRange({ date, startTime, endTime }: Event | Ev
   };
 }
 
+/**
+ * 이벤트 간 시간 겹침(overlap) 여부를 판단하는 함수
+ * @param event1
+ * @param event2
+ * @returns
+ */
 export function isOverlapping(event1: Event | EventForm, event2: Event | EventForm) {
   const { start: start1, end: end1 } = convertEventToDateRange(event1);
   const { start: start2, end: end2 } = convertEventToDateRange(event2);
