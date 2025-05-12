@@ -1,11 +1,10 @@
-import { Event } from '../../types';
 import {
   convertEventToDateRange,
   findOverlappingEvents,
   isOverlapping,
   parseDateTime,
 } from '../../utils/eventOverlap';
-import { createEvent } from '../fixtures/events';
+import { createEvent, getTestEvents } from '../fixtures/eventFactory';
 
 describe('parseDateTime', () => {
   it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
@@ -143,27 +142,7 @@ describe('isOverlapping', () => {
 
 describe('findOverlappingEvents', () => {
   it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
-    const existingEvents: Event[] = [
-      createEvent({
-        id: '1',
-        date: '2025-07-01',
-        startTime: '09:00',
-        endTime: '10:00',
-      }),
-      createEvent({
-        id: '2',
-        date: '2025-07-01',
-        startTime: '10:30',
-        endTime: '11:30',
-      }),
-      createEvent({
-        id: '3',
-        date: '2025-07-01',
-        startTime: '11:00',
-        endTime: '12:00',
-      }),
-    ];
-
+    const existingEvents = getTestEvents('overlap');
     const newEvent = createEvent({
       id: '4',
       date: '2025-07-01',
@@ -174,31 +153,17 @@ describe('findOverlappingEvents', () => {
     const overlappingEvents = findOverlappingEvents(newEvent, existingEvents);
 
     expect(overlappingEvents).toHaveLength(2);
-    expect(overlappingEvents.map((e) => e.id)).toContain('2');
-    expect(overlappingEvents.map((e) => e.id)).toContain('3');
+    expect(overlappingEvents.map((e) => e.id)).toContain('overlap-1');
+    expect(overlappingEvents.map((e) => e.id)).toContain('overlap-2');
   });
 
   it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
-    const existingEvents: Event[] = [
-      createEvent({
-        id: '1',
-        date: '2025-07-01',
-        startTime: '09:00',
-        endTime: '10:00',
-      }),
-      createEvent({
-        id: '2',
-        date: '2025-07-01',
-        startTime: '12:00',
-        endTime: '13:00',
-      }),
-    ];
-
+    const existingEvents = getTestEvents('overlap');
     const newEvent = createEvent({
       id: '3',
       date: '2025-07-01',
-      startTime: '10:30',
-      endTime: '11:30',
+      startTime: '14:30',
+      endTime: '15:30',
     });
 
     const overlappingEvents = findOverlappingEvents(newEvent, existingEvents);
@@ -207,27 +172,13 @@ describe('findOverlappingEvents', () => {
   });
 
   it('자기 자신과는 겹치지 않는 것으로 처리한다', () => {
-    const existingEvents: Event[] = [
-      createEvent({
-        id: '1',
-        date: '2025-07-01',
-        startTime: '09:00',
-        endTime: '10:00',
-      }),
-      createEvent({
-        id: '2',
-        date: '2025-07-01',
-        startTime: '10:30',
-        endTime: '11:30',
-      }),
-    ];
-
+    const existingEvents = getTestEvents('overlap');
     const sameEvent = {
       ...existingEvents[0],
     };
 
     const overlappingEvents = findOverlappingEvents(sameEvent, existingEvents);
 
-    expect(overlappingEvents).toHaveLength(0);
+    expect(overlappingEvents.map((e) => e.id)).not.toContain(sameEvent.id);
   });
 });
