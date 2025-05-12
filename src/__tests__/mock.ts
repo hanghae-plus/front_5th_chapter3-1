@@ -3,7 +3,7 @@ import { Event } from '../types';
 export const MOCK_DATA: Event[] = [
   {
     id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
-    title: '팀 회의',
+    title: 'team 회의',
     date: '2025-05-20',
     startTime: '10:00',
     endTime: '11:00',
@@ -29,6 +29,18 @@ export const MOCK_DATA: Event[] = [
     id: 'da3ca408-836a-4d98-b67a-ca389d07552b',
     title: '프로젝트 마감',
     date: '2025-05-25',
+    startTime: '09:00',
+    endTime: '18:00',
+    description: '분기별 프로젝트 마감',
+    location: '사무실',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  },
+  {
+    id: 'da3ca408-836a123-4d98-b67a-ca389d07552b',
+    title: '이벤트 2',
+    date: '2025-07-01',
     startTime: '09:00',
     endTime: '18:00',
     description: '분기별 프로젝트 마감',
