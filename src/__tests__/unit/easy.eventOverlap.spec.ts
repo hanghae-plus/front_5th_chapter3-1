@@ -80,7 +80,7 @@ describe('isOverlapping', () => {
 describe('findOverlappingEvents', () => {
   it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
     const newEvent = {
-      id: 'MONTHLY001',
+      id: 'MONTHLY002',
       title: '11월 첫째 주 주간회의 (월간 테스트용)',
       description: '11월 프로젝트 진행상황 점검',
       location: '1번 회의실',
@@ -97,5 +97,22 @@ describe('findOverlappingEvents', () => {
     expect(result).toEqual([dummyEvents.events[0]]);
   });
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const newEvent = {
+      id: 'MONTHLY002',
+      title: '12월 첫째 주 주간회의 (월간 테스트용)',
+      description: '12월 프로젝트 진행상황 점검',
+      location: '183717번 회의실',
+      date: '2025-12-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 30,
+    } as Event;
+
+    const result = findOverlappingEvents(newEvent, dummyEvents.events as Event[]);
+
+    expect(result).toEqual([]);
+  });
 });
