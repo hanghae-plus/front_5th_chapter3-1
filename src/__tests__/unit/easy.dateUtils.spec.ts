@@ -10,33 +10,125 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { assertDate } from '../utils';
 
 describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('1월은 31일 수를 반환한다', () => {
+    const year = 2025;
+    const month = 1;
 
-  it('4월은 30일 일수를 반환한다', () => {});
+    const days = getDaysInMonth(year, month);
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+    expect(days).toBe(31);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    const year = 2025;
+    const month = 4;
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+    const days = getDaysInMonth(year, month);
+
+    expect(days).toBe(30);
+  });
+
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    const year = 2024;
+    const month = 2;
+
+    const days = getDaysInMonth(year, month);
+
+    expect(days).toBe(29);
+  });
+
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    const year = 2025;
+    const month = 2;
+
+    const days = getDaysInMonth(year, month);
+
+    expect(days).toBe(28);
+  });
+
+  it('유효하지 않은 월에 대해 적절히 처리한다', () => {
+    const year = 2025;
+    const month = 13;
+
+    const days = getDaysInMonth(year, month);
+
+    expect(days).toBe(31);
+  });
 });
 
 describe('getWeekDates', () => {
-  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    const wednesday = new Date(2025, 4, 14);
 
-  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+    const weekDates = getWeekDates(wednesday);
 
-  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2025, 4, 11 + i));
+    });
+  });
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {});
+  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    const monday = new Date(2025, 4, 12);
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초)', () => {});
+    const weekDates = getWeekDates(monday);
 
-  it('윤년의 2월 29일을 포함한 주를 올바르게 처리한다', () => {});
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2025, 4, 11 + i));
+    });
+  });
 
-  it('월의 마지막 날짜를 포함한 주를 올바르게 처리한다', () => {});
+  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    const sunday = new Date(2025, 4, 18);
+
+    const weekDates = getWeekDates(sunday);
+
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2025, 4, 18 + i));
+    });
+  });
+
+  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {
+    const endOfYear = new Date(2025, 11, 31);
+
+    const weekDates = getWeekDates(endOfYear);
+
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2025, 11, 28 + i));
+    });
+  });
+
+  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초)', () => {
+    const startOfYear = new Date(2025, 0, 1);
+
+    const weekDates = getWeekDates(startOfYear);
+
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2024, 11, 29 + i));
+    });
+  });
+
+  it('윤년의 2월 29일을 포함한 주를 올바르게 처리한다', () => {
+    const leapYear = new Date(2024, 1, 29);
+
+    const weekDates = getWeekDates(leapYear);
+
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2024, 1, 25 + i));
+    });
+  });
+
+  it('월의 마지막 날짜를 포함한 주를 올바르게 처리한다', () => {
+    const lastDayOfMonth = new Date(2025, 4, 31);
+
+    const weekDates = getWeekDates(lastDayOfMonth);
+
+    weekDates.forEach((date, i) => {
+      assertDate(date, new Date(2025, 4, 25 + i));
+    });
+  });
 });
 
 describe('getWeeksAtMonth', () => {
