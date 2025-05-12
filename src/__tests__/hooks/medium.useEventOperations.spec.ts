@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import {
@@ -9,10 +9,27 @@ import {
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
+import { SAMPLE_EVENTS } from '../SampleEvent.ts';
 
-it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {});
+it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  vi.spyOn(global, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify({ events: SAMPLE_EVENTS }))
+  );
+  const { result } = renderHook(() => useEventOperations(false));
+  await waitFor(() => {
+    expect(result.current.events).toEqual(SAMPLE_EVENTS);
+  });
+});
 
-it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
+it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  vi.spyOn(global, 'fetch').mockResolvedValue(
+    new Response(JSON.stringify({ events: SAMPLE_EVENTS }))
+  );
+  const { result } = renderHook(() => useEventOperations(false));
+  await waitFor(() => {
+    expect(result.current.events).toEqual(SAMPLE_EVENTS);
+  });
+});
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
 
