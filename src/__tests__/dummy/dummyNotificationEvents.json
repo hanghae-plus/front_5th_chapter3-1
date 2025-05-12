@@ -1,0 +1,52 @@
+{
+  "events": [
+    {
+      "id": "NOTIF001",
+      "title": "정확한 시간 알림 이벤트",
+      "date": "2025-08-15",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "description": "알림 시간: 2025-08-15 13:30 (30분 전)",
+      "location": "회의실 A",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "NOTIF002",
+      "title": "미래 알림 이벤트",
+      "date": "2025-08-15",
+      "startTime": "15:00",
+      "endTime": "16:00",
+      "description": "알림 시간: 2025-08-15 14:30 (30분 전)",
+      "location": "회의실 B",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "NOTIF003",
+      "title": "과거 알림 이벤트",
+      "date": "2025-08-15",
+      "startTime": "13:00",
+      "endTime": "14:00",
+      "description": "알림 시간: 2025-08-15 12:30 (30분 전)",
+      "location": "회의실 C",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "NOTIF004",
+      "title": "알림 시간 없음 (시작 시 알림)",
+      "date": "2025-08-15",
+      "startTime": "13:30",
+      "endTime": "14:30",
+      "description": "알림 시간: 2025-08-15 13:30 (0분 전)",
+      "location": "회의실 D",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 0
+    }
+  ]
+}
