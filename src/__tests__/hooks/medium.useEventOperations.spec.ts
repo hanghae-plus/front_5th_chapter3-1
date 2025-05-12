@@ -17,6 +17,7 @@ vi.mock('@chakra-ui/react', () => ({
 }));
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  server.use(...setupMockHandlerCreation(events as Event[]));
   const { result } = renderHook(() => useEventOperations(false));
 
   // 데이터 fetch
