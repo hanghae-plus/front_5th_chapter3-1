@@ -3,6 +3,13 @@ import { Event } from '../types';
 const 초 = 1000;
 const 분 = 초 * 60;
 
+/**
+ * 알림 시간이 지나지 않은 이벤트를 반환합니다.
+ * @param events - 이벤트 목록
+ * @param now - 현재 시간
+ * @param notifiedEvents - 이미 알림이 간 이벤트 ID 목록
+ * @returns 알림 시간이 지나지 않은 이벤트 목록
+ */
 export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: string[]) {
   return events.filter((event) => {
     const eventStart = new Date(`${event.date}T${event.startTime}`);
