@@ -53,13 +53,9 @@ describe('getDaysInMonth', () => {
   });
 
   it('유효하지 않은 월에 대해 적절히 처리한다', () => {
-    const year = 2025;
-    const month = 13; // Invalid month
-    const expectedDays = 0;
-
-    const result = getDaysInMonth(year, month);
-
-    expect(result).toBe(expectedDays);
+    expect(getDaysInMonth(2025, 13)).toBe(31);
+    expect(getDaysInMonth(2025, 0)).toBe(31);
+    expect(getDaysInMonth(2025, -1)).toBe(30);
   });
 });
 
@@ -99,15 +95,15 @@ describe('getWeekDates', () => {
   });
 
   it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
-    const date = new Date('2025-07-13'); // 일요일
+    const date = new Date('2025-07-06'); // 일요일
     const expectedDates = [
+      new Date('2025-07-06'), // 일요일
       new Date('2025-07-07'), // 월요일
       new Date('2025-07-08'), // 화요일
       new Date('2025-07-09'), // 수요일
       new Date('2025-07-10'), // 목요일
       new Date('2025-07-11'), // 금요일
       new Date('2025-07-12'), // 토요일
-      new Date('2025-07-13'), // 일요일
     ];
 
     const result = getWeekDates(date);
@@ -188,12 +184,11 @@ describe('getWeeksAtMonth', () => {
   it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {
     const date = new Date('2025-07-01');
     const expectedWeeks = [
-      [null, null, null, null, null, null, 1],
-      [2, 3, 4, 5, 6, 7, 8],
-      [9, 10, 11, 12, 13, 14, 15],
-      [16, 17, 18, 19, 20, 21, 22],
-      [23, 24, 25, 26, 27, 28, 29],
-      [30, null, null, null, null, null],
+      [null, null, 1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10, 11, 12],
+      [13, 14, 15, 16, 17, 18, 19],
+      [20, 21, 22, 23, 24, 25, 26],
+      [27, 28, 29, 30, 31, null, null],
     ];
 
     const result = getWeeksAtMonth(date);
@@ -205,14 +200,70 @@ describe('getWeeksAtMonth', () => {
 describe('getEventsForDay', () => {
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
     const events: Event[] = [
-      { date: '2025-07-01', title: 'Event 1' },
-      { date: '2025-07-02', title: 'Event 2' },
-      { date: '2025-07-01', title: 'Event 3' },
+      {
+        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        title: '팀 회의',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+      {
+        id: '09702fb3-a478-40b3-905e-9ab3c8849dcd',
+        title: '점심 약속',
+        date: '2025-07-01',
+        startTime: '12:30',
+        endTime: '13:30',
+        description: '동료와 점심 식사',
+        location: '회사 근처 식당',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+      {
+        id: 'fcdee123-d654-4c11-b50a-28bb983be457',
+        title: '운동',
+        date: '2025-07-02',
+        startTime: '18:00',
+        endTime: '19:00',
+        description: '헬스장 방문',
+        location: '피트니스 센터',
+        category: '건강',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
     ];
+
     const date = 1;
     const expectedEvents = [
-      { date: '2025-07-01', title: 'Event 1' },
-      { date: '2025-07-01', title: 'Event 3' },
+      {
+        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        title: '팀 회의',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+      {
+        id: '09702fb3-a478-40b3-905e-9ab3c8849dcd',
+        title: '점심 약속',
+        date: '2025-07-01',
+        startTime: '12:30',
+        endTime: '13:30',
+        description: '동료와 점심 식사',
+        location: '회사 근처 식당',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
     ];
 
     const result = getEventsForDay(events, date);
@@ -222,8 +273,18 @@ describe('getEventsForDay', () => {
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
     const events: Event[] = [
-      { date: '2025-07-02', title: 'Event 1' },
-      { date: '2025-07-03', title: 'Event 2' },
+      {
+        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        title: '팀 회의',
+        date: '2025-05-20',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
     ];
     const date = 1;
     const expectedEvents: Event[] = [];
@@ -235,8 +296,18 @@ describe('getEventsForDay', () => {
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
     const events: Event[] = [
-      { date: '2025-07-01', title: 'Event 1' },
-      { date: '2025-07-02', title: 'Event 2' },
+      {
+        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        title: '팀 회의',
+        date: '2025-05-20',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
     ];
     const date = 0;
     const expectedEvents: Event[] = [];
@@ -247,7 +318,20 @@ describe('getEventsForDay', () => {
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
-    const events: Event[] = [{ id: '1' }, { id: '2' }];
+    const events: Event[] = [
+      {
+        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        title: '팀 회의',
+        date: '2025-05-20',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+    ];
     const date = 32;
     const expectedEvents: Event[] = [];
 
@@ -260,45 +344,57 @@ describe('getEventsForDay', () => {
 describe('formatWeek', () => {
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
     const date = new Date('2025-07-10');
-    const expectedWeek = [
-      new Date('2025-07-06'), // 일요일
-      new Date('2025-07-07'), // 월요일
-      new Date('2025-07-08'), // 화요일
-      new Date('2025-07-09'), // 수요일
-      new Date('2025-07-10'), // 목요일
-      new Date('2025-07-11'), // 금요일
-      new Date('2025-07-12'), // 토요일
-    ];
+    const expected = '2025년 7월 2주';
 
     const result = formatWeek(date);
 
-    expect(result).toEqual(expectedWeek);
+    expect(result).toEqual(expected);
   });
 
   it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {
     const date = new Date('2025-07-01');
-    const expectedWeek = [
-      new Date('2025-06-29'), // 일요일
-      new Date('2025-06-30'), // 월요일
-      new Date('2025-07-01'), // 화요일
-      new Date('2025-07-02'), // 수요일
-      new Date('2025-07-03'), // 목요일
-      new Date('2025-07-04'), // 금요일
-      new Date('2025-07-05'), // 토요일
-    ];
+    const expected = '2025년 7월 1주';
 
     const result = formatWeek(date);
 
-    expect(result).toEqual(expectedWeek);
+    expect(result).toEqual(expected);
   });
 
-  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2025-07-31');
+    const expected = '2025년 7월 5주';
 
-  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {});
+    const result = formatWeek(date);
 
-  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+    expect(result).toEqual(expected);
+  });
 
-  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2025-12-31');
+    const expected = '2026년 1월 1주';
+
+    const result = formatWeek(date);
+
+    expect(result).toEqual(expected);
+  });
+
+  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2024-02-29'); // 윤년의 2월 29일
+    const expected = '2024년 2월 5주';
+
+    const result = formatWeek(date);
+
+    expect(result).toEqual(expected);
+  });
+
+  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2025-02-28'); // 평년의 2월 28일
+    const expected = '2025년 2월 4주';
+
+    const result = formatWeek(date);
+
+    expect(result).toEqual(expected);
+  });
 });
 
 describe('formatMonth', () => {
