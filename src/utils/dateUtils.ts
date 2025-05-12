@@ -34,6 +34,7 @@ export function getWeekDates(date: Date): Date[] {
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
+
   const daysInMonth = getDaysInMonth(year, month + 1);
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -59,10 +60,24 @@ export function getWeeksAtMonth(currentDate: Date) {
   return weeks;
 }
 
+/**
+ * events 배열 중에서, date(예: 5일)에 해당하는 이벤트만 골라서 반환한다.
+ * @param events
+ * @param date
+ * @returns
+ */
 export function getEventsForDay(events: Event[], date: number): Event[] {
-  return events.filter((event) => new Date(event.date).getDate() === date);
+  return events.filter((event) => {
+    const parsed = new Date(event.date);
+    return !isNaN(parsed.getTime()) && new Date(event.date).getDate() === date;
+  });
 }
 
+/**
+ *
+ * @param targetDate
+ * @returns
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;

@@ -14,7 +14,7 @@ export interface EventForm {
   description: string;
   location: string;
   category: string;
-  repeat: RepeatInfo;
+  repeat?: RepeatInfo;
   notificationTime: number; // 분 단위로 저장
 }
 
