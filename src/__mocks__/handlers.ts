@@ -1,5 +1,6 @@
-import { http, HttpResponse } from 'msw';
 import { randomUUID } from 'crypto';
+
+import { http, HttpResponse } from 'msw';
 
 import { Event } from '../types';
 import { events } from './response/events.json' assert { type: 'json' };
