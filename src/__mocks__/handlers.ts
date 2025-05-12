@@ -13,11 +13,23 @@ export const handlers = [
   http.post('/api/events', async ({ request }) => {
     const event = (await request.json()) as Event;
     const lastId = Number(events[events.length - 1].id);
+
     event.id = String(lastId + 1);
+
     return HttpResponse.json(event, { status: 201 });
   }),
 
-  http.put('/api/events/:id', async () => {}),
+  http.put('/api/events/:id', async ({ params, request }) => {
+    const event = (await request.json()) as Event;
+    const { id } = params;
+    const index = events.findIndex((e) => e.id === id);
+
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+    }
+
+    return HttpResponse.json({ ...events[index], ...event }, { status: 200 });
+  }),
 
   http.delete('/api/events/:id', ({ params }) => {}),
 ];
