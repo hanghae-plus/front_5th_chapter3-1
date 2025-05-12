@@ -33,7 +33,34 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
   });
 });
 
-it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
+it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  server.use(...setupMockHandlerCreation(events as Event[]));
+  const { result } = renderHook(() => useEventOperations(false));
+
+  const newEvent: Event = {
+    id: (Number(events[events.length - 1].id) + 1).toString(),
+    title: '새로운 이벤트',
+    date: '2025-01-01',
+    startTime: '2025-01-01',
+    endTime: '2025-01-02',
+    description: '새로운 이벤트 설명',
+    location: '새로운 이벤트 장소',
+    category: '새로운 이벤트 카테고리',
+    repeat: {
+      type: 'none',
+      interval: 0,
+    },
+    notificationTime: 0,
+  };
+
+  act(() => {
+    result.current.saveEvent(newEvent);
+  });
+
+  await waitFor(() => {
+    expect(result.current.events[result.current.events.length - 1]).toEqual(newEvent);
+  });
+});
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
 
