@@ -1,3 +1,4 @@
+import { Event } from '../../types';
 import {
   fillZero,
   formatDate,
@@ -9,7 +10,6 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-import { Event } from '../../types';
 
 function makeEvent(id: string, date: string): Event {
   return {
