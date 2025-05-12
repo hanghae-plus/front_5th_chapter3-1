@@ -28,8 +28,21 @@ export const handlers = [
       return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
     }
 
-    return HttpResponse.json({ ...events[index], ...event }, { status: 200 });
+    events[index] = { ...events[index], ...event };
+
+    return HttpResponse.json(events[index], { status: 200 });
   }),
 
-  http.delete('/api/events/:id', ({ params }) => {}),
+  http.delete('/api/events/:id', ({ params }) => {
+    const { id } = params;
+    const index = events.findIndex((e) => e.id === id);
+
+    if (index === -1) {
+      return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+    }
+
+    events.splice(index, 1);
+
+    return HttpResponse.json({ message: 'Event deleted' }, { status: 200 });
+  }),
 ];
