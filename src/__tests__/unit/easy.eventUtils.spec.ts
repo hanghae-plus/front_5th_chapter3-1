@@ -98,4 +98,5 @@ describe('getFilteredEvents', () => {
     { ...common, id: '5', title: '이벤트 5', date: '2025-08-01' }, //
     { ...common, id: '6', title: 'EVENT 6', date: '2025-08-01' }, //
   ];
+  events;
 }
