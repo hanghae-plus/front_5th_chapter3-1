@@ -1,0 +1,40 @@
+import { Event } from '../types';
+
+export const SAMPLE_EVENTS: Event[] = [
+  {
+    id: '1',
+    title: '이벤트 1',
+    date: '2025-10-15',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '이벤트 1 설명',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  },
+  {
+    id: '2',
+    title: '이벤트 2 점심',
+    date: '2025-10-22',
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '이벤트 2 설명',
+    location: '회의실 A',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  },
+  {
+    id: '3',
+    title: '이벤트 3',
+    date: '2025-11-17',
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '이벤트 3 설명',
+    location: '회의실 C',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 0,
+  },
+];
