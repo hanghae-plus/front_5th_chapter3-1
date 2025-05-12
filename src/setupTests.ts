@@ -12,11 +12,14 @@ beforeAll(() => {
 
 beforeEach(() => {
   expect.hasAssertions();
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-10-01'));
 });
 
 afterEach(() => {
-  server.resetHandlers();
   vi.clearAllMocks();
+  vi.useRealTimers(); // <- 타이머 원복도 반드시 필요
+  server.resetHandlers();
 });
 
 afterAll(() => {
