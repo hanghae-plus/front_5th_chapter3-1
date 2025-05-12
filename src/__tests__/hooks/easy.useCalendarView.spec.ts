@@ -31,7 +31,8 @@ describe('초기 상태', () => {
   });
 });
 
-it("view를 'week'으로 변경 시 적절하게 반영된다", () => {
+// 원본 "view를 'week'으로 변경 시 적절하게 반영된다"
+it("view 상태를 'week'으로 변경하면 view 값이 'week'으로 업데이트된다", () => {
   const { result } = renderHook(() => useCalendarView());
   act(() => {
     result.current.setView('week');
