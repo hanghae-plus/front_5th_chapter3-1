@@ -36,7 +36,7 @@ export function isOverlapping(event1: Event | EventForm, event2: Event | EventFo
 }
 
 /**
- *
+ * 이벤트 랩핑 필터링
  * @param newEvent
  * @param events
  * @returns
