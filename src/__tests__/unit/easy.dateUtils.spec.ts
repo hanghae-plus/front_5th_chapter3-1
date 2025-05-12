@@ -40,15 +40,20 @@ describe('getDaysInMonth', () => {
 
 describe('getWeekDates', () => {
   function formatDates(dates: Date[]) {
-    return dates.map(d => d.toISOString().split('T')[0]);
+    return dates.map((d) => d.toISOString().split('T')[0]);
   }
 
   it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-07-02'); // 수요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2025-06-29', '2025-06-30', '2025-07-01',
-      '2025-07-02', '2025-07-03', '2025-07-04', '2025-07-05',
+      '2025-06-29',
+      '2025-06-30',
+      '2025-07-01',
+      '2025-07-02',
+      '2025-07-03',
+      '2025-07-04',
+      '2025-07-05',
     ]);
   });
 
@@ -56,8 +61,13 @@ describe('getWeekDates', () => {
     const date = new Date('2025-07-06'); // 일요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2025-07-06', '2025-07-07', '2025-07-08',
-      '2025-07-09', '2025-07-10', '2025-07-11', '2025-07-12',
+      '2025-07-06',
+      '2025-07-07',
+      '2025-07-08',
+      '2025-07-09',
+      '2025-07-10',
+      '2025-07-11',
+      '2025-07-12',
     ]);
   });
 
@@ -65,8 +75,13 @@ describe('getWeekDates', () => {
     const date = new Date('2025-07-12'); // 토요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2025-07-06', '2025-07-07', '2025-07-08',
-      '2025-07-09', '2025-07-10', '2025-07-11', '2025-07-12',
+      '2025-07-06',
+      '2025-07-07',
+      '2025-07-08',
+      '2025-07-09',
+      '2025-07-10',
+      '2025-07-11',
+      '2025-07-12',
     ]);
   });
 
@@ -74,8 +89,13 @@ describe('getWeekDates', () => {
     const date = new Date('2025-12-31'); // 수요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2025-12-28', '2025-12-29', '2025-12-30',
-      '2025-12-31', '2026-01-01', '2026-01-02', '2026-01-03',
+      '2025-12-28',
+      '2025-12-29',
+      '2025-12-30',
+      '2025-12-31',
+      '2026-01-01',
+      '2026-01-02',
+      '2026-01-03',
     ]);
   });
 
@@ -83,8 +103,13 @@ describe('getWeekDates', () => {
     const date = new Date('2025-01-01'); // 수요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2024-12-29', '2024-12-30', '2024-12-31',
-      '2025-01-01', '2025-01-02', '2025-01-03', '2025-01-04',
+      '2024-12-29',
+      '2024-12-30',
+      '2024-12-31',
+      '2025-01-01',
+      '2025-01-02',
+      '2025-01-03',
+      '2025-01-04',
     ]);
   });
 
@@ -92,8 +117,13 @@ describe('getWeekDates', () => {
     const date = new Date('2024-02-29'); // 윤년 목요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2024-02-25', '2024-02-26', '2024-02-27',
-      '2024-02-28', '2024-02-29', '2024-03-01', '2024-03-02',
+      '2024-02-25',
+      '2024-02-26',
+      '2024-02-27',
+      '2024-02-28',
+      '2024-02-29',
+      '2024-03-01',
+      '2024-03-02',
     ]);
   });
 
@@ -101,8 +131,13 @@ describe('getWeekDates', () => {
     const date = new Date('2025-08-31'); // 일요일
     const result = formatDates(getWeekDates(date));
     expect(result).toEqual([
-      '2025-08-31', '2025-09-01', '2025-09-02',
-      '2025-09-03', '2025-09-04', '2025-09-05', '2025-09-06',
+      '2025-08-31',
+      '2025-09-01',
+      '2025-09-02',
+      '2025-09-03',
+      '2025-09-04',
+      '2025-09-05',
+      '2025-09-06',
     ]);
   });
 });
@@ -122,15 +157,48 @@ describe('getWeeksAtMonth', () => {
       new Date('2025-10-18'), // 토요일
     ];
 
-    expect(result.map(d => d.toISOString())).toEqual(expected.map(d => d.toISOString()));
+    expect(result.map((d) => d.toISOString())).toEqual(expected.map((d) => d.toISOString()));
   });
 });
 
 describe('getEventsForDay', () => {
   const events: Event[] = [
-    { id: '1', title: '이벤트 1', date: '2025-07-01', startTime: '10:00', endTime: '11:00', location: '', description: '' },
-    { id: '2', title: '이벤트 2', date: '2025-07-02', startTime: '12:00', endTime: '13:00', location: '', description: '' },
-    { id: '3', title: '이벤트 3', date: '2025-08-01', startTime: '14:00', endTime: '15:00', location: '', description: '' },
+    {
+      id: '1',
+      title: '이벤트 1',
+      date: '2025-07-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      location: '',
+      description: '',
+      category: '',
+      repeat: undefined as any,
+      notificationTime: '' as any,
+    },
+    {
+      id: '2',
+      title: '이벤트 2',
+      date: '2025-07-02',
+      startTime: '12:00',
+      endTime: '13:00',
+      location: '',
+      description: '',
+      category: '',
+      repeat: undefined as any,
+      notificationTime: '' as any,
+    },
+    {
+      id: '3',
+      title: '이벤트 3',
+      date: '2025-08-01',
+      startTime: '14:00',
+      endTime: '15:00',
+      location: '',
+      description: '',
+      category: '',
+      repeat: undefined as any,
+      notificationTime: '' as any,
+    },
   ];
 
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
@@ -260,7 +328,7 @@ describe('fillZero', () => {
   });
 
   test("소수점이 있는 3.14를 5자리로 변환하면 '03.14'를 반환한다", () => {
-     expect(fillZero(Number('3.14'), 5)).toBe('03.14');
+    expect(fillZero(Number('3.14'), 5)).toBe('03.14');
   });
 
   test('size 파라미터를 생략하면 기본값 2를 사용한다', () => {
