@@ -1,9 +1,16 @@
 import { Event } from '../types.ts';
 
+const isValidDate = (month: number): boolean => {
+  return month >= 0 && month <= 11;
+}
+
 /**
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (!isValidDate(month)) {
+    return 0;
+  }
   return new Date(year, month, 0).getDate();
 }
 
