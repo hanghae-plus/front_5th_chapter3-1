@@ -58,7 +58,8 @@ describe('getFilteredEvents', () => {
     ];
   });
   it("검색어 '이벤트 2'에 맞는 이벤트만 반환한다", () => {
-    const result = getFilteredEvents(mockEvents, '이벤트 2', new Date(), 'month');
+    const currentDate = new Date('2025-05-12');
+    const result = getFilteredEvents(mockEvents, '이벤트 2', currentDate, 'month');
 
     expect(result).toEqual([mockEvents[1]]);
   });
@@ -88,19 +89,22 @@ describe('getFilteredEvents', () => {
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
-    const result = getFilteredEvents(mockEvents, '이벤트 korea2', new Date(), 'month');
+    const currentDate = new Date('2025-05-12');
+    const result = getFilteredEvents(mockEvents, '이벤트 korea2', currentDate, 'month');
 
     expect(result).toEqual([mockEvents[1]]);
   });
 
   it('월의 경계에 있는 이벤트를 올바르게 필터링한다', () => {
-    const result = getFilteredEvents(mockEvents, '', new Date('2025-06-30'), 'month');
+    const currentDate = new Date('2025-06-30');
+    const result = getFilteredEvents(mockEvents, '', currentDate, 'month');
 
     expect(result).toEqual([]);
   });
 
   it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {
-    const result = getFilteredEvents([], '', new Date(), 'month');
+    const currentDate = new Date('2025-05-12');
+    const result = getFilteredEvents([], '', currentDate, 'month');
 
     expect(result).toEqual([]);
   });
