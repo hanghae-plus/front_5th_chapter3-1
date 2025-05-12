@@ -3,6 +3,12 @@ export interface TimeValidationResult {
   endTimeError: string | null;
 }
 
+/**
+ * 시작시간 종료시간 유효성 검사
+ * @param start
+ * @param end
+ * @returns
+ */
 export function getTimeErrorMessage(start: string, end: string): TimeValidationResult {
   if (!start || !end) {
     return { startTimeError: null, endTimeError: null };
