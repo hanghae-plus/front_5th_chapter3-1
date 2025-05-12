@@ -23,7 +23,7 @@ export function convertEventToDateRange({ date, startTime, endTime }: Event | Ev
 }
 
 /**
- * 이벤트 간 시간 겹침(overlap) 여부를 판단하는 함수
+ * 이벤트 간 시간, 날짜 겹침(overlap) 여부를 판단하는 함수
  * @param event1
  * @param event2
  * @returns
@@ -35,6 +35,12 @@ export function isOverlapping(event1: Event | EventForm, event2: Event | EventFo
   return start1 < end2 && start2 < end1;
 }
 
+/**
+ *
+ * @param newEvent
+ * @param events
+ * @returns
+ */
 export function findOverlappingEvents(newEvent: Event | EventForm, events: Event[]) {
   return events.filter(
     (event) => event.id !== (newEvent as Event).id && isOverlapping(event, newEvent)

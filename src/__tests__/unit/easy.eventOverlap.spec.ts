@@ -124,7 +124,118 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  const newEvent: Event = {
+    id: 'new',
+    date: '2025-07-01',
+    startTime: '14:00',
+    endTime: '15:00',
+    title: '',
+    description: '',
+    location: '',
+    category: '',
+    repeat: undefined,
+    notificationTime: 0,
+  };
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const existingEvents: Event[] = [
+      {
+        id: '1',
+        date: '2025-07-01',
+        startTime: '13:30',
+        endTime: '14:30', // ✅ 겹침
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+      {
+        id: '2',
+        date: '2025-07-01',
+        startTime: '15:00',
+        endTime: '16:00', // ❌ 겹치지 않음 (끝과 시작이 같음)
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+      {
+        id: '3',
+        date: '2025-07-01',
+        startTime: '14:30',
+        endTime: '15:30', // ✅ 겹침
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+      {
+        id: 'new',
+        date: '2025-07-01',
+        startTime: '14:00',
+        endTime: '15:00', // ❌ 자기 자신 → 제외
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+    ];
+
+    const result = findOverlappingEvents(newEvent, existingEvents);
+
+    expect(result.map((e) => e.id)).toEqual(['1', '3']); // ✅ 겹치는 이벤트만 포함
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const existingEvents: Event[] = [
+      {
+        id: '1',
+        date: '2025-07-01',
+        startTime: '12:00',
+        endTime: '13:00', // ❌ newEvent(14:00~15:00)와 겹치지 않음
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+      {
+        id: '2',
+        date: '2025-07-01',
+        startTime: '15:00',
+        endTime: '16:00', // ❌ 딱 끝나는 시점 → 안 겹침
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+      {
+        id: '3',
+        date: '2025-07-01',
+        startTime: '10:30',
+        endTime: '12:30', // ✅ 겹침
+        title: '',
+        description: '',
+        location: '',
+        category: '',
+        repeat: undefined,
+        notificationTime: 0,
+      },
+    ];
+
+    const result = findOverlappingEvents(newEvent, existingEvents);
+
+    expect(result.map((e) => e.id)).toEqual([]); // ✅ 겹치는 이벤트가 없으면 빈배열
+  });
 });
