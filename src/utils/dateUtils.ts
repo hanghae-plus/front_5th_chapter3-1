@@ -138,6 +138,12 @@ export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
 
+/**
+ * 날짜 포맷팅
+ * @param currentDate
+ * @param day
+ * @returns
+ */
 export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),
