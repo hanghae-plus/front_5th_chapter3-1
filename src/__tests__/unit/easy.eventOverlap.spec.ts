@@ -209,7 +209,80 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  const events: Event[] = [
+    {
+      id: '1',
+      title: '테스트 이벤트',
+      date: '2025-07-01',
+      startTime: '14:30',
+      endTime: '15:30',
+      description: '테스트 이벤트 설명',
+      location: '테스트 장소',
+      category: '테스트 카테고리',
+      repeat: {
+        type: 'none',
+        interval: 0,
+      },
+      notificationTime: 0,
+    },
+    {
+      id: '2',
+      title: '테스트 이벤트 2',
+      date: '2025-07-01',
+      startTime: '15:00',
+      endTime: '16:00',
+      description: '테스트 이벤트 설명 2',
+      location: '테스트 장소 2',
+      category: '테스트 카테고리 2',
+      repeat: {
+        type: 'none',
+        interval: 0,
+      },
+      notificationTime: 0,
+    },
+  ];
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const newEvent: Event = {
+      id: '3',
+      title: '테스트 이벤트 3',
+      date: '2025-07-01',
+      startTime: '15:00',
+      endTime: '16:00',
+      description: '테스트 이벤트 설명 3',
+      location: '테스트 장소 3',
+      category: '테스트 카테고리 3',
+      repeat: {
+        type: 'none',
+        interval: 0,
+      },
+      notificationTime: 0,
+    };
+
+    const result = findOverlappingEvents(newEvent, events);
+
+    expect(result).toEqual([events[0], events[1]]);
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const newEvent: Event = {
+      id: '3',
+      title: '테스트 이벤트 3',
+      date: '2025-07-01',
+      startTime: '16:00',
+      endTime: '17:30',
+      description: '테스트 이벤트 설명 3',
+      location: '테스트 장소 3',
+      category: '테스트 카테고리 3',
+      repeat: {
+        type: 'none',
+        interval: 0,
+      },
+      notificationTime: 0,
+    };
+
+    const result = findOverlappingEvents(newEvent, events);
+
+    expect(result).toEqual([]);
+  });
 });
