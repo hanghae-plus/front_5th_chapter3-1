@@ -9,15 +9,18 @@ export function getDaysInMonth(year: number, month: number): number {
 
 /**
  * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.
+ * Edit - 주의 시작이 일 ~ 토로 되어있어, 월 ~ 일 형태로 코드 수정
  */
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
-  const diff = date.getDate() - day;
-  const sunday = new Date(date.setDate(diff));
+  const mondayDiff = day === 0 ? -6 : 1 - day;
+  const monday = new Date(date);
+  monday.setDate(date.getDate() + mondayDiff);
+
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
-    const nextDate = new Date(sunday);
-    nextDate.setDate(sunday.getDate() + i);
+    const nextDate = new Date(monday);
+    nextDate.setDate(monday.getDate() + i);
     weekDates.push(nextDate);
   }
   return weekDates;
