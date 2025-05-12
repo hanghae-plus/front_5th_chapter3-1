@@ -31,6 +31,7 @@ module.exports = {
           caseInsensitive: true,
         },
         'newlines-between': 'always',
+        'endOfLine': 'auto',
       },
     ],
   },
