@@ -153,6 +153,8 @@ describe('findOverlappingEvents', () => {
       description: '',
       location: '',
       category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
     };
     const events: Event[] = [
       {
@@ -242,6 +244,8 @@ describe('findOverlappingEvents', () => {
       description: '',
       location: '',
       category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
     };
     const events: Event[] = [
       {
