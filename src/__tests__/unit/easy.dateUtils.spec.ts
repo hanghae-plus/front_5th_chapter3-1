@@ -284,8 +284,9 @@ describe('isDateInRange', () => {
   });
 
   it('시작일이 종료일보다 늦은 경우 모든 날짜에 대해 false를 반환한다', () => {
-    // FIXME: 시작일이 종료일보다 늦은 경우
-    const result = isDateInRange(new Date('2025-07-01'), rangeEnd, rangeStart);
+    const rangeStart = new Date('2025-07-31');
+    const rangeEnd = new Date('2025-07-01');
+    const result = isDateInRange(new Date('2025-07-01'), rangeStart, rangeEnd);
     expect(result).toBe(false);
   });
 });
