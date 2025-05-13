@@ -78,43 +78,142 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
-    // const titleInput = screen.getByLabelText('제목');
-    // const dateInput = screen.getByLabelText('날짜');
-    // const startTimeInput = screen.getByLabelText('시작 시간');
-    // const endTimeInput = screen.getByLabelText('종료 시간');
-    // const scheduleButton = screen.getByTestId('event-submit-button');
-    // const eventList = screen.getByTestId('event-list');
-    // await userSetup.type(titleInput, '팀 회의');
-    // await userSetup.type(dateInput, new Date().toISOString().split('T')[0]);
-    // await userSetup.type(startTimeInput, '10:00');
-    // await userSetup.type(endTimeInput, '11:00');
-    // await userSetup.click(scheduleButton);
-    // await waitFor(() => {
-    //   expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
-    // });
-    // const deleteButtons = within(eventList).getAllByLabelText('Delete event');
-    // const firstDeleteButton = deleteButtons[0];
-    // await act(async () => {
-    //   await userSetup.click(firstDeleteButton);
-    // });
-    // await waitFor(() => {
-    //   expect(within(eventList).queryByText('팀 회의')).not.toBeInTheDocument();
-    // });
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const scheduleButton = screen.getByTestId('event-submit-button');
+    const eventList = screen.getByTestId('event-list');
+
+    await userSetup.type(titleInput, '팀 회의');
+    await userSetup.type(dateInput, new Date().toISOString().split('T')[0]);
+    await userSetup.type(startTimeInput, '10:00');
+    await userSetup.type(endTimeInput, '11:00');
+
+    await userSetup.click(scheduleButton);
+
+    const deleteButton = within(eventList).getByLabelText('Delete event');
+
+    await userSetup.click(deleteButton);
+
+    await waitFor(() => {
+      expect(within(eventList).queryByText('팀 회의')).not.toBeInTheDocument();
+    });
   });
 });
 
 describe('일정 뷰', () => {
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    const currentDate = new Date('2025-01-01');
+    vi.setSystemTime(currentDate);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const calendar = screen.getByTestId('month-view');
+
+    expect(within(calendar).getByText('신정')).toBeInTheDocument();
+  });
 
   describe('주별 뷰', () => {
-    it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+    const userSetup: UserEvent = userEvent.setup();
 
-    it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+      const currentDate = new Date('2025-05-13');
+      vi.setSystemTime(currentDate);
+
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      const calendarSelect = screen.getByLabelText('view');
+      const eventList = screen.getByTestId('event-list');
+
+      await act(() => {
+        userSetup.selectOptions(calendarSelect, 'week');
+      });
+
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+
+    it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+      const currentDate = new Date('2025-10-15');
+      vi.setSystemTime(currentDate);
+
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      const calendarSelect = screen.getByLabelText('view');
+      const eventList = screen.getByTestId('event-list');
+
+      await act(() => {
+        userSetup.selectOptions(calendarSelect, 'week');
+      });
+
+      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('09:00 - 10:00')).toBeInTheDocument();
+      expect(within(eventList).getByText('2025-10-15')).toBeInTheDocument();
+    });
   });
 
   describe('월별 뷰', () => {
-    it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
-    it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const userSetup: UserEvent = userEvent.setup();
+
+    it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+      const currentDate = new Date('2025-05-13');
+      vi.setSystemTime(currentDate);
+
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      const calendarSelect = screen.getByLabelText('view');
+      const eventList = screen.getByTestId('event-list');
+
+      await act(() => {
+        userSetup.selectOptions(calendarSelect, 'month');
+      });
+
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+    it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+      const currentDate = new Date('2025-10-15');
+      vi.setSystemTime(currentDate);
+
+      render(
+        <ChakraProvider>
+          <App />
+        </ChakraProvider>
+      );
+
+      const calendarSelect = screen.getByLabelText('view');
+      const eventList = screen.getByTestId('event-list');
+
+      await act(() => {
+        userSetup.selectOptions(calendarSelect, 'month');
+      });
+
+      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('09:00 - 10:00')).toBeInTheDocument();
+      expect(within(eventList).getByText('2025-10-15')).toBeInTheDocument();
+    });
   });
 });
 
@@ -206,55 +305,112 @@ describe('일정 충돌', () => {
     setupMockHandlerCreation(events as Event[]);
 
     server.use(handlers[0], handlers[1], handlers[2], handlers[3]);
+  });
 
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     render(
       <ChakraProvider>
         <App />
       </ChakraProvider>
     );
-  });
 
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const titleInput = screen.getByLabelText('제목');
     const dateInput = screen.getByLabelText('날짜');
     const startTimeInput = screen.getByLabelText('시작 시간');
     const endTimeInput = screen.getByLabelText('종료 시간');
     const scheduleButton = screen.getByTestId('event-submit-button');
-    const eventList = screen.getByTestId('event-list');
 
-    await userSetup.type(titleInput, '팀 회의');
-    await userSetup.type(dateInput, new Date().toISOString().split('T')[0]);
-    await userSetup.type(startTimeInput, '10:00');
-    await userSetup.type(endTimeInput, '11:00');
+    await userSetup.type(titleInput, '기존 회의');
+    await userSetup.type(dateInput, '2025-10-15');
+    await userSetup.type(startTimeInput, '09:00');
+    await userSetup.type(endTimeInput, '10:00');
 
     await userSetup.click(scheduleButton);
 
-    await waitFor(() => {});
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
   });
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
-});
-
-describe('알림 테스트', () => {
-  const userSetup: UserEvent = userEvent.setup();
-
-  beforeEach(() => {
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
     vi.useFakeTimers();
 
-    setupMockHandlerCreation(events as Event[]);
-
-    server.use(handlers[0], handlers[1]);
+    const currentDate = new Date('2025-10-15T12:00:00');
+    vi.setSystemTime(currentDate);
 
     render(
       <ChakraProvider>
         <App />
       </ChakraProvider>
     );
-  });
 
-  afterEach(() => {
+    // const titleInput = screen.getByLabelText('제목');
+    // const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const scheduleButton = screen.getByTestId('event-submit-button');
+
+    // await userSetup.type(titleInput, '기존 회의');
+    // await userSetup.type(dateInput, '2025-10-15');
+    // await userSetup.type(startTimeInput, '11:00');
+    // await userSetup.type(endTimeInput, '12:00');
+
+    // await userSetup.click(scheduleButton);
+
+    const eventList = screen.getByTestId('event-list');
+    console.log(screen.debug(eventList));
+    const editButtons = within(eventList).getAllByLabelText('Edit event');
+
+    await userSetup.click(editButtons[0]);
+
+    await userSetup.clear(startTimeInput);
+    await userSetup.type(startTimeInput, '09:30');
+    await userSetup.clear(endTimeInput);
+    await userSetup.type(endTimeInput, '10:30');
+
+    await act(() => {
+      userSetup.click(scheduleButton);
+    });
+
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+
     vi.useRealTimers();
   });
+});
 
-  it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.useFakeTimers();
+  const userSetup: UserEvent = userEvent.setup();
+
+  const currentDate = new Date('2025-10-15T08:50:00');
+  vi.setSystemTime(currentDate);
+
+  render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+
+  // const titleInput = screen.getByLabelText('제목');
+  // const dateInput = screen.getByLabelText('날짜');
+  // const startTimeInput = screen.getByLabelText('시작 시간');
+  // const endTimeInput = screen.getByLabelText('종료 시간');
+  // const notificationSelect = screen.getByLabelText('알림 설정');
+  // const scheduleButton = screen.getByTestId('event-submit-button');
+
+  // await userSetup.type(titleInput, '새로운 회의');
+  // await userSetup.type(dateInput, '2025-10-15');
+  // await userSetup.type(startTimeInput, '08:50');
+  // await userSetup.type(endTimeInput, '13:00');
+  // await userSetup.selectOptions(notificationSelect, '10');
+
+  // await userSetup.click(scheduleButton);
+
+  await act(async () => {
+    vi.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText(/10분 후 새로운 회의 일정이 시작됩니다./)).toBeInTheDocument();
+  });
+
+  vi.useRealTimers();
 });
