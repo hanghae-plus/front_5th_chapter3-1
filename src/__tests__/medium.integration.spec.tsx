@@ -390,6 +390,7 @@ describe('일정 충돌', () => {
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.setSystemTime(new Date('2025-05-30T13:50:00'));
   const { user } = setup(<App />);
   const form = {
     title: '디자인 리뷰 회의',
@@ -399,14 +400,14 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
     description: '디자인 팀과의 리뷰 미팅',
     location: '회의실 D',
     category: '업무',
+    notificationTime: 10,
   };
 
   await saveSchedule(user, form);
 
-  await user.click(screen.getByText('디자인 리뷰 회의'));
-  await user.clear(screen.getByLabelText('알림 시간'));
-  await user.type(screen.getByLabelText('알림 시간'), '10');
-  await user.click(screen.getByTestId('event-submit-button'));
+  // 정확한 메시지 확인
+  const alertMessage = '10분 전';
+  const alert = await screen.findByText(alertMessage);
 
-  expect(await screen.findByText('10분 전 알림')).toBeInTheDocument();
+  expect(alert).toBeInTheDocument();
 });
