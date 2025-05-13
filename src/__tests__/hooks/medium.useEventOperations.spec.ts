@@ -11,7 +11,14 @@ import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event, RepeatType } from '../../types.ts';
 
-// Chakra UI useToast 훅을 모킹하여 테스트에서 호출 여부를 검증할 수 있도록 함
+// ? Medium: 아래 toastFn과 mock과 이 fn은 무엇을 해줄까요?
+// vi.mock : 특정 모듈에 대한 가져오기를 가로채서 대체 구현을 하기 위함입니다.chakra 라이브러리 같은 경우
+// DOM이 없는 환경에서 오류가 발생하는데 단순히 함수를 Import 하면 의존성과 사이드 이펙트까지 모두 불러오기 때문에,
+// 깨끗한 모의 구현을 하기 위해서 vi.mock을 사용합니다.
+
+// vi.fn() : 어떤 함수를 모킹하기 위한 선언입니다.
+// toastFn : Vitest의 모의 함수(mock function)로, 호출 여부와 전달된 인자를 추적합니다. 가짜 함수는 기본적으로 undefined를 반환하고,
+// toastFn(useToast)이 언제 어떻게 호출되는지  테스트하기 위해서 사용합니다.
 const toastFn = vi.fn();
 
 vi.mock('@chakra-ui/react', async () => {

@@ -1,16 +1,20 @@
-import { useInterval } from '@chakra-ui/react';
-import { act, renderHook } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // 내부 모듈들
 import { useNotifications } from '../../hooks/useNotifications.ts';
-import { Event } from '../../types.ts';
+import { Event, RepeatType } from '../../types.ts';
 import { getUpcomingEvents, createNotificationMessage } from '../../utils/notificationUtils.ts';
+
+// 모킹을 위한 변수 선언
+let savedCallback: () => void;
 
 // 모킹 설정
 vi.mock('@chakra-ui/react', () => ({
   useInterval: (callback: () => void, delay: number) => {
-    callback(); // 초기 한 번 실행
-    return { callback, delay };
+    // callback을 즉시 실행하지 않고 저장만 함
+    savedCallback = callback;
+    return { isRunning: delay !== null };
   },
 }));
 
@@ -19,24 +23,34 @@ vi.mock('../../utils/notificationUtils.ts', () => ({
   createNotificationMessage: vi.fn(),
 }));
 
-describe('useNotifications', () => {
+describe('useNotifications 훅 테스트', () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    // 각 테스트 전에 저장된 콜백 초기화
+    savedCallback = () => {};
   });
 
-  it('초기 상태에서는 알림이 없어야 한다', () => {
+  it('초기 상태에서는 알림이 없어야 한다', async () => {
     // Arrange
     const mockEvents: Event[] = [];
 
+    // 첫 번째 인터벌에서는 알림이 없도록 설정
+    vi.mocked(getUpcomingEvents).mockReturnValue([]);
+
     // Act
     const { result } = renderHook(() => useNotifications(mockEvents));
+
+    // 인터벌 콜백 수동 실행
+    act(() => {
+      savedCallback();
+    });
 
     // Assert
     expect(result.current.notifications).toEqual([]);
     expect(result.current.notifiedEvents).toEqual([]);
   });
 
-  it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
+  it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', async () => {
     // Arrange
     const mockEvent: Event = {
       id: '1',
@@ -47,7 +61,7 @@ describe('useNotifications', () => {
       description: '',
       location: '',
       category: '',
-      repeat: { type: 'none', interval: 0 },
+      repeat: { type: 'none' as RepeatType, interval: 0 },
       notificationTime: 15,
     };
     const mockEvents = [mockEvent];
@@ -59,8 +73,15 @@ describe('useNotifications', () => {
     // Act
     const { result } = renderHook(() => useNotifications(mockEvents));
 
+    // 초기 상태 확인 - 알림이 아직 없어야 함
+    expect(result.current.notifications).toEqual([]);
+
+    // 인터벌 콜백 수동 실행
+    act(() => {
+      savedCallback();
+    });
+
     // Assert
-    // useInterval 모킹에서 callback을 초기에 한 번 실행하도록 설정했으므로 바로 확인 가능
     expect(getUpcomingEvents).toHaveBeenCalledWith(mockEvents, expect.any(Date), []);
     expect(result.current.notifications).toEqual([
       {
@@ -70,21 +91,19 @@ describe('useNotifications', () => {
     ]);
     expect(result.current.notifiedEvents).toEqual(['1']);
 
-    // 시간이 지난 경우 시뮬레이션 - useInterval의 callback을 다시 호출
+    // 시간이 지난 경우 시뮬레이션 - 더 이상 알림 대상 이벤트 없음
     vi.mocked(getUpcomingEvents).mockReturnValue([]);
 
-    // callback 직접 호출 - useInterval이 1초마다 호출하는 방식을 시뮬레이션
+    // 다시 인터벌 콜백 수동 실행
     act(() => {
-      // useInterval에 전달된 callback을 직접 호출
-      const intervalCallback = vi.mocked(useInterval).mock.calls[0][0];
-      intervalCallback();
+      savedCallback();
     });
 
     // 알림 상태 유지 확인
     expect(result.current.notifications.length).toBe(1);
   });
 
-  it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
+  it('index를 기준으로 알림을 적절하게 제거할 수 있다', async () => {
     // Arrange
     const mockEvents: Event[] = [
       {
@@ -96,7 +115,7 @@ describe('useNotifications', () => {
         description: '',
         location: '',
         category: '',
-        repeat: { type: 'none', interval: 0 },
+        repeat: { type: 'none' as RepeatType, interval: 0 },
         notificationTime: 15,
       },
       {
@@ -108,7 +127,7 @@ describe('useNotifications', () => {
         description: '',
         location: '',
         category: '',
-        repeat: { type: 'none', interval: 0 },
+        repeat: { type: 'none' as RepeatType, interval: 0 },
         notificationTime: 30,
       },
     ];
@@ -121,6 +140,14 @@ describe('useNotifications', () => {
 
     // Act
     const { result } = renderHook(() => useNotifications(mockEvents));
+
+    // 초기 상태 확인 - 아직 알림이 없어야 함
+    expect(result.current.notifications).toEqual([]);
+
+    // 인터벌 콜백 수동 실행
+    act(() => {
+      savedCallback();
+    });
 
     // 초기 알림 상태 확인
     expect(result.current.notifications.length).toBe(2);
@@ -145,7 +172,7 @@ describe('useNotifications', () => {
     expect(result.current.notifications.length).toBe(0);
   });
 
-  it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
+  it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', async () => {
     // Arrange
     const mockEvents: Event[] = [
       {
@@ -157,7 +184,7 @@ describe('useNotifications', () => {
         description: '',
         location: '',
         category: '',
-        repeat: { type: 'none', interval: 0 },
+        repeat: { type: 'none' as RepeatType, interval: 0 },
         notificationTime: 15,
       },
       {
@@ -169,17 +196,25 @@ describe('useNotifications', () => {
         description: '',
         location: '',
         category: '',
-        repeat: { type: 'none', interval: 0 },
+        repeat: { type: 'none' as RepeatType, interval: 0 },
         notificationTime: 30,
       },
     ];
 
-    // 첫 번째 체크: 첫 번째 이벤트만 알림 조건에 맞음
-    vi.mocked(getUpcomingEvents).mockReturnValueOnce([mockEvents[0]]);
-    vi.mocked(createNotificationMessage).mockReturnValueOnce('15분 후 회의 일정이 시작됩니다.');
-
     // Act - 초기 렌더링
     const { result } = renderHook(() => useNotifications(mockEvents));
+
+    // 초기 상태 확인 - 알림이 아직 없어야 함
+    expect(result.current.notifications).toEqual([]);
+
+    // 첫 번째 체크: 첫 번째 이벤트만 알림 조건에 맞음
+    vi.mocked(getUpcomingEvents).mockReturnValue([mockEvents[0]]);
+    vi.mocked(createNotificationMessage).mockReturnValue('15분 후 회의 일정이 시작됩니다.');
+
+    // 인터벌 콜백 수동 실행
+    act(() => {
+      savedCallback();
+    });
 
     // 첫 번째 알림 확인
     expect(result.current.notifications.length).toBe(1);
@@ -187,13 +222,12 @@ describe('useNotifications', () => {
     expect(result.current.notifiedEvents).toEqual(['1']);
 
     // 두 번째 체크: 두 번째 이벤트만 새로 알림 대상이 됨
-    vi.mocked(getUpcomingEvents).mockReturnValueOnce([mockEvents[1]]);
-    vi.mocked(createNotificationMessage).mockReturnValueOnce('30분 후 미팅 일정이 시작됩니다.');
+    vi.mocked(getUpcomingEvents).mockReturnValue([mockEvents[1]]);
+    vi.mocked(createNotificationMessage).mockReturnValue('30분 후 미팅 일정이 시작됩니다.');
 
-    // 시간 경과 시뮬레이션 (두 번째 체크) - useInterval의 callback을 다시 호출
+    // 시간 경과 시뮬레이션 (두 번째 체크)
     act(() => {
-      const intervalCallback = vi.mocked(useInterval).mock.calls[0][0];
-      intervalCallback();
+      savedCallback();
     });
 
     // Assert - 두 번째 체크 결과
@@ -210,11 +244,10 @@ describe('useNotifications', () => {
     expect(result.current.notifiedEvents).toEqual(['1', '2']);
 
     // 세 번째 체크: 더 이상 새 알림이 없음
-    vi.mocked(getUpcomingEvents).mockReturnValueOnce([]);
+    vi.mocked(getUpcomingEvents).mockReturnValue([]);
 
     act(() => {
-      const intervalCallback = vi.mocked(useInterval).mock.calls[0][0];
-      intervalCallback();
+      savedCallback();
     });
 
     // 알림 상태가 변경되지 않았는지 확인
