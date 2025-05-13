@@ -40,18 +40,6 @@ const events: Event[] = [
     repeat: { type: 'none', interval: 0 },
     notificationTime: 15,
   },
-  {
-    id: '4',
-    title: '여행',
-    date: '2025-07-01',
-    startTime: '09:00',
-    endTime: '10:00',
-    description: '',
-    location: 'PC방',
-    category: '학교',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 15,
-  },
 ];
 
 it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {

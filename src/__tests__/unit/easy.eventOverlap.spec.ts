@@ -9,7 +9,7 @@ import {
 describe('parseDateTime', () => {
   it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
     const date = parseDateTime('2025-05-12', '14:30');
-    expect(date).toEqual(new Date('2025-07-01T14:30:00'));
+    expect(date).toEqual(new Date('2025-05-12T14:30:00'));
   });
 
   it('잘못된 날짜 형식에 대해 Invalid Date를 반환한다', () => {
