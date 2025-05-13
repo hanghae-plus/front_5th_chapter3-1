@@ -5,7 +5,6 @@ import { Event } from '../../types.ts';
 import dummyEvents from '../dummy/dummyEventsMonth.json' assert { type: 'json' };
 
 describe('useSearch Hook', () => {
-  const MOCK_INITIAL_DATE = new Date('2025-11-01');
   const getMockEvents = () => {
     return JSON.parse(JSON.stringify(dummyEvents.events)) as Event[];
   };
@@ -45,7 +44,6 @@ describe('useSearch Hook', () => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(MOCK_INITIAL_DATE);
   });
 
   afterEach(() => {
@@ -54,12 +52,16 @@ describe('useSearch Hook', () => {
   });
 
   it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {
+    const MOCK_INITIAL_DATE = new Date('2025-11-01');
+    vi.setSystemTime(MOCK_INITIAL_DATE);
     const mockEvents = getMockEvents();
     const { result } = renderHook(() => useSearch(mockEvents, MOCK_INITIAL_DATE, 'month'));
     expect(result.current.filteredEvents).toEqual(mockEvents);
   });
 
   it('검색어에 맞는 이벤트만 필터링해야 한다', () => {
+    const MOCK_INITIAL_DATE = new Date('2025-11-01');
+    vi.setSystemTime(MOCK_INITIAL_DATE);
     const mockEvents = getMockEvents();
     const { result } = renderHook(() => useSearch(mockEvents, MOCK_INITIAL_DATE, 'month'));
 
@@ -71,6 +73,8 @@ describe('useSearch Hook', () => {
   });
 
   it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이벤트를 반환해야 한다', () => {
+    const MOCK_INITIAL_DATE = new Date('2025-11-01');
+    vi.setSystemTime(MOCK_INITIAL_DATE);
     const mockEvents = getMockEvents();
     const { result } = renderHook(() => useSearch(mockEvents, MOCK_INITIAL_DATE, 'month'));
 
@@ -87,7 +91,32 @@ describe('useSearch Hook', () => {
     expect(result.current.filteredEvents).toEqual(filterEventsBySearchTerm('점심', mockEvents));
   });
 
+  it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다', () => {
+    const MOCK_INITIAL_DATE = new Date('2025-11-01');
+    vi.setSystemTime(MOCK_INITIAL_DATE);
+    const mockEvents = getMockEvents();
+    const { result, rerender, unmount } = renderHook(
+      ({ view }: { view: 'week' | 'month' }) => useSearch(mockEvents, MOCK_INITIAL_DATE, view),
+      { initialProps: { view: 'month' } }
+    );
+
+    // 월간 뷰 테스트
+    expect(result.current.filteredEvents).toEqual(
+      filterEventsByView('month', MOCK_INITIAL_DATE, mockEvents)
+    );
+
+    // 주간 뷰로 변경하여 테스트
+    rerender({ view: 'week' });
+    expect(result.current.filteredEvents).toEqual(
+      filterEventsByView('week', MOCK_INITIAL_DATE, mockEvents)
+    );
+
+    unmount();
+  });
+
   it("검색어를 '회의'에서 '점심'으로 변경하면 필터링된 결과가 즉시 업데이트되어야 한다", () => {
+    const MOCK_INITIAL_DATE = new Date('2025-11-01');
+    vi.setSystemTime(MOCK_INITIAL_DATE);
     const mockEvents = getMockEvents();
     const { result, unmount } = renderHook(() => useSearch(mockEvents, MOCK_INITIAL_DATE, 'month'));
 
@@ -139,27 +168,6 @@ describe('useSearch Hook', () => {
     expect(result.current.filteredEvents).toEqual(mockEvents);
     expect(result.current.searchTerm).toBe('');
     expect(result.current.filteredEvents.length).toBe(initialEventsCount);
-
-    unmount();
-  });
-
-  it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다', () => {
-    const mockEvents = getMockEvents();
-    const { result, rerender, unmount } = renderHook(
-      ({ view }: { view: 'week' | 'month' }) => useSearch(mockEvents, MOCK_INITIAL_DATE, view),
-      { initialProps: { view: 'month' } }
-    );
-
-    // 월간 뷰 테스트
-    expect(result.current.filteredEvents).toEqual(
-      filterEventsByView('month', MOCK_INITIAL_DATE, mockEvents)
-    );
-
-    // 주간 뷰로 변경하여 테스트
-    rerender({ view: 'week' });
-    expect(result.current.filteredEvents).toEqual(
-      filterEventsByView('week', MOCK_INITIAL_DATE, mockEvents)
-    );
 
     unmount();
   });
