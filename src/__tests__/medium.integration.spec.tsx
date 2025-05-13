@@ -196,7 +196,20 @@ describe('일정 뷰', () => {
     vi.useRealTimers();
   });
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    vi.setSystemTime('2025-05-20');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const viewSelector = screen.getByTestId('view-selector');
+    await user.selectOptions(viewSelector, 'week');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
 
