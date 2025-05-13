@@ -251,6 +251,10 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
@@ -264,7 +268,18 @@ describe('검색 기능', () => {
     expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
   });
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const searchInput = screen.getByLabelText('일정 검색');
+    await user.type(searchInput, '팀 회의');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+  });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
 });
