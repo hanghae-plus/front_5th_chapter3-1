@@ -1,3 +1,4 @@
+import { ChakraProvider, useToast as useChakraToast } from '@chakra-ui/react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
@@ -12,7 +13,6 @@ import { events as mockEventsData } from '../../__mocks__/response/realEvents.js
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
-
 const mockEvents = mockEventsData as Event[];
 // 새 이벤트 데이터
 const newEvent: Omit<Event, 'id'> = {
