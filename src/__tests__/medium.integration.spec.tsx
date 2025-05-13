@@ -77,4 +77,22 @@ describe('일정 충돌', () => {
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  setupMockHandlerCreation([
+    {
+      id: 'alarm-1',
+      title: '알람 테스트',
+      date: '2025-10-16',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '알람 확인',
+      location: '회의실',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ]);
+  setup(<App />);
+  // 알람 텍스트가 노출되는지 확인
+  expect(await screen.findByText(/10분 전/)).toBeInTheDocument();
+});
