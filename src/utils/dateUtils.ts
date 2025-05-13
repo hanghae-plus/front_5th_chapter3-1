@@ -79,7 +79,6 @@ export function formatWeek(targetDate: Date) {
 
   const year = thursday.getFullYear();
   const month = thursday.getMonth() + 1;
-  console.log(year, month);
 
   const firstDayOfMonth = new Date(thursday.getFullYear(), thursday.getMonth(), 1);
 

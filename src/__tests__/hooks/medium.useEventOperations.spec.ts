@@ -158,7 +158,7 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
 });
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
-  setupMockHandlerCreation(initialEvents);
+  setupMockHandlerUpdating();
   server.use(
     http.put('/api/events/:id', () => {
       return HttpResponse.json(null, { status: 404 });
@@ -190,7 +190,7 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
 });
 
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
-  setupMockHandlerCreation(initialEvents);
+  setupMockHandlerDeletion();
   server.use(
     http.delete('/api/events/:id', () => {
       return new HttpResponse(null, { status: 500 });
