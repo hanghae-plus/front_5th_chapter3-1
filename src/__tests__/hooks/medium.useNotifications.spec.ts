@@ -3,9 +3,7 @@ import { beforeEach, afterEach, describe, it, expect, vi } from 'vitest';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
 import dummyNotificationEvents from '../dummy/dummyNotificationEvents.json' assert { type: 'json' };
-import { parseHM } from '../utils.ts';
 
 describe('useNotifications Hook', () => {
   const dummyEvents = dummyNotificationEvents.events as Event[];
