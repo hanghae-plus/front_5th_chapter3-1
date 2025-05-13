@@ -176,7 +176,25 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    // 월별 뷰에서는 일정이 표시됨
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).queryByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+
+    const viewSelector = screen.getByTestId('view-selector');
+    await user.selectOptions(viewSelector, 'week');
+
+    // 주별 뷰로 바꾸면 일정이 표시되지 않음
+    const newEventList = await screen.findByTestId('event-list');
+    expect(within(newEventList).queryByText(MOCK_EVENTS[0].title)).not.toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
 

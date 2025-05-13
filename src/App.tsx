@@ -427,6 +427,7 @@ function App() {
               onClick={() => navigate('prev')}
             />
             <Select
+              data-testid="view-selector"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
