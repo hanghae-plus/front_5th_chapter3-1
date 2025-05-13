@@ -5,7 +5,11 @@ import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
-import { setupMockHandlerCreation, setupMockHandlerUpdating } from '../__mocks__/handlersUtils';
+import {
+  setupMockHandlerCreation,
+  setupMockHandlerUpdating,
+  setupMockHandlerDeletion,
+} from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
 import { Event, EventForm } from '../types';
@@ -154,7 +158,21 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerDeletion(MOCK_EVENTS));
+    renderApp();
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+
+    const deleteButton = within(eventList).getByTestId(`delete-event-button-${MOCK_EVENTS[0].id}`);
+    await user.click(deleteButton);
+
+    await waitFor(() => {
+      expect(within(eventList).queryByText(MOCK_EVENTS[0].title)).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {

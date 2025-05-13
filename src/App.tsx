@@ -506,6 +506,7 @@ function App() {
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
+                      data-testid={`delete-event-button-${event.id}`}
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
