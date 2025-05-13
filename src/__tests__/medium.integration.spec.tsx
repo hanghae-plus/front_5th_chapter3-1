@@ -282,6 +282,10 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const { user } = setup(<App />);
     const form = {
@@ -342,13 +346,23 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
+  beforeEach(() => {
+    vi.setSystemTime('2025-05-01');
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerCreation([...mockEvents]);
     const { user } = setup(<App />);
+
     const form = {
       title: '디자인 리뷰 회의',
-      date: '2025-05-30',
-      startTime: '14:00',
-      endTime: '15:30',
+      date: '2025-05-22',
+      startTime: '18:00',
+      endTime: '19:30',
       description: '디자인 팀과의 리뷰 미팅',
       location: '회의실 D',
       category: '업무',
@@ -356,36 +370,35 @@ describe('일정 충돌', () => {
 
     await saveSchedule(user, form);
 
-    await user.click(screen.getByText('일정 추가'));
-    await user.type(screen.getByLabelText('제목'), '겹치는 일정');
-    await user.type(screen.getByLabelText('날짜'), '2025-10-15');
-    await user.type(screen.getByLabelText('시작 시간'), '09:30');
-    await user.type(screen.getByLabelText('종료 시간'), '10:30');
-    await user.click(screen.getByTestId('event-submit-button'));
-
-    expect(await screen.findByText('일정 시간이 겹칩니다.')).toBeInTheDocument();
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
   });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerUpdating([...mockEvents]);
     const { user } = setup(<App />);
-    const form = {
-      title: '디자인 리뷰 회의',
-      date: '2025-05-30',
-      startTime: '14:00',
-      endTime: '15:30',
-      description: '디자인 팀과의 리뷰 미팅',
-      location: '회의실 D',
-      category: '업무',
-    };
 
-    await saveSchedule(user, form);
+    const list = await screen.findByTestId('event-list');
+    const eventId = mockEvents[0].id;
 
-    await user.click(screen.getByText('팀 회의'));
+    // edit 버튼 클릭 (test-id 기반)
+    const editButton = within(list).getByTestId(`event-edit-button-${eventId}`);
+    await user.click(editButton);
+
+    // 날짜 겹치도록 수정
+    await user.clear(screen.getByLabelText('날짜'));
+    await user.type(screen.getByLabelText('날짜'), mockEvents[1].date);
+
+    // 제목은 그대로 두고, 시간만 겹치게 수정
     await user.clear(screen.getByLabelText('시작 시간'));
-    await user.type(screen.getByLabelText('시작 시간'), '09:30');
-    await user.click(screen.getByTestId('event-submit-button'));
+    await user.type(screen.getByLabelText('시작 시간'), mockEvents[1].startTime);
 
-    expect(await screen.findByText('일정 시간이 겹칩니다.')).toBeInTheDocument();
+    await user.clear(screen.getByLabelText('종료 시간'));
+    await user.type(screen.getByLabelText('종료 시간'), mockEvents[1].endTime);
+
+    const submit = screen.getByTestId('event-submit-button');
+    await user.click(submit);
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
   });
 });
 
