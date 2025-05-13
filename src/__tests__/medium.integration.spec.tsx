@@ -15,18 +15,18 @@ const makeEvents = (count = 2): Event[] =>
     .fill(null)
     .map((_, index) => ({
       id: String(index + 1),
-      title: `첫 번째 일정 - ${index + 1}`,
-      description: `첫 번째 일정 설명 - ${index + 1}`,
-      date: new Date(2025, 4, index + 1).toISOString(),
-      startTime: '00:00',
-      endTime: '01:00',
-      location: '서울',
+      title: `${index + 1}-` + EVENT.title,
+      description: `${index + 1}-` + EVENT.description,
+      date: EVENT.date,
+      startTime: EVENT.startTime,
+      endTime: EVENT.endTime,
+      location: `${index + 1}-` + EVENT.location,
       category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
-      notificationTime: new Date().getTime(),
+      notificationTime: EVENT.notificationTime,
       repeat: {
         type: REPEAT_TYPES[index % REPEAT_TYPES.length],
         interval: 1,
-        endDate: new Date(2025, 4, index + 1).toISOString(),
+        endDate: `${index + 1}-` + EVENT.repeat.endDate,
       },
     }));
 
@@ -124,18 +124,17 @@ const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
     screen.debug(screen.getByTestId('event-list'));
   }
 };
+const setup = (initialEvents?: Event[]) => {
+  setupMockHandlerCreation(initialEvents);
+
+  render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
 
 describe('일정 CRUD 및 기본 기능', () => {
-  const setup = (initialEvents?: Event[]) => {
-    setupMockHandlerCreation(initialEvents);
-
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
-  };
-
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     setup();
 
@@ -197,16 +196,111 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(await screen.findByText('일정이 삭제되었습니다.')).toBeInTheDocument();
   });
 });
-describe.skip('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+describe('일정 뷰', () => {
+  const today = new Date();
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  // 이번주 월요일
+  const currentWeekMonday = new Date(today);
+  currentWeekMonday.setDate(today.getDate() - ((today.getDay() + 6) % 7) + 1);
+  currentWeekMonday.setHours(0, 0, 0, 0);
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+  // 다음주 월요일
+  const nextWeekMonday = new Date(currentWeekMonday);
+  nextWeekMonday.setDate(currentWeekMonday.getDate() + 7);
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+  // 이번달 1일
+  const currentMonthFirstDay = new Date(today.getFullYear(), today.getMonth(), 2);
+  currentMonthFirstDay.setHours(0, 0, 0, 0);
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  // 다음달 1일
+  const nextMonthFirstDay = new Date(today.getFullYear(), today.getMonth() + 1, 2);
+  nextMonthFirstDay.setHours(0, 0, 0, 0);
+
+  const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const initialEvents = makeEvents(2).map((event) => ({
+      ...event,
+      date: formatDate(nextWeekMonday),
+    }));
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+
+    const $viewCombobox = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions($viewCombobox, 'week');
+
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const initialEvents = makeEvents(2).map((event) => ({
+      ...event,
+      date: formatDate(currentWeekMonday),
+    }));
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+
+    const $viewCombobox = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions($viewCombobox, 'week');
+
+    expect(await screen.findByText(initialEvents[0].description)).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    const initialEvents = makeEvents(2).map((event) => ({
+      ...event,
+      date: formatDate(nextMonthFirstDay),
+    }));
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+
+    const $viewCombobox = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions($viewCombobox, 'month');
+
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const initialEvents = makeEvents(2).map((event) => ({
+      ...event,
+      date: formatDate(currentMonthFirstDay),
+    }));
+    setup(initialEvents);
+
+    const $monthView = screen.getByTestId('month-view');
+    const $targetEventItem = within($monthView).getByText((content) => {
+      const fullTitle = initialEvents[0].title;
+      let displayedPrefix = content;
+      if (content.endsWith('...')) {
+        displayedPrefix = content.substring(0, content.length - 3);
+      }
+      return displayedPrefix.length > 0 && fullTitle.startsWith(displayedPrefix);
+    });
+
+    expect($targetEventItem).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    const initialEvents = makeEvents();
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+    const $prevButton = screen.getByRole('button', { name: 'Previous' });
+
+    for (let i = 0; i < 12; i++) {
+      try {
+        await screen.findByText('신정', {}, { timeout: 100 });
+        break;
+      } catch (e) {
+        await user.click($prevButton);
+      }
+    }
+
+    expect(await screen.findByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe.skip('검색 기능', () => {
