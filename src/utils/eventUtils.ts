@@ -1,6 +1,7 @@
 import { Event } from '../types';
 import { getWeekDates, isDateInRange } from './dateUtils';
 
+// 날짜 범위에 해당하는 이벤트를 필터링
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
     const eventDate = new Date(event.date);
@@ -8,10 +9,12 @@ function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event
   });
 }
 
+// 검색어가 포함되어 있는지 확인
 function containsTerm(target: string, term: string) {
   return target.toLowerCase().includes(term.toLowerCase());
 }
 
+// 검색어가 포함되어 있는 이벤트를 필터링
 function searchEvents(events: Event[], term: string) {
   return events.filter(
     ({ title, description, location }) =>
@@ -19,6 +22,7 @@ function searchEvents(events: Event[], term: string) {
   );
 }
 
+// 주간 뷰에서 날짜 범위에 해당하는 이벤트를 필터링
 function filterEventsByDateRangeAtWeek(events: Event[], currentDate: Date) {
   const weekDates = getWeekDates(currentDate);
   return filterEventsByDateRange(events, weekDates[0], weekDates[6]);

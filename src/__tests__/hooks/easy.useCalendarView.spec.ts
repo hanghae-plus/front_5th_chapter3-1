@@ -4,9 +4,15 @@ import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
 describe('초기 상태', () => {
-  it('view는 "month"이어야 한다', () => {});
+  it('view는 "month"이어야 한다', () => {
+    const { result } = renderHook(() => useCalendarView());
+    expect(result.current.view).toBe('month');
+  });
 
-  it('currentDate는 오늘 날짜인 "2025-10-01"이어야 한다', () => {});
+  it('currentDate는 오늘 날짜인 "2025-10-01"이어야 한다', () => {
+    const { result } = renderHook(() => useCalendarView());
+    expect(result.current.currentDate).toBe('2025-10-01');
+  });
 
   it('holidays는 10월 휴일인 개천절, 한글날이 지정되어 있어야 한다', () => {});
 });
