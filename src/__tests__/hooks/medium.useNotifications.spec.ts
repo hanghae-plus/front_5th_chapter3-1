@@ -1,22 +1,36 @@
 import { act, renderHook } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+// import { http, HttpResponse } from 'msw';
 
-import {
-  setupMockHandlerCreation,
-  setupMockHandlerDeletion,
-  setupMockHandlerUpdating,
-} from '../../__mocks__/handlersUtils.ts';
+// import {
+//   setupMockHandlerCreation,
+//   setupMockHandlerDeletion,
+//   setupMockHandlerUpdating,
+// } from '../../__mocks__/handlersUtils.ts';
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
+// import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { useNotifications } from '../../hooks/useNotifications.ts';
-import { server } from '../../setupTests.ts';
+// import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 
 const INITIAL_EVENTS = events as Event[];
 
 // 저장되어있는 초기 이벤트 데이터를 적절하게 불러온다
 it('초기 상태에서는 알림이 없어야 한다', async () => {
-  const { result } = renderHook(() => useNotifications(INITIAL_EVENTS));
+  const mockEvents = [
+    {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      notificationTime: 10,
+    },
+  ];
+
+  const { result } = renderHook(() => useNotifications(mockEvents));
   expect(result.current.notifications).toEqual([]);
 });
 
