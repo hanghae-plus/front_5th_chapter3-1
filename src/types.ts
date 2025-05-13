@@ -8,7 +8,7 @@ export interface RepeatInfo {
 
 export interface EventForm {
   title: string;
-  date: string;
+  date: Date;
   startTime: string;
   endTime: string;
   description: string;

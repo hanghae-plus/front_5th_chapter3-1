@@ -57,7 +57,7 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
 
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
-  const diffToThursday = 4 - dayOfWeek;
+  const diffToThursday = 4 - dayOfWeek; // ISO의 주의 기준이 목요일.
   const thursday = new Date(targetDate);
   thursday.setDate(targetDate.getDate() + diffToThursday);
 
