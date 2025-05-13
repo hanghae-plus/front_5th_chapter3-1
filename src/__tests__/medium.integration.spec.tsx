@@ -13,24 +13,30 @@ import { EVENT, EVENT_CATEGORIES, REPEAT_TYPES } from './constants';
 const makeEvents = (count = 2): Event[] =>
   Array(count)
     .fill(null)
-    .map((_, index) => ({
-      id: String(index + 1),
-      title: `${index + 1}-` + EVENT.title,
-      description: `${index + 1}-` + EVENT.description,
-      date: EVENT.date,
-      startTime: EVENT.startTime,
-      endTime: EVENT.endTime,
-      location: `${index + 1}-` + EVENT.location,
-      category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
-      notificationTime: EVENT.notificationTime,
-      repeat: {
-        type: REPEAT_TYPES[index % REPEAT_TYPES.length],
-        interval: 1,
-        endDate: `${index + 1}-` + EVENT.repeat.endDate,
-      },
-    }));
+    .map((_, index) => {
+      const eventDate = new Date();
+      eventDate.setDate(eventDate.getDate() + index);
+      const formattedDate = eventDate.toISOString().split('T')[0];
 
-const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
+      return {
+        id: String(index + 1),
+        title: `${index + 1}-` + EVENT.title,
+        description: `${index + 1}-` + EVENT.description,
+        date: formattedDate, // 수정된 날짜 사용
+        startTime: EVENT.startTime,
+        endTime: EVENT.endTime,
+        location: `${index + 1}-` + EVENT.location,
+        category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
+        notificationTime: EVENT.notificationTime,
+        repeat: {
+          type: REPEAT_TYPES[index % REPEAT_TYPES.length],
+          interval: 1,
+          endDate: `${index + 1}-` + EVENT.repeat.endDate,
+        },
+      };
+    });
+
+const submitEvent = async (event?: Partial<Event>) => {
   const user = userEvent.setup();
 
   const $titleInput = screen.getByLabelText<HTMLInputElement>('제목');
@@ -119,10 +125,6 @@ const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
   }
 
   await user.click($submitButton);
-
-  if (isDebug) {
-    screen.debug(screen.getByTestId('event-list'));
-  }
 };
 const setup = (initialEvents?: Event[]) => {
   setupMockHandlerCreation(initialEvents);
@@ -153,12 +155,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     const $targetEventItem = $eventItems.find(($item) =>
       within($item).queryByText(initialEvents[0].title)
     );
-
-    if (!$targetEventItem) {
-      console.error(`[${initialEvents[0].title}] 제목을 포함하는 event-item을 찾을 수 없습니다.`);
-      screen.debug(undefined, Infinity);
-      return;
-    }
+    if (!$targetEventItem) return;
 
     const user = userEvent.setup();
 
@@ -179,12 +176,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     const $targetEventItem = $eventItems.find(($item) =>
       within($item).queryByText(initialEvents[0].title)
     );
-
-    if (!$targetEventItem) {
-      console.error(`[${initialEvents[0].title}] 제목을 포함하는 event-item을 찾을 수 없습니다.`);
-      screen.debug(undefined, Infinity);
-      return;
-    }
+    if (!$targetEventItem) return;
 
     const user = userEvent.setup();
 
