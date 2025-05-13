@@ -32,7 +32,8 @@ describe('getDaysInMonth', () => {
     expect(result).toBe(28);
   });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {
+  // 유효하지 않은 월에 대해 적절히 처리한다
+  it('유효하지 않은 월이 맞지 않으면 0을 반환한다', () => {
     expect(getDaysInMonth(2025, 0)).toBe(0); // 너무 작음
     expect(getDaysInMonth(2025, 13)).toBe(0); // 너무 큼
     expect(getDaysInMonth(2025, -5)).toBe(0); // 음수

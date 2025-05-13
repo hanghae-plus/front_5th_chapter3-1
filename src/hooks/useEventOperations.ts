@@ -3,6 +3,12 @@ import { useEffect, useState } from 'react';
 
 import { Event, EventForm } from '../types';
 
+/**
+ * event Operation hook
+ * @param editing
+ * @param onSave
+ * @returns
+ */
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
   const toast = useToast();
