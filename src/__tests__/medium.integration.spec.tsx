@@ -225,7 +225,20 @@ describe('일정 뷰', () => {
     vi.useRealTimers();
   });
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const viewSelector = screen.getByTestId('view-selector');
+    await user.selectOptions(viewSelector, 'month');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
 });
