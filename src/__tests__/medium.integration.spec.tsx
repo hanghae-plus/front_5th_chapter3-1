@@ -176,6 +176,10 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
@@ -192,8 +196,6 @@ describe('일정 뷰', () => {
     // 주별 뷰로 바꾸면 일정이 표시되지 않음
     const newEventList = await screen.findByTestId('event-list');
     expect(within(newEventList).queryByText(MOCK_EVENTS[0].title)).not.toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
@@ -207,8 +209,6 @@ describe('일정 뷰', () => {
 
     const eventList = await screen.findByTestId('event-list');
     expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
@@ -221,8 +221,6 @@ describe('일정 뷰', () => {
     await user.selectOptions(viewSelector, 'month');
 
     expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
@@ -236,8 +234,6 @@ describe('일정 뷰', () => {
 
     const eventList = await screen.findByTestId('event-list');
     expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
@@ -251,13 +247,22 @@ describe('일정 뷰', () => {
 
     const calendar = await screen.findByTestId('month-view');
     expect(within(calendar).getByText('신정')).toBeInTheDocument();
-
-    vi.useRealTimers();
   });
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const searchInput = screen.getByLabelText('일정 검색');
+    await user.type(searchInput, '입력된 검색어');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
 
