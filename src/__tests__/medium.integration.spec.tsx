@@ -311,6 +311,10 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
@@ -342,7 +346,38 @@ describe('일정 충돌', () => {
     expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
   });
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
+    renderApp();
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+
+    const editButton = within(eventList).getByTestId(`edit-event-button-${MOCK_EVENTS[0].id}`);
+    await user.click(editButton);
+
+    const title = screen.getByLabelText('제목');
+    await user.clear(title);
+    await user.type(title, '수정된 제목');
+
+    const date = screen.getByLabelText('날짜');
+    await user.clear(date);
+    await user.type(date, '2025-05-21');
+
+    const startTime = screen.getByLabelText('시작 시간');
+    await user.clear(startTime);
+    await user.type(startTime, '12:40');
+
+    const endTime = screen.getByLabelText('종료 시간');
+    await user.clear(endTime);
+    await user.type(endTime, '13:20');
+
+    const submitButton = screen.getByTestId('event-submit-button');
+    await user.click(submitButton);
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
