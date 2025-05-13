@@ -67,7 +67,7 @@ export const setupMockHandlerDeletion = (initialEvents: Event[]) => {
       const idx = events.findIndex((e) => e.id === id);
       if (idx > -1) {
         events.splice(idx, 1);
-        return HttpResponse.json(null, { status: 204 });
+        return HttpResponse.json(null, { status: 200 });
       }
       return HttpResponse.json({ message: 'Not found' }, { status: 404 });
     }),

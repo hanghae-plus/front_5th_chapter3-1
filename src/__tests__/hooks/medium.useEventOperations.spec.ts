@@ -1,4 +1,4 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import {
@@ -10,24 +10,71 @@ import { events } from '../../__mocks__/response/events.json' assert { type: 'js
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
+import { mockTestData } from '../data/mockTestData.ts';
 
-// beforeAll(() => server.listen());
-// afterEach(() => server.resetHandlers());
-// afterAll(() => server.close());
 describe('useEventOperations 이벤트 crud 기능 테스트', () => {
+  const { handlers } = setupMockHandlerCreation(events as Event[]);
+  beforeEach(() => {
+    server.use(...handlers);
+  });
+
   it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
     const { result } = renderHook(() => useEventOperations(false));
 
-    // 초기 fetchEvents() 호출 후 state 변경 대기
-    await result.current.fetchEvents();
-
-    // mockEvents.json 에 정의된 이벤트 배열이 들어와야 한다
-    expect(result.current.events).toEqual(events);
+    await waitFor(() => {
+      expect(result.current.events).toEqual(events);
+    });
   });
 
-  it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
-  it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {});
-  it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
+  it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+    const { result } = renderHook(() => useEventOperations(false));
+
+    await act(async () => {
+      await result.current.saveEvent(mockTestData);
+    });
+
+    await waitFor(() => {
+      expect(result.current.events).toContainEqual(mockTestData);
+    });
+  });
+
+  it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
+    const { handlers } = setupMockHandlerDeletion(events as Event[]);
+    server.use(...handlers);
+
+    const { result } = renderHook(() => useEventOperations(false));
+
+    const targetId = events[0].id;
+
+    await act(async () => {
+      await result.current.deleteEvent(targetId);
+    });
+
+    await waitFor(() => {
+      expect(result.current.events.some((e) => e.id === targetId)).toBe(false);
+    });
+  });
+
+  it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
+    const { handlers } = setupMockHandlerUpdating(events as Event[]);
+    server.use(...handlers);
+
+    const updatedEvent = {
+      ...events[0],
+      title: 'updated title',
+      endTime: '12:00',
+    };
+
+    const { result } = renderHook(() => useEventOperations(true));
+
+    await act(async () => {
+      await result.current.saveEvent(updatedEvent as Event);
+    });
+
+    await waitFor(() => {
+      expect(result.current.events).toContainEqual(updatedEvent);
+    });
+  });
 });
 
 describe('useEventOperations 에러 처리', () => {
