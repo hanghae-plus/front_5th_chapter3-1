@@ -37,7 +37,7 @@ interface EventFormState {
   notificationTime: number;
 }
 
-interface EventFormErrors {
+export interface EventFormErrors {
   startTimeError?: string;
   endTimeError?: string;
 }
@@ -46,8 +46,7 @@ interface EventFormProps {
   form: EventFormState;
   errors: EventFormErrors;
   isEditing: boolean;
-  // eslint-disable-next-line no-unused-vars
-  onChange: (field: string, value: any) => void;
+  onChange: <K extends keyof EventFormState>(field: K, value: EventFormState[K]) => void;
   onSubmit: () => void;
 }
 
