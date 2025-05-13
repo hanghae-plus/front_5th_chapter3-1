@@ -1,19 +1,29 @@
-import { Event } from '../../types';
-import {
-  convertEventToDateRange,
-  findOverlappingEvents,
-  isOverlapping,
-  parseDateTime,
-} from '../../utils/eventOverlap';
+import { parseDateTime } from '../../utils/eventOverlap';
 
 describe('parseDateTime', () => {
-  it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {});
+  it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
+    const result = parseDateTime('2025-07-01', '14:30');
+    expect(result.getFullYear()).toBe(2025);
+    expect(result.getMonth()).toBe(6);
+    expect(result.getDate()).toBe(1);
+    expect(result.getHours()).toBe(14);
+    expect(result.getMinutes()).toBe(30);
+  });
 
-  it('잘못된 날짜 형식에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 날짜 형식에 대해 Invalid Date를 반환한다', () => {
+    const result = parseDateTime('2025-17-01', '14:30');
+    expect(isNaN(result.getTime())).toBe(true);
+  });
 
-  it('잘못된 시간 형식에 대해 Invalid Date를 반환한다', () => {});
+  it('잘못된 시간 형식에 대해 Invalid Date를 반환한다', () => {
+    const result = parseDateTime('2025-07-01', '99:99');
+    expect(isNaN(result.getTime())).toBe(true);
+  });
 
-  it('날짜 문자열이 비어있을 때 Invalid Date를 반환한다', () => {});
+  it('날짜 문자열이 비어있을 때 Invalid Date를 반환한다', () => {
+    const result = parseDateTime('', '14:30');
+    expect(isNaN(result.getTime())).toBe(true);
+  });
 });
 
 describe('convertEventToDateRange', () => {
