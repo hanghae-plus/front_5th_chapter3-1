@@ -152,6 +152,8 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
     duration: 3000,
     isClosable: true,
   });
+
+  expect(result.current.events).toEqual([]);
 });
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
@@ -170,6 +172,32 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
     duration: 3000,
     isClosable: true,
   });
+
+  expect(result.current.events).toEqual(initEvents);
 });
 
-it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {});
+it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+  const initEvents = [...events] as Event[];
+  setupMockHandlerCreation(initEvents);
+
+  server.use(
+    http.delete('/api/events/:id', () => {
+      return HttpResponse.error();
+    })
+  );
+
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await act(async () => {
+    await result.current.deleteEvent(initEvents[0].id);
+  });
+
+  expect(mockToast).toHaveBeenCalledWith({
+    title: '일정 삭제 실패',
+    status: 'error',
+    duration: 3000,
+    isClosable: true,
+  });
+
+  expect(result.current.events).toEqual(initEvents);
+});
