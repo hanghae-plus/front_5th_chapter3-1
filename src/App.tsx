@@ -293,6 +293,7 @@ function App() {
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
+        {/* 일정 추가 */}
         <VStack w="400px" spacing={5} align="stretch">
           <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
 
@@ -417,6 +418,7 @@ function App() {
           </Button>
         </VStack>
 
+        {/* 일정 보기 */}
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
 
@@ -445,6 +447,7 @@ function App() {
           {view === 'month' && renderMonthView()}
         </VStack>
 
+        {/* 일정 검색 */}
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
           <FormControl>
             <FormLabel>일정 검색</FormLabel>

@@ -4,6 +4,7 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (month < 1 || month > 12) throw new Error('유효하지 않는 월입니다.');
   return new Date(year, month, 0).getDate();
 }
 
