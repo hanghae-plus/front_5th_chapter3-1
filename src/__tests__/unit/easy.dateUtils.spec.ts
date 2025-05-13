@@ -1,3 +1,4 @@
+import { RepeatType } from '../../types.ts';
 import {
   fillZero,
   formatDate,
@@ -9,7 +10,6 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-import {RepeatType} from "../../types.ts";
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -45,7 +45,7 @@ describe('getWeekDates', () => {
       new Date('2025-05-15'),
       new Date('2025-05-16'),
       new Date('2025-05-17'),
-    ])
+    ]);
   });
 
   it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
@@ -59,7 +59,7 @@ describe('getWeekDates', () => {
       new Date('2025-05-15'),
       new Date('2025-05-16'),
       new Date('2025-05-17'),
-    ])
+    ]);
   });
 
   it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
@@ -73,7 +73,7 @@ describe('getWeekDates', () => {
       new Date('2025-05-15'),
       new Date('2025-05-16'),
       new Date('2025-05-17'),
-    ])
+    ]);
   });
 
   it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {
@@ -87,8 +87,7 @@ describe('getWeekDates', () => {
       new Date('2026-01-01'),
       new Date('2026-01-02'),
       new Date('2026-01-03'),
-
-    ])
+    ]);
   });
 
   it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초)', () => {
@@ -102,7 +101,7 @@ describe('getWeekDates', () => {
       new Date('2026-01-01'),
       new Date('2026-01-02'),
       new Date('2026-01-03'),
-    ])
+    ]);
   });
 
   it('윤년의 2월 29일을 포함한 주를 올바르게 처리한다', () => {
@@ -116,7 +115,7 @@ describe('getWeekDates', () => {
       new Date('2024-02-29'),
       new Date('2024-03-01'),
       new Date('2024-03-02'),
-    ])
+    ]);
   });
 
   it('월의 마지막 날짜를 포함한 주를 올바르게 처리한다', () => {
@@ -130,7 +129,7 @@ describe('getWeekDates', () => {
       new Date('2024-02-29'),
       new Date('2024-03-01'),
       new Date('2024-03-02'),
-    ])
+    ]);
   });
 });
 
@@ -143,8 +142,8 @@ describe('getWeeksAtMonth', () => {
       [6, 7, 8, 9, 10, 11, 12],
       [13, 14, 15, 16, 17, 18, 19],
       [20, 21, 22, 23, 24, 25, 26],
-      [27, 28, 29, 30, 31, null, null]
-    ])
+      [27, 28, 29, 30, 31, null, null],
+    ]);
   });
 });
 
@@ -152,37 +151,35 @@ describe('getEventsForDay', () => {
   const events = [
     {
       id: '1',
-      title: "이벤트 1",
+      title: '이벤트 1',
       date: new Date('2025-07-01'),
-      startTime: "09:00",
-      endTime: "10:00",
-      description: "상세내용 1",
-      location: "장소 1",
-      category: "카테고리 1",
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '상세내용 1',
+      location: '장소 1',
+      category: '카테고리 1',
       repeat: {
         type: 'none' as RepeatType,
-        interval: 0
+        interval: 0,
       },
-      notificationTime: 0
+      notificationTime: 0,
     },
     {
       id: '2',
-      title: "이벤트 2",
+      title: '이벤트 2',
       date: new Date('2025-07-02'),
-      startTime: "10:00",
-      endTime: "11:00",
-      description: "상세내용 2",
-      location: "장소 2",
-      category: "카테고리 2",
-      repeat:
-        {
-          type: 'none' as RepeatType,
-          interval: 0
-        },
-      notificationTime:
-        0
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '상세내용 2',
+      location: '장소 2',
+      category: '카테고리 2',
+      repeat: {
+        type: 'none' as RepeatType,
+        interval: 0,
+      },
+      notificationTime: 0,
     },
-  ]
+  ];
 
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
     const date = new Date('2025-07-01').getDate();
@@ -190,37 +187,37 @@ describe('getEventsForDay', () => {
     expect(result).toEqual([
       {
         id: '1',
-        title: "이벤트 1",
+        title: '이벤트 1',
         date: new Date('2025-07-01'),
-        startTime: "09:00",
-        endTime: "10:00",
-        description: "상세내용 1",
-        location: "장소 1",
-        category: "카테고리 1",
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '상세내용 1',
+        location: '장소 1',
+        category: '카테고리 1',
         repeat: {
           type: 'none' as RepeatType,
-          interval: 0
+          interval: 0,
         },
-        notificationTime: 0
+        notificationTime: 0,
       },
-    ])
+    ]);
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
     const date = new Date('2025-07-03').getDate();
     const result = getEventsForDay(events, date);
-    expect(result).toEqual([])
+    expect(result).toEqual([]);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
     const date = new Date('').getDate();
     const result = getEventsForDay(events, date);
-    expect(result).toEqual([])
+    expect(result).toEqual([]);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
     const result = getEventsForDay(events, 32);
-    expect(result).toEqual([])
+    expect(result).toEqual([]);
   });
 });
 
@@ -313,14 +310,14 @@ describe('isDateInRange', () => {
 describe('fillZero', () => {
   test("5를 2자리로 변환하면 '05'를 반환한다", () => {
     const value = 5;
-    const size = 2
+    const size = 2;
     const result = fillZero(value, size);
     expect(result).toBe('05');
   });
 
   test("10을 2자리로 변환하면 '10'을 반환한다", () => {
     const value = 10;
-    const size = 2
+    const size = 2;
     const result = fillZero(value, size);
     expect(result).toBe('10');
   });

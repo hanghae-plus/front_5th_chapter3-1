@@ -33,6 +33,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    "semi": ["error", "always"],
   },
   globals: {
     Set: true,
@@ -43,6 +44,7 @@ module.exports = {
       version: 'detect',
     },
   },
+
   overrides: [
     {
       files: [
