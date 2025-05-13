@@ -12,6 +12,16 @@ import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 import { mockTestData } from '../data/mockTestData.ts';
 
+const mockToast = vi.fn();
+
+vi.mock('@chakra-ui/react', async () => {
+  const originalChakraUi = await vi.importActual('@chakra-ui/react');
+  return {
+    ...originalChakraUi,
+    useToast: () => mockToast,
+  };
+});
+
 describe('useEventOperations 이벤트 crud 기능 테스트', () => {
   const { handlers } = setupMockHandlerCreation(events as Event[]);
   beforeEach(() => {
@@ -78,9 +88,82 @@ describe('useEventOperations 이벤트 crud 기능 테스트', () => {
 });
 
 describe('useEventOperations 에러 처리', () => {
-  it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {});
+  it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+    server.use(
+      http.get('/api/events', () => {
+        throw new Error('Network error');
+      })
+    );
 
-  it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {});
+    const { result } = renderHook(() => useEventOperations(false));
 
-  it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {});
+    await act(async () => {
+      await result.current.fetchEvents();
+    });
+
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '이벤트 로딩 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+    const { handlers } = setupMockHandlerUpdating(events as Event[]);
+    server.use(...handlers);
+
+    const { result } = renderHook(() => useEventOperations(true));
+
+    const updatedEvent = {
+      id: '4',
+      date: '2025-05-27',
+      title: 'Event D',
+      startTime: '13:00',
+      endTime: '14:00',
+      description: '새로운 팀 미팅',
+      location: '회의실 D',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 20,
+    } as Event;
+
+    await act(async () => {
+      await result.current.saveEvent(updatedEvent);
+    });
+
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정 저장 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+    server.use(
+      http.delete('/api/events/:id', () => {
+        throw new Error('Network error');
+      })
+    );
+
+    const { result } = renderHook(() => useEventOperations(false));
+
+    await act(async () => {
+      await result.current.deleteEvent(events[0].id);
+    });
+
+    expect(mockToast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정 삭제 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
 });
