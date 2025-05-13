@@ -2,6 +2,7 @@ import realEventJson from '../../__mocks__/response/realEvents.json';
 import { Event } from '../../types';
 import {
   areDateArraysEqual,
+  formatWeek,
   getDaysInMonth,
   getEventsForDay,
   getWeekDates,
@@ -178,17 +179,35 @@ describe('getEventsForDay', () => {
 });
 
 describe('formatWeek', () => {
-  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2025-05-14'));
+    expect(result).toBe('2025년 5월 3주');
+  });
 
-  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2025-05-02'));
+    expect(result).toBe('2025년 5월 1주');
+  });
 
-  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2025-05-31'));
+    expect(result).toBe('2025년 5월 5주');
+  });
 
-  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2021-01-04')); // 월요일
+    expect(result).toBe('2021년 1월 1주');
+  });
 
-  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2024-02-29')); // 목요일
+    expect(result).toBe('2024년 2월 5주');
+  });
 
-  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
+  it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
+    const result = formatWeek(new Date('2025-02-28')); // 금요일
+    expect(result).toBe('2025년 2월 4주');
+  });
 });
 
 describe('formatMonth', () => {
