@@ -428,6 +428,7 @@ function App() {
             />
             <Select
               aria-label="view"
+              data-testid="view-select"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
             >
@@ -459,7 +460,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                key={event.id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+                data-testid={`event-card-${event.id}`}
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
@@ -502,11 +510,13 @@ function App() {
                     <IconButton
                       aria-label="Edit event"
                       icon={<EditIcon />}
+                      data-testid={`event-edit-button-${event.id}`}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
+                      data-testid={`event-delete-button-${event.id}`}
                       onClick={() => deleteEvent(event.id)}
                     />
                   </HStack>
