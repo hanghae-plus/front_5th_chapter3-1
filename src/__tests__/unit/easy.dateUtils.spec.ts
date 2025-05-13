@@ -10,6 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { getFollowing7Days } from '../utils';
 
 describe('getDaysInMonth', () => {
   it('1월에 대해 31일을 반환한다', () => {
@@ -41,15 +42,7 @@ describe('getDaysInMonth', () => {
 describe('getWeekDates', () => {
   it('주중의 날짜(수요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2025, 4, 7);
-    const weekDates = [
-      new Date(2025, 4, 4),
-      new Date(2025, 4, 5),
-      new Date(2025, 4, 6),
-      new Date(2025, 4, 7),
-      new Date(2025, 4, 8),
-      new Date(2025, 4, 9),
-      new Date(2025, 4, 10),
-    ];
+    const weekDates = getFollowing7Days(new Date(2025, 4, 4));
 
     expect(new Date(date).getDay()).toBe(3);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
@@ -57,15 +50,7 @@ describe('getWeekDates', () => {
 
   it('주의 시작(월요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2025, 3, 7);
-    const weekDates = [
-      new Date(2025, 3, 6),
-      new Date(2025, 3, 7),
-      new Date(2025, 3, 8),
-      new Date(2025, 3, 9),
-      new Date(2025, 3, 10),
-      new Date(2025, 3, 11),
-      new Date(2025, 3, 12),
-    ];
+    const weekDates = getFollowing7Days(new Date(2025, 3, 6));
 
     expect(new Date(date).getDay()).toBe(1);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
@@ -73,15 +58,7 @@ describe('getWeekDates', () => {
 
   it('주의 끝(일요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2025, 2, 9);
-    const weekDates = [
-      new Date(2025, 2, 9),
-      new Date(2025, 2, 10),
-      new Date(2025, 2, 11),
-      new Date(2025, 2, 12),
-      new Date(2025, 2, 13),
-      new Date(2025, 2, 14),
-      new Date(2025, 2, 15),
-    ];
+    const weekDates = getFollowing7Days(new Date(2025, 2, 9));
 
     expect(new Date(date).getDay()).toBe(0);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
@@ -89,60 +66,28 @@ describe('getWeekDates', () => {
 
   it('연도를 넘어가는 주의 날짜(연말)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2024, 11, 31);
-    const weekDates = [
-      new Date(2024, 11, 29),
-      new Date(2024, 11, 30),
-      new Date(2024, 11, 31),
-      new Date(2025, 0, 1),
-      new Date(2025, 0, 2),
-      new Date(2025, 0, 3),
-      new Date(2025, 0, 4),
-    ];
+    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('연도를 넘어가는 주의 날짜(연초)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2025, 0, 1);
-    const weekDates = [
-      new Date(2024, 11, 29),
-      new Date(2024, 11, 30),
-      new Date(2024, 11, 31),
-      new Date(2025, 0, 1),
-      new Date(2025, 0, 2),
-      new Date(2025, 0, 3),
-      new Date(2025, 0, 4),
-    ];
+    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('윤년의 2월 29일을 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date(2025, 0, 1);
-    const weekDates = [
-      new Date(2024, 11, 29),
-      new Date(2024, 11, 30),
-      new Date(2024, 11, 31),
-      new Date(2025, 0, 1),
-      new Date(2025, 0, 2),
-      new Date(2025, 0, 3),
-      new Date(2025, 0, 4),
-    ];
+    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('월의 마지막 날짜를 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다.', () => {
     const date = new Date(2024, 1, 29);
-    const weekDates = [
-      new Date(2024, 1, 25),
-      new Date(2024, 1, 26),
-      new Date(2024, 1, 27),
-      new Date(2024, 1, 28),
-      new Date(2024, 1, 29),
-      new Date(2024, 2, 1),
-      new Date(2024, 2, 2),
-    ];
+    const weekDates = getFollowing7Days(new Date(2024, 1, 25));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
