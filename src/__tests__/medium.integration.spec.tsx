@@ -1,8 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { render, screen, within, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 
 import {
   setupMockHandlerCreation,
@@ -11,8 +9,7 @@ import {
 } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
-import { Event, EventForm } from '../types';
-import { formatDate } from '../utils/dateUtils';
+import { Event } from '../types';
 
 const MOCK_EVENTS: Event[] = [
   {
