@@ -3,8 +3,6 @@ import { act, renderHook } from '@testing-library/react';
 import { events } from '../../__mocks__/response/events.json';
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event, RepeatType } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
 
 const SEC_IN_MS = 1000;
 const ONE_MINUTE = SEC_IN_MS * 60;
