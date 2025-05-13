@@ -7,6 +7,7 @@ export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: st
   return events.filter((event) => {
     const eventStart = new Date(`${event.date}T${event.startTime}`);
     const timeDiff = (eventStart.getTime() - now.getTime()) / 분;
+
     return timeDiff > 0 && timeDiff <= event.notificationTime && !notifiedEvents.includes(event.id);
   });
 }
