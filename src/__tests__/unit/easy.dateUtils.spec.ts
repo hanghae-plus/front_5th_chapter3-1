@@ -3,6 +3,7 @@ import { Event } from '../../types';
 import {
   areDateArraysEqual,
   fillZero,
+  formatDate,
   formatWeek,
   getDaysInMonth,
   getEventsForDay,
@@ -287,16 +288,28 @@ describe('fillZero', () => {
   });
 
   test('value가 지정된 size보다 큰 자릿수를 가지면 원래 값을 그대로 반환한다', () => {
-    expect(fillZero(1111, 2)).toBe('1234');
+    expect(fillZero(1111, 2)).toBe('1111');
   });
 });
 
 describe('formatDate', () => {
-  it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {});
+  it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {
+    const date = new Date('2025-05-15');
+    expect(formatDate(date)).toBe('2025-05-15');
+  });
 
-  it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {});
+  it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {
+    const date = new Date('2025-05-01');
+    expect(formatDate(date, 20)).toBe('2025-05-20');
+  });
 
-  it('월이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {});
+  it('월이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
+    const date = new Date('2025-05-10');
+    expect(formatDate(date)).toBe('2025-05-10');
+  });
 
-  it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {});
+  it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
+    const date = new Date('2025-05-04');
+    expect(formatDate(date)).toBe('2025-05-04');
+  });
 });
