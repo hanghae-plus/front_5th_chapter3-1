@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useSearch } from '../../hooks/useSearch.ts';
+import { useSearch } from '../../features/search/models/useSearch.ts';
 import { Event } from '../../types.ts';
 
 it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {});
