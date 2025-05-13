@@ -211,7 +211,19 @@ describe('일정 뷰', () => {
     vi.useRealTimers();
   });
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    vi.setSystemTime('2025-04-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const viewSelector = screen.getByTestId('view-selector');
+    await user.selectOptions(viewSelector, 'month');
+
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+
+    vi.useRealTimers();
+  });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
 
