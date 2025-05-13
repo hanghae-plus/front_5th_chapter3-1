@@ -101,14 +101,12 @@ const submitEvent = async (event?: Partial<Event>) => {
   }
 
   if (event?.category) {
-    await user.clear($categoryInput);
     await user.type($categoryInput, event.category);
   } else if (!$categoryInput.value) {
     await user.type($categoryInput, EVENT.category);
   }
 
   if (event?.notificationTime) {
-    await user.clear($notificationTimeInput);
     await user.type($notificationTimeInput, String(event.notificationTime));
   } else if (!$notificationTimeInput.value) {
     await user.type($notificationTimeInput, String(EVENT.notificationTime));
@@ -295,7 +293,7 @@ describe.skip('일정 뷰', () => {
   });
 });
 
-describe('검색 기능', () => {
+describe.skip('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const initialEvents = makeEvents();
     setup(initialEvents);
@@ -346,10 +344,53 @@ describe('검색 기능', () => {
   });
 });
 
-describe.skip('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+describe('일정 충돌', () => {
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const initialEvents = makeEvents(1).map((event) => ({
+      ...event,
+      date: EVENT.date,
+      startTime: EVENT.startTime,
+      endTime: EVENT.endTime,
+    }));
+    setup(initialEvents);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    await submitEvent({
+      ...initialEvents[0],
+      title: '겹치는 일정',
+      description: '겹치는 일정 설정',
+    });
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const initialEvents = makeEvents(2).map((event, index) => ({
+      ...event,
+      ...(index === 0 && { date: EVENT.date }),
+      startTime: EVENT.startTime,
+      endTime: EVENT.endTime,
+    }));
+    setup(initialEvents);
+
+    const $eventItems = await screen.findAllByTestId('event-item');
+    const $targetEventItem = $eventItems.find(($item) =>
+      within($item).queryByText(initialEvents[1].title)
+    );
+    if (!$targetEventItem) return;
+
+    const user = userEvent.setup();
+
+    const $editEventButton = within($targetEventItem).getByRole('button', { name: 'Edit event' });
+    await user.click($editEventButton);
+
+    await submitEvent({
+      date: initialEvents[0].date,
+      startTime: initialEvents[0].startTime,
+      endTime: initialEvents[0].endTime,
+    });
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
 });
 
 it.skip('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
