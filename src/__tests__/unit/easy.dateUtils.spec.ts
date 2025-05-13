@@ -1,4 +1,9 @@
-import { areDateArraysEqual, getDaysInMonth, getWeekDates } from '../../utils/dateUtils';
+import {
+  areDateArraysEqual,
+  getDaysInMonth,
+  getWeekDates,
+  getWeeksAtMonth,
+} from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -124,7 +129,12 @@ describe('getWeekDates', () => {
 });
 
 describe('getWeeksAtMonth', () => {
-  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
+  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {
+    const result = getWeeksAtMonth(new Date('2025-07-01'));
+
+    expect(result.length).toBe(5);
+    expect(result.every((week) => week.length === 7)).toBe(true);
+  });
 });
 
 describe('getEventsForDay', () => {
