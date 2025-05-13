@@ -24,13 +24,16 @@ vi.mock('@chakra-ui/react', async (importOriginal) => {
 });
 
 beforeEach(() => {
+  setupMockHandlerCreation(eventsForTest);
+});
+
+afterEach(() => {
   mockToastInstance.mockClear();
 });
 
 const eventsForTest = allEventDataFromFile.events as Event[];
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
-  setupMockHandlerCreation(eventsForTest);
   const { result } = renderHook(() => useEventOperations(true));
 
   await waitFor(() => {
