@@ -1,16 +1,64 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor, fireEvent } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
-import { Event } from '../types';
+import { Event, EventForm } from '../types';
+import { formatDate } from '../utils/dateUtils';
+
+const renderApp = () => {
+  return render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
+
+beforeEach(() => {
+  vi.setSystemTime('2025-05-01');
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('일정 CRUD 및 기본 기능', () => {
+  // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const user = userEvent.setup();
+    setupMockHandlerCreation();
+    renderApp();
+
+    const NEW_EVENT_FORM = {
+      title: '테스트 이벤트 1',
+      date: '2025-05-13',
+      startTime: '12:00',
+      endTime: '14:30',
+      description: '테스트 이벤트 설명',
+      location: '테스트 이벤트 장소',
+      category: '업무',
+    };
+
+    await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
+    await user.type(screen.getByLabelText('날짜'), NEW_EVENT_FORM.date);
+    await user.type(screen.getByLabelText('시작 시간'), NEW_EVENT_FORM.startTime);
+    await user.type(screen.getByLabelText('종료 시간'), NEW_EVENT_FORM.endTime);
+    await user.type(screen.getByLabelText('설명'), NEW_EVENT_FORM.description);
+    await user.type(screen.getByLabelText('위치'), NEW_EVENT_FORM.location);
+    await user.selectOptions(screen.getByLabelText('카테고리'), NEW_EVENT_FORM.category);
+
+    const submitButton = screen.getByTestId('event-submit-button');
+    await user.click(submitButton);
+    const eventList = await screen.findByTestId('event-list');
+    await waitFor(() => {
+      expect(within(eventList).getByText(NEW_EVENT_FORM.title)).toBeInTheDocument();
+      expect(within(eventList).getByText(NEW_EVENT_FORM.date)).toBeInTheDocument();
+    });
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
