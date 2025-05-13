@@ -106,7 +106,7 @@ describe('일정 CRUD 및 기본 기능', () => {
       date: '2025-05-13',
       startTime: '12:00',
       endTime: '14:30',
-      description: '테스트 이벤트 설명1111',
+      description: '테스트 이벤트 설명',
       location: '테스트 이벤트 장소',
       category: '업무',
     };
@@ -311,7 +311,36 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    // mock data 첫번째 이벤트와 겹침
+    const NEW_EVENT_FORM = {
+      title: '중복 테스트 이벤트',
+      date: '2025-05-20',
+      startTime: '10:10',
+      endTime: '10:50',
+      description: '중복 테스트',
+      location: '테스트 이벤트 장소',
+      category: '업무',
+    };
+
+    await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
+    await user.type(screen.getByLabelText('날짜'), NEW_EVENT_FORM.date);
+    await user.type(screen.getByLabelText('시작 시간'), NEW_EVENT_FORM.startTime);
+    await user.type(screen.getByLabelText('종료 시간'), NEW_EVENT_FORM.endTime);
+    await user.type(screen.getByLabelText('설명'), NEW_EVENT_FORM.description);
+    await user.type(screen.getByLabelText('위치'), NEW_EVENT_FORM.location);
+    await user.selectOptions(screen.getByLabelText('카테고리'), NEW_EVENT_FORM.category);
+
+    const submitButton = screen.getByTestId('event-submit-button');
+    await user.click(submitButton);
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
 });
