@@ -287,61 +287,41 @@ describe('검색 기능', () => {
   });
 
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    vi.setSystemTime('2025-06-01');
+    setupMockHandlerCreation([...mockEvents]);
     const { user } = setup(<App />);
-    const form = {
-      title: '디자인 리뷰 회의',
-      date: '2025-05-30',
-      startTime: '14:00',
-      endTime: '15:30',
-      description: '디자인 팀과의 리뷰 미팅',
-      location: '회의실 D',
-      category: '업무',
-    };
 
-    await saveSchedule(user, form);
+    await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '없는 일정');
 
-    await user.type(screen.getByPlaceholderText('검색'), '없는 일정');
-
-    expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
   });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    vi.setSystemTime('2025-05-01');
+    setupMockHandlerCreation([...mockEvents]);
     const { user } = setup(<App />);
-    const form = {
-      title: '디자인 리뷰 회의',
-      date: '2025-05-30',
-      startTime: '14:00',
-      endTime: '15:30',
-      description: '디자인 팀과의 리뷰 미팅',
-      location: '회의실 D',
-      category: '업무',
-    };
 
-    await saveSchedule(user, form);
+    await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '팀 회의');
 
-    await user.type(screen.getByPlaceholderText('검색'), '디자인 리뷰 회의');
-
-    expect(screen.getByText('디자인 리뷰 회의')).toBeInTheDocument();
+    const list = await screen.findByTestId('event-list');
+    expect(within(list).getByText('팀 회의')).toBeInTheDocument();
   });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    vi.setSystemTime('2025-05-01');
+    setupMockHandlerCreation([...mockEvents]);
     const { user } = setup(<App />);
-    const form = {
-      title: '디자인 리뷰 회의',
-      date: '2025-05-30',
-      startTime: '14:00',
-      endTime: '15:30',
-      description: '디자인 팀과의 리뷰 미팅',
-      location: '회의실 D',
-      category: '업무',
-    };
 
-    await saveSchedule(user, form);
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+    await user.clear(searchInput);
 
-    await user.type(screen.getByPlaceholderText('검색'), '디자인 리뷰 회의');
-    await user.clear(screen.getByPlaceholderText('검색'));
-
-    expect(screen.getByText('디자인 리뷰 회의')).toBeInTheDocument();
+    const list = await screen.findByTestId('event-list');
+    expect(within(list).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(list).getByText('점심 약속')).toBeInTheDocument();
+    expect(within(list).getByText('프로젝트 마감')).toBeInTheDocument();
+    expect(within(list).getByText('생일 파티')).toBeInTheDocument();
+    expect(within(list).getByText('운동')).toBeInTheDocument();
   });
 });
 
