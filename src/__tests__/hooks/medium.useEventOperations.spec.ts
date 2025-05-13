@@ -137,6 +137,32 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
   expect(result.current.events).toEqual([]);
 });
 
-it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {});
+it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+  server.use(...setupMockHandlerUpdating(events as Event[]));
+  const { result } = renderHook(() => useEventOperations(true));
+
+  const event = events[0] as Event;
+
+  const updatedEvent: Event = {
+    ...event,
+    id: '2',
+    title: '업데이트한 이벤트',
+  };
+
+  act(() => {
+    result.current.saveEvent(updatedEvent);
+  });
+
+  await waitFor(() => {
+    expect(mockToast).toHaveBeenCalledWith({
+      title: '일정 저장 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  });
+
+  expect(result.current.events).toEqual(events);
+});
 
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {});
