@@ -23,10 +23,11 @@ export const handlers = [
 
   http.post('/api/events', async ({ request }) => {
     const { ...rest } = (await request.json()) as Event;
+    const newEvent = { ...rest, id: String(events.length + 1) };
 
-    setupMockHandlerAdding([rest]);
+    setupMockHandlerAdding([newEvent]);
     return HttpResponse.json({
-      events: [...events, rest],
+      events: [...events, newEvent],
     });
   }),
 
