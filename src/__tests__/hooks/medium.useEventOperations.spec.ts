@@ -62,7 +62,26 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   });
 });
 
-it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
+it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
+  server.use(...setupMockHandlerUpdating(events as Event[]));
+  const { result } = renderHook(() => useEventOperations(true));
+
+  const originalEvent = events[0] as Event;
+
+  const updatedEvent: Event = {
+    ...originalEvent,
+    title: '업데이트한 이벤트',
+    endTime: ' 13:00',
+  };
+
+  act(() => {
+    result.current.saveEvent(updatedEvent);
+  });
+
+  await waitFor(() => {
+    expect(result.current.events[0]).toEqual(updatedEvent);
+  });
+});
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {});
 
