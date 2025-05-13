@@ -1,10 +1,11 @@
-import { EventForm } from '../types';
+import { Event, EventForm } from '../types';
 
-export function createTestEvent(overrides: Partial<EventForm> = {}): EventForm {
+export function createTestEvent(overrides: Partial<EventForm & { id?: string }> = {}): Event {
   return {
+    id: overrides.id ?? Math.random().toString(),
     date: '2025-07-01',
-    startTime: '09:00',
-    endTime: '10:00',
+    startTime: '10:00',
+    endTime: '11:00',
     title: '',
     description: '',
     location: '',

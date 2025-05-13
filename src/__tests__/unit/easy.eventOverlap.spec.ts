@@ -1,4 +1,9 @@
-import { convertEventToDateRange, isOverlapping, parseDateTime } from '../../utils/eventOverlap';
+import {
+  convertEventToDateRange,
+  findOverlappingEvents,
+  isOverlapping,
+  parseDateTime,
+} from '../../utils/eventOverlap';
 import { createTestEvent } from '../../utils/testUtils';
 
 describe('parseDateTime', () => {
@@ -81,7 +86,38 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const existingEvents = [
+      createTestEvent({ id: '1', startTime: '09:00', endTime: '10:30' }), // 겹침
+      createTestEvent({ id: '2', startTime: '11:00', endTime: '12:00' }), // 겹치지 않음
+      createTestEvent({ id: '3', startTime: '10:15', endTime: '10:45' }), // 겹침
+    ];
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+    const newEvent = createTestEvent({
+      id: 'new',
+      startTime: '10:00',
+      endTime: '11:00',
+    });
+
+    const result = findOverlappingEvents(newEvent, existingEvents);
+    const resultIds = result.map((e) => e.id);
+
+    expect(resultIds).toEqual(['1', '3']);
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const existingEvents = [
+      createTestEvent({ id: '1', startTime: '08:00', endTime: '09:00' }),
+      createTestEvent({ id: '2', startTime: '11:00', endTime: '12:00' }),
+    ];
+
+    const newEvent = createTestEvent({
+      id: 'new',
+      startTime: '09:15',
+      endTime: '09:45',
+    });
+
+    const result = findOverlappingEvents(newEvent, existingEvents);
+    expect(result).toEqual([]);
+  });
 });
