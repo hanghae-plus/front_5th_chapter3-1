@@ -111,7 +111,19 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
   expect(otherEvents).toEqual(expectedOtherEvents);
 });
 
-it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {});
+it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
+  const initEvents = [...events] as Event[];
+  setupMockHandlerCreation(initEvents);
+
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await act(async () => {
+    await result.current.deleteEvent(initEvents[0].id);
+  });
+
+  expect(result.current.events.length).toBe(initEvents.length - 1);
+  expect(result.current.events).not.toContain(initEvents[0]);
+});
 
 it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {});
 
