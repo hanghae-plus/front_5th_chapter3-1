@@ -120,7 +120,22 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
   });
 });
 
-it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {});
+it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+  server.use(http.get('/api/events', () => HttpResponse.error()));
+
+  const { result } = renderHook(() => useEventOperations(false));
+
+  await waitFor(() => {
+    expect(mockToast).toHaveBeenCalledWith({
+      title: '이벤트 로딩 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  });
+
+  expect(result.current.events).toEqual([]);
+});
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {});
 
