@@ -6,8 +6,10 @@ import { createMockHandlersUtils } from './__mocks__/handlersUtils';
 import { events } from './__mocks__/response/events.json' assert { type: 'json' };
 import { Event } from './types';
 
-const server = setupServer(); // 핸들러 없이 먼저 생성
+const server = setupServer();
 export { server };
+
+let mockUtils: ReturnType<typeof createMockHandlersUtils>;
 
 beforeAll(() => {
   // 테스트 환경에서 MSW 서버를 시작
@@ -18,7 +20,7 @@ beforeEach(() => {
   // 테스트 내에 expect가 실행되지 않으면 fail시키는 메서드
   expect.hasAssertions();
   // 각 테스트마다 mockUtils와 핸들러를 새로 생성
-  const mockUtils = createMockHandlersUtils(events as Event[]);
+  mockUtils = createMockHandlersUtils(events as Event[]);
   server.resetHandlers(...createHandlers(mockUtils));
 });
 

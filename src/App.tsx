@@ -532,7 +532,7 @@ function App() {
         leastDestructiveRef={cancelRef}
         onClose={() => setIsOverlapDialogOpen(false)}
       >
-        <AlertDialogOverlay>
+        <AlertDialogOverlay data-testid="overlap-dialog">
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               일정 겹침 경고

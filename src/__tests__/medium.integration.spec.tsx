@@ -1,12 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor, fireEvent } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
+import { render, screen, within, waitFor, fireEvent } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
 
 import App from '../App';
 import { server } from '../setupTests';
-import { Event } from '../types';
+import { EventForm } from '../types';
 
 const renderApp = () => {
   return render(
@@ -342,9 +341,141 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const user = userEvent.setup();
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    renderApp();
+
+    const NEW_EVENT = createCurrentMonthEvent('새로운 일정');
+
+    await addOrUpdateEvent(user, NEW_EVENT);
+
+    const items = screen.getAllByText('새로운 일정');
+    expect(items.length).toBeGreaterThan(0);
+
+    const OVERLAP_EVENT = createCurrentMonthEvent('겹치는 일정');
+
+    // 각 input을 직접 비우고 type으로 입력
+    const titleInput = screen.getByLabelText(/제목/i);
+    const dateInput = screen.getByLabelText(/날짜/i);
+    const startTimeInput = screen.getByLabelText(/시작 시간/i);
+    const endTimeInput = screen.getByLabelText(/종료 시간/i);
+    const descriptionInput = screen.getByLabelText(/설명/i);
+
+    // 커스텀 컴포넌트에서는 jsdom 환경에서 focus/clear가 제대로 동작하지 않을 수 있다.
+    // fireEvent로 강제로 값과 change 이벤트 발생시켜서 input을 비운다.
+    fireEvent.change(titleInput, { target: { value: '' } });
+    await user.type(titleInput, OVERLAP_EVENT.title);
+
+    fireEvent.change(dateInput, { target: { value: '' } });
+    await user.type(dateInput, OVERLAP_EVENT.date);
+
+    fireEvent.change(startTimeInput, { target: { value: '' } });
+    await user.type(startTimeInput, OVERLAP_EVENT.startTime);
+
+    fireEvent.change(endTimeInput, { target: { value: '' } });
+    await user.type(endTimeInput, OVERLAP_EVENT.endTime);
+
+    fireEvent.change(descriptionInput, { target: { value: '' } });
+    await user.type(descriptionInput, OVERLAP_EVENT.description);
+
+    const saveButton = screen.getByTestId('event-submit-button');
+    await user.click(saveButton);
+
+    const overlapDialog = await waitFor(() => screen.getByTestId('overlap-dialog'));
+
+    expect(overlapDialog).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const user = userEvent.setup();
+
+    renderApp();
+
+    // 첫 번째 일정 등록
+    const FIRST_EVENT = createCurrentMonthEvent('첫 번째 일정');
+    await addOrUpdateEvent(user, FIRST_EVENT);
+
+    // 두 번째 일정 등록
+    const SECOND_EVENT = {
+      title: '두 번째 일정',
+      date: '2025-05-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '두 번째 일정 설명',
+    };
+
+    await addOrUpdateEvent(user, SECOND_EVENT);
+
+    // 첫 번째 일정 수정 버튼 클릭
+    const eventList = screen.getByTestId('event-list');
+    const eventItem = within(eventList).getByText(FIRST_EVENT.title).closest('div');
+    const parent = eventItem?.parentElement;
+    const parentDiv = parent?.parentElement;
+    const editButton = within(parentDiv!).getByRole('button', { name: 'Edit event' });
+    const editButtonTestId = editButton.getAttribute('data-testid');
+    const id = editButtonTestId?.split('-').pop();
+
+    const editButtonById = screen.getByTestId(`edit-event-button-${id}`);
+    await user.click(editButtonById);
+
+    // 두 번째 일정과 겹치는 시간으로 수정
+    const titleInput = screen.getByLabelText(/제목/i);
+    const dateInput = screen.getByLabelText(/날짜/i);
+    const startTimeInput = screen.getByLabelText(/시작 시간/i);
+    const endTimeInput = screen.getByLabelText(/종료 시간/i);
+    const descriptionInput = screen.getByLabelText(/설명/i);
+
+    fireEvent.change(titleInput, { target: { value: '' } });
+    await user.type(titleInput, FIRST_EVENT.title);
+
+    fireEvent.change(dateInput, { target: { value: '' } });
+    await user.type(dateInput, SECOND_EVENT.date);
+
+    fireEvent.change(startTimeInput, { target: { value: '' } });
+    await user.type(startTimeInput, SECOND_EVENT.startTime);
+
+    fireEvent.change(endTimeInput, { target: { value: '' } });
+    await user.type(endTimeInput, SECOND_EVENT.endTime);
+
+    fireEvent.change(descriptionInput, { target: { value: '' } });
+    await user.type(descriptionInput, FIRST_EVENT.description);
+
+    const saveButton = screen.getByTestId('event-submit-button');
+    await user.click(saveButton);
+
+    const overlapDialog = await waitFor(() => screen.getByTestId('overlap-dialog'));
+
+    expect(overlapDialog).toBeInTheDocument();
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 알림이 노출된다', async () => {
+  renderApp();
+
+  const user = userEvent.setup();
+
+  // 현재 시간 기준으로 10분 후 일정 생성
+  const TEST_TIME = 10;
+  const now = new Date();
+  const tenMinutesLater = new Date(now.getTime() + TEST_TIME * 60 * 1000);
+
+  const event: EventForm = {
+    title: '알림 테스트',
+    date: tenMinutesLater.toISOString().split('T')[0], // YYYY-MM-DD
+    startTime: tenMinutesLater.toTimeString().slice(0, 5), // HH:mm
+    endTime: new Date(tenMinutesLater.getTime() + 60 * 60 * 1000).toTimeString().slice(0, 5), // 1시간 후
+    description: '알림 테스트 설명',
+    notificationTime: TEST_TIME,
+    location: '',
+    category: '',
+    repeat: { type: 'none', interval: 0 },
+  };
+
+  await addOrUpdateEvent(user, event);
+
+  await waitFor(() => {
+    const alertBox = document.querySelector('[role="alert"]');
+    expect(alertBox?.textContent).toMatch(`${TEST_TIME}분 후 ${event.title} 일정이 시작됩니다`);
+  });
+});
