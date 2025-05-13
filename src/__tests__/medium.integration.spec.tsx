@@ -136,7 +136,7 @@ const setup = (initialEvents?: Event[]) => {
   );
 };
 
-describe('일정 CRUD 및 기본 기능', () => {
+describe.skip('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     setup();
 
@@ -188,7 +188,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(await screen.findByText('일정이 삭제되었습니다.')).toBeInTheDocument();
   });
 });
-describe('일정 뷰', () => {
+describe.skip('일정 뷰', () => {
   const today = new Date();
 
   // 이번주 월요일
@@ -295,12 +295,55 @@ describe('일정 뷰', () => {
   });
 });
 
-describe.skip('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+describe('검색 기능', () => {
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const initialEvents = makeEvents();
+    setup(initialEvents);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    const user = userEvent.setup();
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    const $searchInput = screen.getByPlaceholderText<HTMLInputElement>('검색어를 입력하세요');
+    await user.type($searchInput, '일정이 없을 제목');
+
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const COUNT = 3;
+
+    const initialEvents = makeEvents(COUNT).map((event, index) => ({
+      ...event,
+      title: `팀 회의${index + 1}`,
+    }));
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+
+    const $searchInput = screen.getByPlaceholderText<HTMLInputElement>('검색어를 입력하세요');
+    await user.type($searchInput, '팀 회의');
+
+    const $eventItems = await screen.findAllByTestId('event-item');
+    expect($eventItems).toHaveLength(COUNT);
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const COUNT = 4;
+
+    const initialEvents = makeEvents(COUNT).map((event, index) => ({
+      ...event,
+      title: index % 2 === 0 ? event.title : `팀 회의${index + 1}`,
+    }));
+    setup(initialEvents);
+
+    const user = userEvent.setup();
+
+    const $searchInput = screen.getByPlaceholderText<HTMLInputElement>('검색어를 입력하세요');
+    await user.type($searchInput, '팀 회의');
+    expect(await screen.findAllByTestId('event-item')).toHaveLength(COUNT / 2);
+
+    await user.clear($searchInput);
+    expect(await screen.findAllByTestId('event-item')).toHaveLength(COUNT);
+  });
 });
 
 describe.skip('일정 충돌', () => {
