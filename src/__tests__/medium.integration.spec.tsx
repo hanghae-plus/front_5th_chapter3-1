@@ -8,45 +8,124 @@ import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
 import type { Event } from '../types';
+import { EVENT, EVENT_CATEGORIES, REPEAT_TYPES } from './constants';
 
-const createEvent = async (event?: Partial<Event>, isDebug = false) => {
+const INITIAL_EVENTS: Event[] = Array(1)
+  .fill(null)
+  .map((_, index) => ({
+    id: String(index + 1),
+    title: `첫 번째 일정 - ${index + 1}`,
+    description: `첫 번째 일정 설명 - ${index + 1}`,
+    date: new Date(2025, 4, index + 1).toISOString(),
+    startTime: '00:00',
+    endTime: '01:00',
+    location: '서울',
+    category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
+    notificationTime: new Date().getTime(),
+    repeat: {
+      type: REPEAT_TYPES[index % REPEAT_TYPES.length],
+      interval: 1,
+      endDate: new Date(2025, 4, index + 1).toISOString(),
+    },
+  }));
+
+const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
   const user = userEvent.setup();
 
-  const $titleInput = screen.getByLabelText('제목');
-  const $dateInput = screen.getByLabelText('날짜');
-  const $startTimeInput = screen.getByLabelText('시작 시간');
-  const $endTimeInput = screen.getByLabelText('종료 시간');
-  const $descriptionInput = screen.getByLabelText('설명');
-  const $locationInput = screen.getByLabelText('위치');
-  const $categoryInput = screen.getByLabelText('카테고리');
-  const $isRepeatingInput = screen.getByLabelText('반복 설정');
-  const $notificationTimeInput = screen.getByLabelText('알림 설정');
-  const $repeatTypeInput = screen.getByLabelText('반복 유형');
-  const $repeatIntervalInput = screen.getByLabelText('반복 간격');
-  const $repeatEndDateInput = screen.getByLabelText('반복 종료일');
-  const $addButton = screen.getByTestId('event-submit-button');
+  const $titleInput = screen.getByLabelText<HTMLInputElement>('제목');
+  const $dateInput = screen.getByLabelText<HTMLInputElement>('날짜');
+  const $startTimeInput = screen.getByLabelText<HTMLInputElement>('시작 시간');
+  const $endTimeInput = screen.getByLabelText<HTMLInputElement>('종료 시간');
+  const $descriptionInput = screen.getByLabelText<HTMLInputElement>('설명');
+  const $locationInput = screen.getByLabelText<HTMLInputElement>('위치');
+  const $categoryInput = screen.getByLabelText<HTMLInputElement>('카테고리');
+  const $notificationTimeInput = screen.getByLabelText<HTMLInputElement>('알림 설정');
+  const $submitButton = screen.getByTestId<HTMLButtonElement>('event-submit-button');
 
-  await user.type($titleInput, event?.title ?? '내가 만든 제목');
-  await user.type($dateInput, event?.date ?? '2025-05-15');
-  await user.type($startTimeInput, event?.startTime ?? '00:00');
-  await user.type($endTimeInput, event?.endTime ?? '10:00');
-  await user.type($descriptionInput, event?.description ?? '내가 만든 설명');
-  await user.type($locationInput, event?.location ?? '내가 만든 위치');
-  await user.type($categoryInput, event?.category ?? '내가 만든 카테고리');
-  await user.type($isRepeatingInput, event?.repeat?.type ?? '반복');
-  await user.type($notificationTimeInput, String(event?.notificationTime ?? 10));
-  await user.type($repeatTypeInput, event?.repeat?.type ?? '매일');
-  await user.type($repeatIntervalInput, String(event?.repeat?.interval ?? 1));
-  await user.type($repeatEndDateInput, event?.repeat?.endDate ?? '2025-05-15');
-  await user.click($addButton);
+  const $isRepeatingCheckbox = screen.getByLabelText<HTMLInputElement>('반복 설정');
+  if (!$isRepeatingCheckbox.checked) {
+    await user.click($isRepeatingCheckbox);
+  }
+
+  const $repeatTypeInput = screen.getByLabelText<HTMLInputElement>('반복 유형');
+  const $repeatIntervalInput = screen.getByLabelText<HTMLInputElement>('반복 간격');
+  const $repeatEndDateInput = screen.getByLabelText<HTMLInputElement>('반복 종료일');
+
+  if (event?.title) {
+    await user.clear($titleInput);
+    await user.type($titleInput, event.title);
+  } else if (!$titleInput.value) {
+    await user.type($titleInput, EVENT.title);
+  }
+
+  if (event?.date) {
+    await user.clear($dateInput);
+    await user.type($dateInput, event.date);
+  } else if (!$dateInput.value) {
+    await user.type($dateInput, EVENT.date);
+  }
+
+  if (event?.startTime) {
+    await user.clear($startTimeInput);
+    await user.type($startTimeInput, event.startTime);
+  } else if (!$startTimeInput.value) {
+    await user.type($startTimeInput, EVENT.startTime);
+  }
+
+  if (event?.endTime) {
+    await user.clear($endTimeInput);
+    await user.type($endTimeInput, event.endTime);
+  } else if (!$endTimeInput.value) {
+    await user.type($endTimeInput, EVENT.endTime);
+  }
+
+  if (event?.description) {
+    await user.clear($descriptionInput);
+    await user.type($descriptionInput, event.description);
+  } else if (!$descriptionInput.value) {
+    await user.type($descriptionInput, EVENT.description);
+  }
+
+  if (event?.location) {
+    await user.clear($locationInput);
+    await user.type($locationInput, event.location);
+  } else if (!$locationInput.value) {
+    await user.type($locationInput, EVENT.location);
+  }
+
+  if (event?.category) {
+    await user.clear($categoryInput);
+    await user.type($categoryInput, event.category);
+  } else if (!$categoryInput.value) {
+    await user.type($categoryInput, EVENT.category);
+  }
+
+  if (event?.notificationTime) {
+    await user.clear($notificationTimeInput);
+    await user.type($notificationTimeInput, String(event.notificationTime));
+  } else if (!$notificationTimeInput.value) {
+    await user.type($notificationTimeInput, String(EVENT.notificationTime));
+  }
+
+  if (event?.repeat) {
+    await user.type($repeatTypeInput, event.repeat.type);
+    await user.type($repeatIntervalInput, String(event.repeat.interval));
+    await user.type($repeatEndDateInput, event.repeat.endDate ?? EVENT.repeat.endDate);
+  } else if (!$repeatTypeInput.value) {
+    await user.type($repeatTypeInput, EVENT.repeat.type);
+    await user.type($repeatIntervalInput, String(EVENT.repeat.interval));
+    await user.type($repeatEndDateInput, EVENT.repeat.endDate);
+  }
+
+  await user.click($submitButton);
 
   if (isDebug) {
     screen.debug(screen.getByTestId('event-list'));
   }
 };
 
-describe.only('일정 CRUD 및 기본 기능', () => {
-  beforeEach(async () => {
+describe('일정 CRUD 및 기본 기능', () => {
+  beforeEach(() => {
     render(
       <ChakraProvider>
         <App />
@@ -54,19 +133,43 @@ describe.only('일정 CRUD 및 기본 기능', () => {
     );
   });
 
-  it.only('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     setupMockHandlerCreation();
 
     const createdDescription = '내가 만든 설명 - ' + Date.now();
 
-    await createEvent({
-      description: createdDescription,
-    });
+    await submitEvent({ description: createdDescription });
 
     expect(await screen.findByText(createdDescription)).toBeInTheDocument();
   });
 
-  it.skip('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerCreation(INITIAL_EVENTS);
+
+    const createdDescription = '내가 만든 일정 - ' + Date.now();
+    await submitEvent({ description: createdDescription });
+
+    const $eventItems = screen.getAllByTestId('event-item');
+    const $targetEventItem = $eventItems.find(($item) =>
+      within($item).queryByText(createdDescription)
+    );
+
+    if (!$targetEventItem) {
+      console.error(`[${createdDescription}] 설명을 포함하는 event-item을 찾을 수 없습니다.`);
+      screen.debug(undefined, Infinity);
+      return;
+    }
+
+    const user = userEvent.setup();
+
+    const $editEventButton = within($targetEventItem).getByRole('button', { name: 'Edit event' });
+    await user.click($editEventButton);
+
+    const updatedDescription = '내가 수정한 일정 - ' + Date.now();
+    await submitEvent({ description: updatedDescription });
+
+    expect(await screen.findByText(updatedDescription)).toBeInTheDocument();
+  });
 
   it.skip('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
 });
@@ -97,4 +200,4 @@ describe.skip('일정 충돌', () => {
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it.skip('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});

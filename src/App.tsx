@@ -45,7 +45,7 @@ import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { Event, EventCategory, EventForm, RepeatType } from './types';
 import {
   formatDate,
   formatMonth,
@@ -146,7 +146,7 @@ function App() {
       endTime,
       description,
       location,
-      category,
+      category: category as EventCategory,
       repeat: {
         type: isRepeating ? repeatType : 'none',
         interval: repeatInterval,
@@ -459,7 +459,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                key={event.id}
+                data-testid="event-item"
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
@@ -554,7 +561,7 @@ function App() {
                     endTime,
                     description,
                     location,
-                    category,
+                    category: category as EventCategory,
                     repeat: {
                       type: isRepeating ? repeatType : 'none',
                       interval: repeatInterval,
