@@ -1,6 +1,9 @@
+import realEventJson from '../../__mocks__/response/realEvents.json';
+import { Event } from '../../types';
 import {
   areDateArraysEqual,
   getDaysInMonth,
+  getEventsForDay,
   getWeekDates,
   getWeeksAtMonth,
 } from '../../utils/dateUtils';
@@ -138,13 +141,40 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+  const mockEvents = realEventJson.events as Event[];
+  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const customEvents: Event[] = [
+      {
+        id: '1',
+        title: '5월 첫날 회의',
+        date: '2025-05-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '5월 시작 회의',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    const result = getEventsForDay(customEvents, 1);
+    expect(result.map((e) => e.id)).toEqual(['1']);
+  });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(mockEvents, 15);
+    expect(result).toEqual([]);
+  });
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(mockEvents, 0);
+    expect(result).toEqual([]);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const result = getEventsForDay(mockEvents, 32);
+    expect(result).toEqual([]);
+  });
 });
 
 describe('formatWeek', () => {
