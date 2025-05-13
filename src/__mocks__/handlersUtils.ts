@@ -29,10 +29,13 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
       return HttpResponse.json({ events: mockEvents }, { status: 200 });
     }),
 
-    http.put('/api/events/:id', async ({ request, params }) => {
-      const { id } = params;
+    http.put('/api/events/:id', async ({ request }) => {
       const updatedEvent = (await request.json()) as Event;
-      mockEvents = mockEvents.map((event) => (event.id === id ? updatedEvent : event));
+      const hasEvent = mockEvents.some((event) => event.id === updatedEvent.id);
+      if (!hasEvent) {
+        return HttpResponse.json({ success: false }, { status: 404 });
+      }
+      mockEvents = mockEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event));
       return HttpResponse.json({ success: true }, { status: 200 });
     }),
   ];
