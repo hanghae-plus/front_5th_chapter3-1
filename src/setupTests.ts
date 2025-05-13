@@ -5,6 +5,7 @@ import { handlers } from './__mocks__/handlers';
 
 /* msw */
 export const server = setupServer(...handlers);
+
 vi.stubEnv('TZ', 'UTC'); // 타임존 문제 전체 처리
 
 beforeAll(() => {
