@@ -7,6 +7,20 @@ export function getDaysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate();
 }
 
+/** Date객체를 비교하는 헬퍼함수 */
+
+export function areDateArraysEqual(a: Date[], b: Date[]) {
+  if (a.length !== b.length) return false;
+  return a.every((date, i) => {
+    const other = b[i];
+    return (
+      date.getFullYear() === other.getFullYear() &&
+      date.getMonth() === other.getMonth() &&
+      date.getDate() === other.getDate()
+    );
+  });
+}
+
 /**
  * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.
  */
