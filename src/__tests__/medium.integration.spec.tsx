@@ -1,12 +1,9 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { render, screen, within } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import type { Event } from '../types';
 import { EVENT, EVENT_CATEGORIES, REPEAT_TYPES } from './constants';
 
@@ -134,7 +131,7 @@ const setup = (initialEvents?: Event[]) => {
   );
 };
 
-describe.skip('일정 CRUD 및 기본 기능', () => {
+describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     setup();
 
@@ -186,7 +183,7 @@ describe.skip('일정 CRUD 및 기본 기능', () => {
     expect(await screen.findByText('일정이 삭제되었습니다.')).toBeInTheDocument();
   });
 });
-describe.skip('일정 뷰', () => {
+describe('일정 뷰', () => {
   const today = new Date();
 
   // 이번주 월요일
@@ -293,7 +290,7 @@ describe.skip('일정 뷰', () => {
   });
 });
 
-describe.skip('검색 기능', () => {
+describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const initialEvents = makeEvents();
     setup(initialEvents);
@@ -393,4 +390,6 @@ describe('일정 충돌', () => {
   });
 });
 
-it.skip('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it.skip('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  // TODO: 어떻게 해요..?
+});
