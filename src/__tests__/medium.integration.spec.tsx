@@ -281,7 +281,33 @@ describe('검색 기능', () => {
     expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
   });
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    vi.setSystemTime('2025-05-01');
+    const user = userEvent.setup();
+    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    renderApp();
+
+    const searchInput = screen.getByLabelText('일정 검색');
+    await user.type(searchInput, '팀 회의');
+
+    // 검색어에 해당하는 일정만 표시. 나머지는 안나옴
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+    expect(within(eventList).queryByText(MOCK_EVENTS[1].title)).not.toBeInTheDocument();
+    expect(within(eventList).queryByText(MOCK_EVENTS[2].title)).not.toBeInTheDocument();
+    expect(within(eventList).queryByText(MOCK_EVENTS[3].title)).not.toBeInTheDocument();
+    expect(within(eventList).queryByText(MOCK_EVENTS[4].title)).not.toBeInTheDocument();
+
+    await user.clear(searchInput);
+
+    // 검색어를 지우면 모든 일정이 다시 표시됨
+    const newEventList = await screen.findByTestId('event-list');
+    expect(within(newEventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
+    expect(within(newEventList).getByText(MOCK_EVENTS[1].title)).toBeInTheDocument();
+    expect(within(newEventList).getByText(MOCK_EVENTS[2].title)).toBeInTheDocument();
+    expect(within(newEventList).getByText(MOCK_EVENTS[3].title)).toBeInTheDocument();
+    expect(within(newEventList).getByText(MOCK_EVENTS[4].title)).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
