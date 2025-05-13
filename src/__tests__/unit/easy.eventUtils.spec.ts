@@ -83,10 +83,6 @@ describe('getFilteredEvents', () => {
     const view = 'week';
     const filteredEvents = getFilteredEvents(events, searchTerm, currentDate, view);
     expect(filteredEvents.length).toBe(2);
-
-    // const monthView = 'month';
-    // const allEvents = getFilteredEvents(events, searchTerm, currentDate, monthView);
-    // expect(allEvents.length).toBe(3);
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {

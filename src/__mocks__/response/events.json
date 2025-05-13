@@ -11,6 +11,18 @@
       "category": "업무",
       "repeat": { "type": "none", "interval": 0 },
       "notificationTime": 10
+    },
+    {
+      "id": "2",
+      "title": "점심 약속",
+      "date": "2025-10-01",
+      "startTime": "12:00",
+      "endTime": "13:00",
+      "description": "친구와 점심 식사",
+      "location": "수원역",
+      "category": "개인",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 1
     }
   ]
 }
