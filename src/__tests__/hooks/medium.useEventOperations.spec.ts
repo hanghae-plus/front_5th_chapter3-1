@@ -53,7 +53,43 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
   expect(mockToastInstance).toHaveBeenCalledTimes(1);
 });
 
-it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
+it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  const { result } = renderHook(() => useEventOperations(true));
+
+  const newEvent: Event = {
+    id: '1',
+    title: '새로운 이벤트',
+    date: '2025-01-01',
+    startTime: '10:00',
+    endTime: '15:00',
+    description: '새로운 이벤트 설명',
+    location: '새로운 이벤트 장소',
+    category: '새로운 이벤트 카테고리',
+    notificationTime: 0,
+    repeat: {
+      type: 'daily',
+      interval: 1,
+    },
+  };
+  await waitFor(() => {
+    expect(result.current.events).toEqual(eventsForTest);
+  });
+
+  act(() => {
+    result.current.saveEvent(newEvent);
+  });
+
+  console.log(mockToastInstance.);
+  await waitFor(() => {
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정이 추가되었습니다.',
+        status: 'success',
+        duration: 3000,
+      })
+    );
+  });
+});
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
 
