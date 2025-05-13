@@ -10,24 +10,25 @@ import { server } from '../setupTests';
 import type { Event } from '../types';
 import { EVENT, EVENT_CATEGORIES, REPEAT_TYPES } from './constants';
 
-const INITIAL_EVENTS: Event[] = Array(1)
-  .fill(null)
-  .map((_, index) => ({
-    id: String(index + 1),
-    title: `첫 번째 일정 - ${index + 1}`,
-    description: `첫 번째 일정 설명 - ${index + 1}`,
-    date: new Date(2025, 4, index + 1).toISOString(),
-    startTime: '00:00',
-    endTime: '01:00',
-    location: '서울',
-    category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
-    notificationTime: new Date().getTime(),
-    repeat: {
-      type: REPEAT_TYPES[index % REPEAT_TYPES.length],
-      interval: 1,
-      endDate: new Date(2025, 4, index + 1).toISOString(),
-    },
-  }));
+const makeEvents = (count = 2): Event[] =>
+  Array(count)
+    .fill(null)
+    .map((_, index) => ({
+      id: String(index + 1),
+      title: `첫 번째 일정 - ${index + 1}`,
+      description: `첫 번째 일정 설명 - ${index + 1}`,
+      date: new Date(2025, 4, index + 1).toISOString(),
+      startTime: '00:00',
+      endTime: '01:00',
+      location: '서울',
+      category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
+      notificationTime: new Date().getTime(),
+      repeat: {
+        type: REPEAT_TYPES[index % REPEAT_TYPES.length],
+        interval: 1,
+        endDate: new Date(2025, 4, index + 1).toISOString(),
+      },
+    }));
 
 const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
   const user = userEvent.setup();
@@ -125,16 +126,18 @@ const submitEvent = async (event?: Partial<Event>, isDebug = false) => {
 };
 
 describe('일정 CRUD 및 기본 기능', () => {
-  beforeEach(() => {
+  const setup = (initialEvents?: Event[]) => {
+    setupMockHandlerCreation(initialEvents);
+
     render(
       <ChakraProvider>
         <App />
       </ChakraProvider>
     );
-  });
+  };
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    setupMockHandlerCreation();
+    setup();
 
     const createdDescription = '내가 만든 설명 - ' + Date.now();
 
@@ -144,18 +147,16 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    setupMockHandlerCreation(INITIAL_EVENTS);
+    const initialEvents = makeEvents();
+    setup(initialEvents);
 
-    const createdDescription = '내가 만든 일정 - ' + Date.now();
-    await submitEvent({ description: createdDescription });
-
-    const $eventItems = screen.getAllByTestId('event-item');
+    const $eventItems = await screen.findAllByTestId('event-item');
     const $targetEventItem = $eventItems.find(($item) =>
-      within($item).queryByText(createdDescription)
+      within($item).queryByText(initialEvents[0].title)
     );
 
     if (!$targetEventItem) {
-      console.error(`[${createdDescription}] 설명을 포함하는 event-item을 찾을 수 없습니다.`);
+      console.error(`[${initialEvents[0].title}] 제목을 포함하는 event-item을 찾을 수 없습니다.`);
       screen.debug(undefined, Infinity);
       return;
     }
@@ -171,9 +172,31 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(await screen.findByText(updatedDescription)).toBeInTheDocument();
   });
 
-  it.skip('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
-});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const initialEvents = makeEvents();
+    setup(initialEvents);
 
+    const $eventItems = await screen.findAllByTestId('event-item');
+    const $targetEventItem = $eventItems.find(($item) =>
+      within($item).queryByText(initialEvents[0].title)
+    );
+
+    if (!$targetEventItem) {
+      console.error(`[${initialEvents[0].title}] 제목을 포함하는 event-item을 찾을 수 없습니다.`);
+      screen.debug(undefined, Infinity);
+      return;
+    }
+
+    const user = userEvent.setup();
+
+    const $deleteEventButton = within($targetEventItem).getByRole('button', {
+      name: 'Delete event',
+    });
+    await user.click($deleteEventButton);
+
+    expect(await screen.findByText('일정이 삭제되었습니다.')).toBeInTheDocument();
+  });
+});
 describe.skip('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
 

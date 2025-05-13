@@ -49,6 +49,24 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
       return HttpResponse.json({
         events: mockEvents,
       });
+    }),
+    http.delete<FindByIdParams, Event>('/api/events/:id', async ({ params }) => {
+      const deletedEventId = params.id;
+
+      console.group('🚀 DELETE /api/events/:id ( setupMockHandlerCreation )');
+      console.log('🚀 params >> ', params);
+      console.groupEnd();
+
+      const exEventIndex = mockEvents.findIndex((event) => event.id === deletedEventId);
+      if (exEventIndex === -1) {
+        return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+      }
+
+      mockEvents.splice(exEventIndex, 1);
+
+      return HttpResponse.json({
+        events: mockEvents,
+      });
     })
   );
 };
