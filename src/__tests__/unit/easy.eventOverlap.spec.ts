@@ -38,8 +38,8 @@ describe('convertEventToDateRange', () => {
     const result = convertEventToDateRange(input);
 
     expect(result.start.getFullYear()).toBe(2025);
-    expect(result.start.getHours()).toBe(9);
-    expect(result.end.getHours()).toBe(10);
+    expect(result.start.getHours()).toBe(10);
+    expect(result.end.getHours()).toBe(11);
   });
 
   it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {

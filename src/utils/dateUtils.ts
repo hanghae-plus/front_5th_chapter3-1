@@ -101,8 +101,13 @@ export function formatMonth(date: Date): string {
 /**
  * 주어진 날짜가 특정 범위 내에 있는지 확인합니다.
  */
-export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boolean {
-  return date >= rangeStart && date <= rangeEnd;
+export function isDateInRange(date: Date, start: Date, end: Date): boolean {
+  const format = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(
+      2,
+      '0'
+    )}`;
+  return format(date) >= format(start) && format(date) <= format(end);
 }
 
 export function fillZero(value: number, size = 2) {
