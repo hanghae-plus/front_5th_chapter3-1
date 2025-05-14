@@ -11,6 +11,7 @@ import {
 } from '@chakra-ui/react';
 
 import { notificationOptions } from '../../../based/constants/notificationOptions';
+import { EventDeleteButton, EventEditButton } from '../../../features/event';
 
 export const EventList = () => {
   return (
@@ -75,18 +76,8 @@ export const EventList = () => {
                 </Text>
               </VStack>
               <HStack>
-                <IconButton
-                  data-testid={`edit-event-button-${event.id}`}
-                  aria-label="Edit event"
-                  icon={<EditIcon />}
-                  onClick={() => editEvent(event)}
-                />
-                <IconButton
-                  data-testid={`delete-event-button-${event.id}`}
-                  aria-label="Delete event"
-                  icon={<DeleteIcon />}
-                  onClick={() => deleteEvent(event.id)}
-                />
+                <EventEditButton />
+                <EventDeleteButton />
               </HStack>
             </HStack>
           </Box>

@@ -7,8 +7,15 @@ import {
   AlertDialogOverlay,
   AlertDialogBody,
 } from '@chakra-ui/react';
+import { useRef } from 'react';
+
+import { useDialogStore } from '../../../based/store/DialogStore';
+import { EventAddButton } from '../../../features/event';
 
 export const OverlapDialog = () => {
+  const cancelRef = useRef<HTMLButtonElement>(null);
+  const { isOverlapDialogOpen, setIsOverlapDialogOpen } = useDialogStore();
+
   return (
     <AlertDialog
       isOpen={isOverlapDialogOpen}
@@ -35,31 +42,7 @@ export const OverlapDialog = () => {
             <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
               취소
             </Button>
-            <Button
-              colorScheme="red"
-              onClick={() => {
-                setIsOverlapDialogOpen(false);
-                saveEvent({
-                  id: editingEvent ? editingEvent.id : undefined,
-                  title,
-                  date,
-                  startTime,
-                  endTime,
-                  description,
-                  location,
-                  category,
-                  repeat: {
-                    type: isRepeating ? repeatType : 'none',
-                    interval: repeatInterval,
-                    endDate: repeatEndDate || undefined,
-                  },
-                  notificationTime,
-                });
-              }}
-              ml={3}
-            >
-              계속 진행
-            </Button>
+            <EventAddButton />
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialogOverlay>

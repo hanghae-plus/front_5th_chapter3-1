@@ -1,10 +1,16 @@
-import { ChevronLeftIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Heading, Select, IconButton, HStack, VStack } from '@chakra-ui/react';
 
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
 
-export const EventCalendar = () => {
+export const EventCalendar = ({
+  viewState,
+  viewActions,
+}: {
+  viewState: ViewState;
+  viewActions: ViewActions;
+}) => {
   return (
     <VStack flex={1} spacing={5} align="stretch">
       <Heading>일정 보기</Heading>

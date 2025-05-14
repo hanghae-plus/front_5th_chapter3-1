@@ -11,10 +11,54 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { categories } from '../../../based/constants';
+import { notificationOptions } from '../../../based/constants/notificationOptions';
 import { getTimeErrorMessage } from '../../../based/utils/timeValidation';
 import { RepeatType } from '../../../types';
+import { EventFormState, EventFormActions } from '../model/useEventFormStateAndActions';
 
-export const EventAddForm = () => {
+export const EventAddForm = ({
+  formState,
+  formActions,
+  onSubmit,
+}: {
+  formState: EventFormState;
+  formActions: EventFormActions;
+  onSubmit: () => void;
+}) => {
+  const {
+    editingEvent,
+    title,
+    date,
+    startTime,
+    endTime,
+    startTimeError,
+    endTimeError,
+    description,
+    location,
+    category,
+    isRepeating,
+    repeatType,
+    repeatInterval,
+    repeatEndDate,
+    notificationTime,
+  } = formState;
+
+  const {
+    setTitle,
+    setDate,
+    setDescription,
+    setLocation,
+    setCategory,
+    setIsRepeating,
+    setRepeatType,
+    setRepeatInterval,
+    setRepeatEndDate,
+    setNotificationTime,
+    handleStartTimeChange,
+    handleEndTimeChange,
+  } = formActions;
+
   return (
     <VStack w="400px" spacing={5} align="stretch">
       <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
@@ -135,7 +179,7 @@ export const EventAddForm = () => {
         </VStack>
       )}
 
-      <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
+      <Button data-testid="event-submit-button" onClick={onSubmit} colorScheme="blue">
         {editingEvent ? '일정 수정' : '일정 추가'}
       </Button>
     </VStack>
