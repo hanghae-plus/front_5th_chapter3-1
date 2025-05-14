@@ -3,17 +3,6 @@ import { act, renderHook } from '@testing-library/react';
 import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
-const MOCK_INITIAL_DATE = new Date(2025, 9, 1); // 2025년 10월 1일
-
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(MOCK_INITIAL_DATE);
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
 describe('초기 상태', () => {
   it('초기 view는 "month"이어야 한다', () => {
     const { result } = renderHook(() => useCalendarView());
@@ -50,7 +39,7 @@ describe('view 변경', () => {
 
     expect(result.current.view).toBe('week');
   });
-  
+
   it("주간 뷰에서 다음으로 navigate시 7일 후 '2025-10-08' 날짜로 지정이 된다", () => {
     const { result } = renderHook(() => useCalendarView());
 
@@ -63,7 +52,7 @@ describe('view 변경', () => {
 
     assertDate(result.current.currentDate, new Date('2025-10-08'));
   });
-  
+
   it("주간 뷰에서 이전으로 navigate시 7일 후 '2025-09-24' 날짜로 지정이 된다", () => {
     const { result } = renderHook(() => useCalendarView());
 
@@ -76,7 +65,7 @@ describe('view 변경', () => {
 
     assertDate(result.current.currentDate, new Date('2025-09-24'));
   });
-  
+
   it("월간 뷰에서 다음으로 navigate시 한 달 전 '2025-11-01' 날짜여야 한다", () => {
     const { result } = renderHook(() => useCalendarView());
 
@@ -89,7 +78,7 @@ describe('view 변경', () => {
 
     assertDate(result.current.currentDate, new Date('2025-11-01'));
   });
-  
+
   it("월간 뷰에서 이전으로 navigate시 한 달 전 '2025-09-01' 날짜여야 한다", () => {
     const { result } = renderHook(() => useCalendarView());
 
@@ -102,7 +91,7 @@ describe('view 변경', () => {
 
     assertDate(result.current.currentDate, new Date('2025-09-01'));
   });
-  
+
   it("currentDate가 '2025-03-03' 변경되면 3월 휴일 '삼일절'로 업데이트되어야 한다", async () => {
     const { result } = renderHook(() => useCalendarView());
 
@@ -114,5 +103,4 @@ describe('view 변경', () => {
       '2025-03-01': '삼일절',
     });
   });
-  
 });
