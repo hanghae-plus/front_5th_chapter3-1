@@ -6,8 +6,8 @@ import App from './App.tsx';
 
 async function prepare() {
   const { setupWorker } = await import('msw/browser');
-  const { mockApiHandlers } = await import('./mockApiHandlers.ts');
-  const worker = setupWorker(...mockApiHandlers);
+  const { handlers } = await import('./__mocks__/handlers.ts');
+  const worker = setupWorker(...handlers);
   return worker.start();
 }
 
