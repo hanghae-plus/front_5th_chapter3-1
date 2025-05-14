@@ -1,16 +1,74 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
+
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils.ts';
+import allEventDataFromFile from '../__tests__/dummy/dummyMockEvents.json' assert { type: 'json' };
 import { ReactElement } from 'react';
 
 import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
+const eventsForTest = allEventDataFromFile.events as Event[];
+
+const renderApp = () => {
+  return render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
+
 describe('일정 CRUD 및 기본 기능', () => {
+  beforeEach(() => {});
+  afterEach(() => {});
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const user = userEvent.setup();
+    // 기존 이벤트와 겹치지 않는 고유 ID 생성
+    const uniqueId = `test-id-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const newEvent = {
+      id: uniqueId,
+      title: '새로운 이벤트',
+      date: '2025-01-01',
+      startTime: '10:00',
+      endTime: '15:00',
+      description: '새로운 이벤트 설명',
+      location: '새로운 이벤트 장소',
+      category: '업무',
+      notificationTime: 10,
+      repeat: {
+        type: 'none',
+        interval: 0,
+      },
+    };
+
+    // MSW 핸들러 직접 설정 - 응답에 새 이벤트 포함
+    server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: [...eventsForTest, newEvent] });
+      }),
+      http.post('/api/events', async () => {
+        return HttpResponse.json(newEvent, { status: 201 });
+      })
+    );
+    renderApp();
+
+    await user.type(screen.getByLabelText('제목'), newEvent.title);
+    await user.clear(screen.getByLabelText('날짜'));
+    await user.type(screen.getByLabelText('날짜'), newEvent.date);
+    await user.clear(screen.getByLabelText('시작 시간'));
+    await user.type(screen.getByLabelText('시작 시간'), newEvent.startTime);
+    await user.clear(screen.getByLabelText('종료 시간'));
+    await user.type(screen.getByLabelText('종료 시간'), newEvent.endTime);
+    await user.type(screen.getByLabelText('설명'), newEvent.description);
+    await user.type(screen.getByLabelText('위치'), newEvent.location);
+    await user.selectOptions(screen.getByLabelText('카테고리'), newEvent.category);
+    await user.selectOptions(
+      screen.getByLabelText('알림 설정'),
+      newEvent.notificationTime.toString()
+    );
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
