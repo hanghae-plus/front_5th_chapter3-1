@@ -20,7 +20,7 @@ describe('초기 상태', () => {
     const holidaysObj = result.current.holidays;
 
     const holidays = Object.entries(holidaysObj)
-      .filter(([date, name]) => name === '개천절' || name === '한글날') // 추석 제거
+      .filter(([, name]) => name === '개천절' || name === '한글날') // 추석 제거
       .map(([date, name]) => ({ date, name }));
 
     expect(holidays).toEqual([
@@ -111,7 +111,7 @@ it("currentDate가 '2025-01-01' 변경되면 1월 휴일 '신정'으로 업데�
 
   const holidaysObj = result.current.holidays;
   const holidays = Object.entries(holidaysObj)
-    .filter(([date, name]) => name === '신정')
+    .filter(([, name]) => name === '신정')
     .map(([date, name]) => ({ date, name }));
 
   expect(holidays).toEqual([{ date: '2025-01-01', name: '신정' }]);
