@@ -12,7 +12,7 @@ export function getDaysInMonth(year: number, month: number): number {
  */
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
-  const diff = date.getDate() - day;
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1);
   const sunday = new Date(date.setDate(diff));
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
