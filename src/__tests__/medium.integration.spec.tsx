@@ -320,14 +320,15 @@ describe('일정 충돌', () => {
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-  // eslint-disable-next-line jest/valid-expect
-  vi.setSystemTime(new Date('2025-10-15 08:49:00'));
+  vi.setSystemTime(new Date('2025-10-15T08:49:00'));
 
   setup(<App />);
 
+  await screen.findByText('일정 로딩 완료!');
+
   act(() => {
-    vi.advanceTimersByTime(1000 * 61);
+    vi.advanceTimersByTime(1000 * 60);
   });
 
-  expect(screen.findByText('10분 후 기존 회의 일정이 시작됩니다.'));
+  expect(await screen.queryByText('10분 후 기존 회의 일정이 시작됩니다.')).toBeInTheDocument();
 });
