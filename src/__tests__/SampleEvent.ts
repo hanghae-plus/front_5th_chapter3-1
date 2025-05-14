@@ -11,7 +11,7 @@ export const SAMPLE_EVENTS: Event[] = [
     location: '회의실 B',
     category: '업무',
     repeat: { type: 'none', interval: 0 },
-    notificationTime: 0,
+    notificationTime: 10,
   },
   {
     id: '2',
