@@ -1,16 +1,59 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
 
+import {
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerUpdating,
+} from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
-import { Event } from '../types';
+
+waitFor;
+setupMockHandlerUpdating;
+setupMockHandlerDeletion;
+
+let user: UserEvent;
+beforeEach(() => {
+  vi.setSystemTime('2025-05-01');
+  user = userEvent.setup();
+});
+
+const renderApp = () => {
+  return render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const handler = setupMockHandlerCreation([]);
+    server.use(...handler);
+    renderApp();
+
+    await user.type(screen.getByLabelText('제목'), '제목'); // type 처리에서 지연됨
+    await user.type(screen.getByLabelText('날짜'), '2025-10-01');
+    await user.type(screen.getByLabelText('시작 시간'), '10:00');
+    await user.type(screen.getByLabelText('종료 시간'), '11:00');
+    await user.type(screen.getByLabelText('설명'), '설명');
+    await user.type(screen.getByLabelText('위치'), '회의실');
+    await user.selectOptions(screen.getByLabelText('카테고리'), '업무');
+
+    await user.click(screen.getByRole('button', { name: '일정 추가' }));
+
+    const eventList = screen.getByTestId('event-list');
+    console.log(eventList); // 당연히 출력안됨
+    expect(within(eventList).getByText('제목')).toBeInTheDocument();
+    expect(within(eventList).getByText('2025-10-01')).toBeInTheDocument();
+    expect(within(eventList).getByText('10:00')).toBeInTheDocument();
+    expect(within(eventList).getByText('11:00')).toBeInTheDocument();
+    expect(within(eventList).getByText('설명')).toBeInTheDocument();
+    expect(within(eventList).getByText('회의실')).toBeInTheDocument();
+    expect(within(eventList).getByText('업무')).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});

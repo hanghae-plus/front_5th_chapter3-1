@@ -9,8 +9,9 @@ import { Event } from '@/types';
 
 const mockEvents = mock as Event[];
 
-export const setupMockHandlerCreation = () => {
-  const events = [...mockEvents];
+export const setupMockHandlerCreation = (initEvents?: Event[]) => {
+  const events = typeof initEvents !== 'undefined' ? [...initEvents] : [...mockEvents];
+
   return [
     http.get('/api/events', () => HttpResponse.json({ events })),
     http.post('/api/events', async ({ request }) => {
@@ -21,8 +22,9 @@ export const setupMockHandlerCreation = () => {
   ];
 };
 
-export const setupMockHandlerUpdating = () => {
-  const events = [...mockEvents];
+export const setupMockHandlerUpdating = (initEvents?: Event[]) => {
+  const events = typeof initEvents !== 'undefined' ? [...initEvents] : [...mockEvents];
+
   return [
     http.get('/api/events', () => HttpResponse.json({ events })),
     http.put('/api/events/:id', async ({ params, request }) => {
@@ -40,8 +42,9 @@ export const setupMockHandlerUpdating = () => {
   ];
 };
 
-export const setupMockHandlerDeletion = () => {
-  const events = [...mockEvents];
+export const setupMockHandlerDeletion = (initEvents?: Event[]) => {
+  const events = typeof initEvents !== 'undefined' ? [...initEvents] : [...mockEvents];
+
   return [
     http.get('/api/events', () => HttpResponse.json({ events })),
     http.delete('/api/events/:id', ({ params }) => {

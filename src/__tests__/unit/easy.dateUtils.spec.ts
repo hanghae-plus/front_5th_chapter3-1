@@ -35,7 +35,7 @@ describe('getDaysInMonth', () => {
     expect(getDaysInMonth(2025, Infinity)).toBeNaN();
     expect(getDaysInMonth(2025, -Infinity)).toBeNaN();
     expect(getDaysInMonth(2025, Number.MAX_VALUE)).toBeNaN();
-    expect(getDaysInMonth(2025, Number.MIN_VALUE)).toBe(31); // 왜 31이지?
+    expect(getDaysInMonth(2025, Number.MIN_VALUE)).toBe(31);
     console.log(getDaysInMonth(2025, Number.MIN_VALUE));
 
     // 범위 초과
