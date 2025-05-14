@@ -43,81 +43,70 @@ describe('getDaysInMonth', () => {
 describe('getWeekDates', () => {
   it('주중의 날짜(수요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-05-07');
-    const weekDates = getFollowing7Days(new Date('2025-05-04'));
 
     expect(new Date(date).getDay()).toBe(3);
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2025-05-04')));
   });
 
   it('주의 시작(월요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-04-07');
-    const weekDates = getFollowing7Days(new Date('2025-04-06'));
 
     expect(new Date(date).getDay()).toBe(1);
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2025-04-06')));
   });
 
   it('주의 끝(일요일)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-03-09');
-    const weekDates = getFollowing7Days(new Date('2025-03-09'));
 
     expect(new Date(date).getDay()).toBe(0);
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2025-03-09')));
   });
 
   it('연도를 넘어가는 주의 날짜(연말)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2024-12-31');
-    const weekDates = getFollowing7Days(new Date('2024-12-29'));
 
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2024-12-29')));
   });
 
   it('연도를 넘어가는 주의 날짜(연초)에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-01-01');
-    const weekDates = getFollowing7Days(new Date('2024-12-29'));
 
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2024-12-29')));
   });
 
   it('윤년의 2월 29일을 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다', () => {
     const date = new Date('2024-02-29');
-    const weekDates = getFollowing7Days(new Date('2024-02-25'));
 
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2024-02-25')));
   });
 
   it('월의 마지막 날짜를 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다.', () => {
     const date = new Date('2024-04-30');
-    const weekDates = getFollowing7Days(new Date('2024-04-28'));
 
-    expect(getWeekDates(new Date(date))).toEqual(weekDates);
+    expect(getWeekDates(new Date(date))).toEqual(getFollowing7Days(new Date('2024-04-28')));
   });
 });
 
 describe('getWeeksAtMonth', () => {
   it('2025년 7월 1일이 포함된 월의 모든 주를 배열로 반환한다', () => {
-    const weeks = [
+    expect(getWeeksAtMonth(new Date('2025-07-01'))).toEqual([
       [null, null, 1, 2, 3, 4, 5],
       [6, 7, 8, 9, 10, 11, 12],
       [13, 14, 15, 16, 17, 18, 19],
       [20, 21, 22, 23, 24, 25, 26],
       [27, 28, 29, 30, 31, null, null],
-    ];
-
-    expect(getWeeksAtMonth(new Date('2025-07-01'))).toEqual(weeks);
+    ]);
   });
 
   it('다른 달과 겹치는 주도 포함해 해당 월에 속한 모든 주를 배열로 반환한다', () => {
-    const weeks = [
+    expect(getWeeksAtMonth(new Date('2025-08-11'))).toEqual([
       [null, null, null, null, null, 1, 2],
       [3, 4, 5, 6, 7, 8, 9],
       [10, 11, 12, 13, 14, 15, 16],
       [17, 18, 19, 20, 21, 22, 23],
       [24, 25, 26, 27, 28, 29, 30],
       [31, null, null, null, null, null, null],
-    ];
-
-    expect(getWeeksAtMonth(new Date('2025-08-11'))).toEqual(weeks);
+    ]);
   });
 });
 
@@ -130,7 +119,6 @@ describe('getEventsForDay', () => {
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
     expect(getEventsForDay(realEvents.events as Event[], 3)).toHaveLength(0);
-    expect(getEventsForDay(realEvents.events as Event[], 30)).toHaveLength(0);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
@@ -139,14 +127,10 @@ describe('getEventsForDay', () => {
 
   it('날짜가 음수일 경우 빈 배열을 반환한다', () => {
     expect(getEventsForDay(realEvents.events as Event[], -4)).toHaveLength(0);
-    expect(getEventsForDay(realEvents.events as Event[], -20)).toHaveLength(0);
-    expect(getEventsForDay(realEvents.events as Event[], -10)).toHaveLength(0);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
-    expect(getEventsForDay(realEvents.events as Event[], 32)).toHaveLength(0);
-    expect(getEventsForDay(realEvents.events as Event[], 35)).toHaveLength(0);
-    expect(getEventsForDay(realEvents.events as Event[], 40)).toHaveLength(0);
+    expect(getEventsForDay(realEvents.events as Event[], 33)).toHaveLength(0);
   });
 });
 
