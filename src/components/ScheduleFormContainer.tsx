@@ -26,7 +26,7 @@ const ScheduleFormContainer = ({ events, saveEvent, editingEvent, setEditingEven
     if (editingEvent) {
       editEvent(editingEvent);
     }
-  }, [editingEvent, editEvent]);
+  }, [editingEvent]);
 
   const addOrUpdateEvent = async () => {
     if (!values.title || !values.date || !values.startTime || !values.endTime) {
