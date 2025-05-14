@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { it, expect, vi } from 'vitest';
 
 import { useNotifications } from '../../hooks/useNotifications';
 import { Event } from '../../types';

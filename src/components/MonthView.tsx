@@ -10,7 +10,7 @@ export default function MonthView({
   holidays,
   getWeeksAtMonth,
   formatDate,
-  getEventsForDay
+  getEventsForDay,
 }) {
   const weeks = getWeeksAtMonth(currentDate);
 
