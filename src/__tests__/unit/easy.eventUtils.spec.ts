@@ -1,6 +1,5 @@
 import type { Event } from '../../types';
 import { getFilteredEvents } from '../../utils/eventUtils';
-import { filter } from '@chakra-ui/react';
 
 describe('getFilteredEvents', () => {
   const events: Event[] = [
