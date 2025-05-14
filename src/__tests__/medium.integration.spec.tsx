@@ -1,21 +1,237 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor, cleanup } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import App from '../App';
 import { server } from '../setupTests';
-import { Event } from '../types';
+import { Event, EventForm } from '../types';
+
+const renderWithChakra = (ui: ReactElement) => {
+  return render(<ChakraProvider>{ui}</ChakraProvider>);
+};
 
 describe('일정 CRUD 및 기본 기능', () => {
-  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+  let user: UserEvent;
+  // 각 테스트에서 사용할 메모리 내 이벤트 목록
+  let inMemoryEvents: Event[];
+
+  beforeEach(async () => {
+    user = userEvent.setup();
+    inMemoryEvents = []; // 각 테스트 시작 시 이벤트 목록 초기화
+    vi.setSystemTime(new Date('2025-05-20'));
+
+    server.use(
+      http.get('/api/events', async () => {
+        return HttpResponse.json({ events: [...inMemoryEvents] });
+      })
+    );
+
+    server.use(
+      http.post('/api/events', async ({ request }) => {
+        const newEventData = (await request.json()) as EventForm;
+        const newEventWithId: Event = {
+          id: `mock-event-${Date.now()}`,
+          ...newEventData,
+        };
+        inMemoryEvents.push(newEventWithId);
+        return HttpResponse.json(newEventWithId, { status: 201 });
+      })
+    );
+
+    renderWithChakra(<App />);
+
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+    expect(
+      await screen.findByText(/검색 결과가 없습니다.|일정이 없습니다./i, {})
+    ).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    server.resetHandlers(); // 각 테스트 후 핸들러 초기화
+  });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    const newEventDetails: Omit<Event, 'id'> = {
+      title: '테스트 회의',
+      date: '2025-05-25',
+      startTime: '14:00',
+      endTime: '15:00',
+      description: '테스트 설명',
+      location: '테스트 위치',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    await user.type(screen.getByLabelText('제목'), newEventDetails.title);
+    await user.type(screen.getByLabelText('날짜'), newEventDetails.date);
+    await user.type(screen.getByLabelText('시작 시간'), newEventDetails.startTime);
+    await user.type(screen.getByLabelText('종료 시간'), newEventDetails.endTime);
+    await user.type(screen.getByLabelText('설명'), newEventDetails.description);
+    await user.type(screen.getByLabelText('위치'), newEventDetails.location);
+    await user.selectOptions(screen.getByLabelText('카테고리'), newEventDetails.category);
+
+    // 일정 추가 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 성공 토스트 메시지 확인
+    expect(await screen.findByText('일정이 추가되었습니다.')).toBeInTheDocument();
+
+    // UI에 최종적으로 반영되었는지 확인
+    await waitFor(async () => {
+      const eventList = screen.getByTestId('event-list');
+      expect(await within(eventList).findByText(newEventDetails.title)).toBeInTheDocument();
+      expect(within(eventList).getByText(newEventDetails.date)).toBeInTheDocument();
+      expect(
+        within(eventList).getByText(`${newEventDetails.startTime} - ${newEventDetails.endTime}`)
+      ).toBeInTheDocument();
+      expect(within(eventList).getByText(newEventDetails.description)).toBeInTheDocument();
+      expect(within(eventList).getByText(newEventDetails.location)).toBeInTheDocument();
+      expect(
+        within(eventList).getByText(`카테고리: ${newEventDetails.category}`)
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    // 초기 이벤트 생성 및 메모리에 추가
+    const initialEvent: Event = {
+      id: 'initial-event-1',
+      title: '원래 회의',
+      date: '2025-05-25',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '원래 설명',
+      location: '원래 위치',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    // 메모리에 초기 이벤트 추가
+    inMemoryEvents.push(initialEvent);
+
+    // PUT 핸들러 추가
+    server.use(
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const id = params.id as string;
+        const updatedData = (await request.json()) as Event;
+
+        // 메모리 내 이벤트 업데이트
+        const index = inMemoryEvents.findIndex((e) => e.id === id);
+        if (index !== -1) {
+          inMemoryEvents[index] = { ...updatedData, id };
+        }
+
+        return HttpResponse.json({ ...updatedData, id }, { status: 200 });
+      })
+    );
+
+    // App 리렌더링하여 초기 데이터 로드
+    cleanup();
+    renderWithChakra(<App />);
+
+    // 로딩 완료 및 초기 이벤트 표시 대기
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+
+    // 이벤트 리스트에서 원래 회의 찾기
+    const eventList = screen.getByTestId('event-list');
+    await within(eventList).findByText('원래 회의');
+
+    // 수정 버튼 클릭
+    const editButton = within(eventList).getByLabelText('Edit event');
+    await user.click(editButton);
+
+    // 폼에 수정할 내용 입력 (폼이 표시되고 제목이 '일정 수정'으로 변경되었는지 확인)
+    await waitFor(() => {
+      const heading = screen.getByRole('heading', { name: '일정 수정' });
+      expect(heading).toBeInTheDocument();
+    });
+
+    // 제목과 종료 시간 수정 (폼 컨테이너를 사용하지 않고 직접 요소 접근)
+    const titleInput = screen.getByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 회의');
+
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, '12:00');
+
+    // 수정 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 수정 성공 메시지 확인
+    await screen.findByText('일정이 수정되었습니다.');
+
+    // UI에 수정된 내용 확인
+    await waitFor(async () => {
+      expect(await within(eventList).findByText('수정된 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('10:00 - 12:00')).toBeInTheDocument();
+    });
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    // 삭제할 이벤트 생성 및 메모리에 추가
+    const eventToDelete: Event = {
+      id: 'event-to-delete',
+      title: '삭제할 회의',
+      date: '2025-05-25',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '삭제할 설명',
+      location: '삭제할 위치',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    // 메모리에 삭제할 이벤트 추가
+    inMemoryEvents.push(eventToDelete);
+
+    // DELETE 핸들러 추가
+    server.use(
+      http.delete('/api/events/:id', ({ params }) => {
+        const id = params.id as string;
+
+        // 메모리 내 이벤트 삭제
+        inMemoryEvents = inMemoryEvents.filter((e) => e.id !== id);
+
+        return new HttpResponse(null, { status: 204 });
+      })
+    );
+
+    // App 리렌더링하여 초기 데이터 로드
+    cleanup();
+    renderWithChakra(<App />);
+
+    // 로딩 완료 및 초기 이벤트 표시 대기
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+
+    // 이벤트 리스트에서 삭제할 회의 찾기
+    const eventList = screen.getByTestId('event-list');
+    await within(eventList).findByText('삭제할 회의');
+
+    // 삭제 버튼 클릭
+    const deleteButton = within(eventList).getByLabelText('Delete event');
+    await user.click(deleteButton);
+
+    // 삭제 성공 메시지 확인
+    await screen.findByText('일정이 삭제되었습니다.');
+
+    // 삭제된 일정이 더 이상 표시되지 않는지 확인
+    await waitFor(() => {
+      expect(screen.queryByText('삭제할 회의')).not.toBeInTheDocument();
+    });
+
+    // 이벤트 리스트에 '검색 결과가 없습니다' 메시지가 표시되는지 확인 (모든 이벤트가 삭제된 경우)
+    await waitFor(() => {
+      expect(screen.getByText(/검색 결과가 없습니다.|일정이 없습니다./i)).toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {

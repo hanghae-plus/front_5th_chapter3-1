@@ -36,18 +36,15 @@ describe('getUpcomingEvents', () => {
   it('이미 알림이 간 이벤트는 제외한다', () => {
     const events: Event[] = [
       { ...baseEvent, id: '1', startTime: '10:00', notificationTime: 10 },
-      { ...baseEvent, id: '2', startTime: '11:00', notificationTime: 10 },
+      { ...baseEvent, id: '2', startTime: '11:00', notificationTime: 70 },
     ];
 
-    // 현재 시간을 9:51로 설정 (두 이벤트 모두 알림 시간 도래)
     const now = new Date(`${baseEvent.date}T09:51:00`);
 
-    // id '1'은 이미 알림이 간 상태
     const notifiedEvents: string[] = ['1'];
 
     const result = getUpcomingEvents(events, now, notifiedEvents);
 
-    // id '2'만 반환되어야 함
     expect(result).toHaveLength(1);
     expect(result[0].id).toBe('2');
   });
