@@ -492,20 +492,32 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
+  const MOCK_EVENTS = [
+    {
+      id: '1',
+      title: '과제 제출',
+      date: '2025-05-16',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '항해 과제가 끝나게 해주세요 제발',
+      location: '아이콘역삼빌딩',
+      category: '학습',
+      repeat: { type: 'none', interval: 0 },
+    },
+    {
+      id: '2',
+      title: '8주차 발제',
+      date: '2025-05-17',
+      startTime: '13:00',
+      endTime: '18:00',
+      description: '다음 과제는 뭘까',
+      location: '아이콘역삼빌딩',
+      category: '학습',
+      repeat: { type: 'none', interval: 0 },
+    },
+  ];
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
-    const MOCK_EVENTS = [
-      {
-        id: '1',
-        title: '과제 제출',
-        date: '2025-05-16',
-        startTime: '10:00',
-        endTime: '11:00',
-        description: '항해 과제가 끝나게 해주세요 제발',
-        location: '아이콘역삼빌딩',
-        category: '학습',
-        repeat: { type: 'none', interval: 0 },
-      },
-    ];
     setupMockHandlerCreation(MOCK_EVENTS as Event[]);
 
     render(
@@ -538,7 +550,66 @@ describe('일정 충돌', () => {
     expect(alert).toBeInTheDocument();
   });
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = await screen.findByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+
+    const eventItem = eventItems[0];
+
+    const editButton = within(eventItem).getByTestId('edit-button');
+    await userEvent.click(editButton);
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categoryInput = screen.getByLabelText('카테고리');
+
+    await Promise.all([
+      userEvent.clear(titleInput),
+      userEvent.clear(dateInput),
+      userEvent.clear(startTimeInput),
+      userEvent.clear(endTimeInput),
+      userEvent.clear(descriptionInput),
+      userEvent.clear(locationInput),
+    ]);
+
+    const editedEvent = {
+      title: '발제 땡땡이',
+      date: '2025-05-17',
+      startTime: '13:00',
+      endTime: '18:00',
+      description: '발제 제끼고 놀러가기',
+      location: '카페',
+      category: '기타',
+    };
+
+    // 일정 수정 정보 입력
+    await userEvent.type(titleInput, editedEvent.title);
+    await userEvent.type(dateInput, editedEvent.date);
+    await userEvent.type(startTimeInput, editedEvent.startTime);
+    await userEvent.type(endTimeInput, editedEvent.endTime);
+    await userEvent.type(descriptionInput, editedEvent.description);
+    await userEvent.type(locationInput, editedEvent.location);
+    await userEvent.selectOptions(categoryInput, editedEvent.category);
+
+    // 수정 정보 저장
+    const saveButton = screen.getByTestId('event-submit-button');
+    await userEvent.click(saveButton);
+
+    const alert = screen.getByText('일정 겹침 경고');
+    expect(alert).toBeInTheDocument();
+  });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
