@@ -2,8 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
+// import { formatDate } from '../../utils/dateUtils.ts';
+// import { parseHM } from '../utils.ts';
 
 const now = new Date('2025-05-20T09:59:00');
 

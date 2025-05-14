@@ -1,7 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
+// import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import {
@@ -10,7 +10,7 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
+// import { server } from '../setupTests';
 import { Event } from '../types';
 
 const mockEvents: Event[] = [
