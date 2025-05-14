@@ -269,6 +269,7 @@ function App() {
                                 borderRadius="md"
                                 fontWeight={isNotified ? 'bold' : 'normal'}
                                 color={isNotified ? 'red.500' : 'inherit'}
+                                data-testid={`event-view-item`}
                               >
                                 <HStack spacing={1}>
                                   {isNotified && <BellIcon />}

@@ -315,9 +315,54 @@ describe('일정 뷰', () => {
     // 이벤트 리스트에서 "검색 결과가 없습니다." 텍스트가 표시되는지 확인
     const noResultsText = screen.getByText('검색 결과가 없습니다.');
     expect(noResultsText).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const MOCK_EVENTS = [
+      {
+        id: '1',
+        title: '이벤트 1',
+        date: '2025-05-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '이벤트 1 설명',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+      },
+    ];
+
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const selectView = screen.getByLabelText('view');
+    await userEvent.selectOptions(selectView, 'month');
+
+    // 월별 뷰에 일정이 정확히 표시되는지 확인
+    const monthView = screen.getByTestId('month-view');
+    const dateCell = within(monthView).getByText(MOCK_EVENTS[0].date.split('-')[2]);
+    const eventBox = within(dateCell.parentElement!).getByTestId('event-view-item');
+    expect(eventBox).toHaveTextContent(MOCK_EVENTS[0].title);
+
+    // 이벤트 리스트에서도 동일한 이벤트가 표시되는지 확인
+    const eventList = screen.getByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+    expect(eventItems).toHaveLength(1);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].title);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].date);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].startTime);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].endTime);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].description);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].location);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].category);
+  });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
 });
