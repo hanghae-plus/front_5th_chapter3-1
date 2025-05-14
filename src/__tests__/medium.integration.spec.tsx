@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import {
@@ -10,14 +9,15 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
+// ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
+// ! Medium: ChakraProvider로 묶어주는 동작은 의미있음. element 로 들어올 App 컴포넌트에서 Chakra UI 를 사용하는데 이 컴포넌트는 ChakraProvider 안에서 사용되어야 하기 때문
 const setup = (element: ReactElement) => {
   const user = userEvent.setup();
 
-  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
+  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user };
 };
 
 // ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
@@ -40,15 +40,100 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
-// ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    setupMockHandlerCreation();
+    const { user } = setup(<App />); // setup 함수에서 render 가 즉시 실행되기 때문에 실제 DOM 에서 컴포넌트가 마운트되고 user 객체 반환
+
+    const newEvent = {
+      title: '과제하기!',
+      date: '2025-10-14',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '테스트 코드 작성',
+      location: '도서관',
+      category: '업무',
+    };
+    await saveSchedule(user, newEvent);
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList).findByText(newEvent.title)).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    // 초기 타이틀 상태 확인
+    const addTitle = screen.getAllByText('일정 추가');
+    expect(addTitle[0]).toBeInTheDocument();
+
+    const eventList = await screen.findByTestId('event-list');
+
+    const updatedTitle = '기존 회의, 자료 프린트';
+    const updatedDescription = '기획팀도 들어옴.';
+    const updatedLocation = '회의실 A';
+    const eventTitle = '기존 회의';
+
+    // 수정 버튼 쿼링
+    const eventElement = await within(eventList).findByText(eventTitle);
+    const eventContainer = eventElement.closest('.chakra-stack.css-1y3f6ad') as HTMLElement; // 해당 이벤트 버튼을 포함한 상위 요소 찾기
+    const editButton = await within(eventContainer!).findByRole('button', {
+      name: 'Edit event',
+    });
+
+    // 수정 버튼 클릭 후 타이틀 상태 확인
+    act(() => {
+      user.click(editButton);
+    });
+    const updateTitle = await screen.findAllByText('일정 수정');
+    expect(updateTitle[0]).toBeInTheDocument();
+
+    const titleInput = screen.getByLabelText('제목');
+    const DescriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+
+    /**
+     * title: '기존 회의' -> '기존 회의, 자료 프린트'
+     * description: '기존 팀 미팅' -> '기획팀도 들어옴.'
+     * location: '회의실 B' -> '회의실 A'
+     */
+    await user.type(titleInput, ', 자료 프린트');
+    await user.clear(DescriptionInput);
+    await user.type(DescriptionInput, updatedDescription);
+    await user.type(locationInput, '{Backspace}');
+    await user.type(locationInput, 'A');
+
+    act(() => {
+      user.click(screen.getByTestId('event-submit-button'));
+    });
+
+    expect(await within(eventList).findByText(updatedTitle)).toBeInTheDocument();
+    expect(await within(eventList).findByText(updatedDescription)).toBeInTheDocument();
+    expect(await within(eventList).findByText(updatedLocation)).toBeInTheDocument();
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion();
+    const { user } = setup(<App />);
+
+    const eventTitle = '삭제할 이벤트';
+    const eventList = await screen.findByTestId('event-list');
+    const eventElement = await within(eventList).findByText(eventTitle);
+    expect(eventElement).toBeInTheDocument();
+
+    // 삭제 버튼 쿼링
+    const eventContainer = eventElement.closest('.chakra-stack.css-1y3f6ad') as HTMLElement; // 해당 이벤트 버튼을 포함한 상위 요소 찾기
+    const deleteButton = await within(eventContainer!).findByRole('button', {
+      name: 'Delete event',
+    });
+
+    await user.click(deleteButton);
+    waitFor(async () => {
+      expect(await within(eventList).findByText(eventTitle)).toBeUndefined();
+    });
+  });
 });
 
 describe('일정 뷰', () => {
@@ -63,6 +148,7 @@ describe('일정 뷰', () => {
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
 });
 
+// ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
 
