@@ -44,15 +44,106 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    setupMockHandlerCreation([]); // No events to simulate an empty week view
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const { user } = setup(<App />);
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    // Switch to week view
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    // Verify the week view is displayed
+    expect(await screen.findByTestId('week-view')).toBeInTheDocument();
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    // Verify no events are displayed
+    expect(screen.queryByText(/팀 회의/)).not.toBeInTheDocument();
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '팀 회의',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    // Switch to week view
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // Verify the week view is displayed
+    expect(await screen.findByTestId('week-view')).toBeInTheDocument();
+
+    // Verify the event is displayed on the correct day
+    expect(await screen.findByText('업무')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    setupMockHandlerCreation([]); // No events to simulate an empty month view
+
+    const { user } = setup(<App />);
+
+    // Switch to month view
+    await user.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // Verify the month view is displayed
+    expect(await screen.findByTestId('month-view')).toBeInTheDocument();
+
+    // Verify no events are displayed
+    expect(screen.queryByText(/점심 식사/)).not.toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '팀 회의',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    // Switch to month view
+    await user.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // Verify the month view is displayed
+    expect(await screen.findByTestId('month-view')).toBeInTheDocument();
+
+    // Verify the event is displayed on the correct day
+    expect(await screen.findByText('업무')).toBeInTheDocument();
+    expect(screen.getByText('16')).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation([]);
+  
+    const { user } = setup(<App />);
+  
+    await user.selectOptions(screen.getByLabelText('view'), 'month');
+  
+    expect(await screen.findByTestId('month-view')).toBeInTheDocument();
+  
+    const holidayElement = await screen.findByText('신정');  
+    expect(holidayElement).toBeInTheDocument();
+    expect(holidayElement).toHaveStyle('color: #E53E3E');
+  });
 });
 
 describe('검색 기능', () => {
