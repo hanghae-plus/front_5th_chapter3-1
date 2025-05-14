@@ -102,3 +102,18 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
+
+export function getNavigatedDate(
+  prevDate: Date,
+  view: 'week' | 'month', 
+  direction: 'prev' | 'next'
+): Date {
+  const newDate = new Date(prevDate);
+  if (view === 'week') {
+    newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
+  } else if (view === 'month') {
+    newDate.setDate(1);
+    newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
+  }
+  return newDate;
+}
