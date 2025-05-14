@@ -7,6 +7,7 @@ import { Event } from '../types';
 // ! 아래 이름을 사용하지 않아도 되니, 독립적이게 테스트를 구동할 수 있는 방법을 찾아보세요. 그리고 이 로직을 PR에 설명해주세요.
 export const setupMockHandlerCreation = (initialEvents: Event[]) => {
   const events: Event[] = [...initialEvents];
+  const randomId = (Math.floor(Math.random() * 90) + 10).toString();
 
   const handlers = [
     // 목록 조회
@@ -15,9 +16,13 @@ export const setupMockHandlerCreation = (initialEvents: Event[]) => {
     }),
 
     // 새 이벤트 생성
+
     http.post('/api/events', async ({ request }) => {
       const newEvent = (await request.json()) as Event;
-      events.push(newEvent);
+      events.push({
+        ...newEvent,
+        id: randomId,
+      });
       return HttpResponse.json(newEvent);
     }),
   ];

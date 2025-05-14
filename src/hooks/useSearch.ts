@@ -9,7 +9,6 @@ export const useSearch = (events: Event[], currentDate: Date, view: 'week' | 'mo
   const filteredEvents = useMemo(() => {
     return getFilteredEvents(events, searchTerm, currentDate, view);
   }, [events, searchTerm, currentDate, view]);
-
   return {
     searchTerm,
     setSearchTerm,
