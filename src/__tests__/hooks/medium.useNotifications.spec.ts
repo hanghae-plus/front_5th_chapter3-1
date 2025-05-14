@@ -48,8 +48,10 @@ it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
 
 it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', async () => {
   const testTime = new Date('2025-10-15T08:49:00');
+  vi.useRealTimers(); // TODO: afterEach 에 넣어도 에러 나는 이유
   vi.useFakeTimers();
   vi.setSystemTime(testTime);
+
   const { result } = renderHook(() => useNotifications(initialEvents));
   expect(result.current.notifications).toHaveLength(0);
 
