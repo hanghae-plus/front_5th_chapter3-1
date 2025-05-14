@@ -262,13 +262,116 @@ describe('일정 뷰', () => {
   });
 });
 
-// describe('검색 기능', () => {
-//   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+describe('검색 기능', () => {
+  beforeEach(() => {
+    server.resetHandlers();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-05-21T00:00:00Z'));
+  });
 
-//   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const { user } = setup(<App />);
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '없는 이벤트지롱');
 
-//   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
-// });
+    const noEventText = screen.getByText('검색 결과가 없습니다.');
+    expect(noEventText).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const initialEventsWithTeamMeeting: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2025-05-21',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '다른 회의',
+        date: '2025-05-21',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '다른 업무 회의',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(initialEventsWithTeamMeeting);
+
+    const { user } = setup(<App />);
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+
+    const eventList = screen.getByTestId('event-list');
+    const eventCardTitle = await within(eventList).findByText('팀 회의');
+    const eventCard = eventCardTitle.closest('div');
+    expect(eventCard).toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const initialEventsForClearSearch: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의 검색용',
+        date: '2025-05-21',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+        description: '',
+        location: '',
+        startTime: '09:00',
+        endTime: '10:00',
+      },
+      {
+        id: '2',
+        title: '개인 약속 검색용',
+        date: '2025-05-21',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+        description: '',
+        location: '',
+        startTime: '11:00',
+        endTime: '12:00',
+      },
+    ];
+    setupMockHandlerCreation(initialEventsForClearSearch);
+
+    const { user } = setup(<App />);
+    const eventListContainer = screen.getByTestId('event-list');
+
+    // within, findByXXX + await를 이용해 비동기적인 UI 업데이트를 기다리기
+    await within(eventListContainer).findByText('팀 회의 검색용');
+    await within(eventListContainer).findByText('개인 약속 검색용');
+
+    let allEventCards = within(eventListContainer).getAllByTestId('event-card');
+    expect(allEventCards.length).toBe(initialEventsForClearSearch.length);
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+
+    await waitFor(() => {
+      const searchedCards = within(eventListContainer).getAllByTestId('event-card');
+      expect(searchedCards.length).toBe(1);
+      expect(within(searchedCards[0]).getByText('팀 회의 검색용')).toBeInTheDocument();
+    });
+
+    await user.clear(searchInput);
+
+    const restoredCards = within(eventListContainer).getAllByTestId('event-card');
+    expect(restoredCards.length).toBe(initialEventsForClearSearch.length);
+  });
+});
 
 // describe('일정 충돌', () => {
 //   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
