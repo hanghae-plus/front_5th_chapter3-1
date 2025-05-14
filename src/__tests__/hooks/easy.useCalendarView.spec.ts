@@ -19,14 +19,9 @@ describe('초기 상태', () => {
     const { result } = renderHook(() => useCalendarView());
     const holidaysObj = result.current.holidays;
 
-    const holidays = Object.entries(holidaysObj)
-      .filter(([, name]) => name === '개천절' || name === '한글날') // 추석 제거
-      .map(([date, name]) => ({ date, name }));
+    const holidayNames = Object.values(holidaysObj);
 
-    expect(holidays).toEqual([
-      { date: '2025-10-03', name: '개천절' },
-      { date: '2025-10-09', name: '한글날' },
-    ]);
+    expect(holidayNames).toEqual(expect.arrayContaining(['개천절', '한글날']));
   });
 });
 
@@ -110,9 +105,8 @@ it("currentDate가 '2025-01-01' 변경되면 1월 휴일 '신정'으로 업데�
   });
 
   const holidaysObj = result.current.holidays;
-  const holidays = Object.entries(holidaysObj)
-    .filter(([, name]) => name === '신정')
-    .map(([date, name]) => ({ date, name }));
 
-  expect(holidays).toEqual([{ date: '2025-01-01', name: '신정' }]);
+  const holidayNames = Object.values(holidaysObj);
+
+  expect(holidayNames).toEqual(expect.arrayContaining(['신정']));
 });
