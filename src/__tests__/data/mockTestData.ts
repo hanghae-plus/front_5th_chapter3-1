@@ -28,7 +28,7 @@ export const mockTestDataList: Event[] = [
   {
     id: '3',
     date: '2025-05-01',
-    title: 'Event C',
+    title: '팀 회의',
     startTime: '13:00',
     endTime: '14:00',
     description: '새로운 팀 미팅',

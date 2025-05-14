@@ -1,12 +1,27 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import {
+  render,
+  screen,
+  within,
+  act,
+  renderHook,
+  fireEvent,
+  waitFor,
+} from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import App from '../App';
+import { useSearch } from '../hooks/useSearch';
 import { server } from '../setupTests';
 import { Event } from '../types';
+import { mockTestDataList } from './data/mockTestData';
+import { handlers } from '../__mocks__/handlers';
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
+
+const weekStart = new Date('2025-05-02'); // 이 날이 속한 주: 6/29~7/5
+const monthDate = new Date('2025-05-01'); // 7월 전체
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
@@ -31,11 +46,53 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+  beforeEach(() => {
+    server.use(...handlers);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+  });
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    fireEvent.change(searchInput, { target: { value: '트랄라' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+
+    fireEvent.change(searchInput, { target: { value: mockTestDataList[2].title } });
+
+    const searchedEvent = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(searchedEvent).getByText(mockTestDataList[2].title)).toBeInTheDocument();
+      expect(within(searchedEvent).getByText(mockTestDataList[2].location)).toBeInTheDocument();
+      expect(within(searchedEvent).getByText(mockTestDataList[2].description)).toBeInTheDocument();
+    });
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    fireEvent.change(searchInput, { target: { value: mockTestDataList[2].title } });
+
+    fireEvent.change(searchInput, { target: { value: '' } });
+
+    const searchedEvent = await screen.findByTestId('event-list');
+
+    // mockTestDataList 에 들어있는 각 제목이 모두 있는지 순회 검증
+    mockTestDataList.forEach((event) => {
+      expect(within(searchedEvent).getByText(event.title)).toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 충돌', () => {

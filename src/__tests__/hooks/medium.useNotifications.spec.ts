@@ -23,7 +23,7 @@ describe('useNotifications hook notification 테스트', () => {
   const distantEvent: Event = {
     ...upcomingEvent,
     id: '2',
-    startTime: '11:00:00', // 1시간 뒤
+    startTime: '11:00:00', //2시간 뒤
     notificationTime: 5, // 5분 전
   };
 
@@ -80,7 +80,7 @@ describe('useNotifications hook notification 테스트', () => {
     });
     expect(result.current.notifications).toHaveLength(1);
 
-    // 두 번째 tick: same 이벤트여서 추가되지 않음
+    // 두 번째 tick: 같은 이벤트여서 추가되지 않음
     act(() => {
       vi.advanceTimersByTime(1000);
     });

@@ -111,6 +111,7 @@ function App() {
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
+  console.log('filteredEvents', filteredEvents);
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -464,7 +465,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                data-testid={'searched-event'}
+                key={event.id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
