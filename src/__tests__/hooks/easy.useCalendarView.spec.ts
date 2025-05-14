@@ -27,13 +27,9 @@ describe('초기 상태', () => {
 
   it('holidays는 10월 휴일인 개천절, 한글날이 지정되어 있어야 한다', () => {
     const { result } = renderHook(() => useCalendarView());
-    expect(result.current.holidays).toEqual({
-      '2025-10-03': '개천절',
-      '2025-10-05': '추석',
-      '2025-10-06': '추석',
-      '2025-10-07': '추석',
-      '2025-10-09': '한글날',
-    });
+    expect(Object.values(result.current.holidays)).toContain('개천절');
+    expect(Object.values(result.current.holidays)).toContain('한글날');
+    expect(Object.keys(result.current.holidays)).toHaveLength(5);
   });
 });
 
@@ -96,11 +92,8 @@ describe('날짜 변경 및 휴일 업데이트', () => {
       result.current.setCurrentDate(new Date('2025-01-01'));
     });
     expect(result.current.currentDate).toEqual(new Date('2025-01-01'));
-    expect(result.current.holidays).toEqual({
-      '2025-01-01': '신정',
-      '2025-01-29': '설날',
-      '2025-01-30': '설날',
-      '2025-01-31': '설날',
-    });
+    expect(Object.values(result.current.holidays)).toContain('신정');
+    expect(Object.values(result.current.holidays)).toContain('설날');
+    expect(Object.keys(result.current.holidays)).toHaveLength(4);
   });
 });

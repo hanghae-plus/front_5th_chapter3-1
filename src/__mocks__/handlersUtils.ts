@@ -37,7 +37,7 @@ const createEventStore = (initEvents: Event[] = []) => {
 
       return HttpResponse.json({ event });
     }),
-    // * ID 파라미터 처리 유틸리티 함수
+    // * ID 파라미터 처리 유틸리티 함수ㄴ
     getEventId: (id: string | readonly string[]) => {
       return typeof id === 'string' ? id : id[0];
     },
@@ -84,13 +84,13 @@ export const setupMockHandlerUpdating = (initEvents: Event[] = []) => {
   //* 이벤트 수정 핸들러
   const handler = http.put('/api/events/:id', async ({ params, request }) => {
     const { id } = params;
-    if (!id) new HttpResponse(null, { status: 404 });
+    if (!id) return new HttpResponse(null, { status: 404 });
 
     const eventId = store.getEventId(id);
-    const updatedEvent = (await request.json()) as Event;
+    const updatedEvent = (await request.json()) as Partial<Event>;
     const index = store.findEventIndex(eventId);
 
-    if (index === -1) new HttpResponse(null, { status: 404 });
+    if (index === -1) return new HttpResponse(null, { status: 404 });
 
     //* 이벤트 업데이트
     const events = store.getEvents();
@@ -115,12 +115,12 @@ export const setupMockHandlerDeletion = (initEvents: Event[] = []) => {
   //* 이벤트 삭제 핸들러
   const handler = http.delete('/api/events/:id', ({ params }) => {
     const { id } = params;
-    if (!id) new HttpResponse(null, { status: 404 });
+    if (!id) return new HttpResponse(null, { status: 404 });
 
     const eventId = store.getEventId(id);
     const index = store.findEventIndex(eventId);
 
-    if (index === -1) new HttpResponse(null, { status: 404 });
+    if (index === -1) return new HttpResponse(null, { status: 404 });
 
     //* 이벤트 삭제
     store.filterEvents(eventId);

@@ -77,7 +77,7 @@ describe('getFilteredEvents', () => {
     expect(filteredEvents.map((e) => e.id).sort()).toEqual(['1', '3']);
   });
 
-  it.only('검색어가 없을 때 모든 이벤트를 반환한다', () => {
+  it('검색어가 없을 때 모든 이벤트를 반환한다', () => {
     const searchTerm = '';
     const currentDate = new Date('2025-07-01');
     const view = 'week';

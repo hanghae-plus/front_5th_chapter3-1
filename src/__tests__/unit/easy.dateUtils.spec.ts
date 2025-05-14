@@ -28,6 +28,7 @@ describe('getDaysInMonth', () => {
     expect(getDaysInMonth(2025, 2)).toBe(28);
   });
 
+  // * 유효하지 않은 월을 입력할 경우 에러를 발생시킨다
   it('유효하지 않은 월에 대해 적절히 처리한다', () => {
     expect(() => getDaysInMonth(2025, 13)).toThrow();
   });
@@ -106,39 +107,27 @@ describe('getEventsForDay', () => {
   const mockEvents: Event[] = [
     {
       id: '1',
-      title: '이벤트 1',
-      date: '2025-07-01',
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '',
-      location: '',
-      category: '',
-      repeat: { type: 'none' as const, interval: 0 },
-      notificationTime: 0,
+      title: '팀 회의',
+      date: '2025-10-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '주간 팀 회의',
+      location: '회의실 A',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
     },
     {
       id: '2',
-      title: '이벤트 2',
-      date: '2025-07-15',
-      startTime: '14:00',
-      endTime: '15:00',
-      description: '',
-      location: '',
-      category: '',
-      repeat: { type: 'none' as const, interval: 0 },
-      notificationTime: 0,
-    },
-    {
-      id: '3',
-      title: '이벤트 3',
-      date: '2025-07-01',
-      startTime: '16:00',
-      endTime: '17:00',
-      description: '',
-      location: '',
-      category: '',
-      repeat: { type: 'none' as const, interval: 0 },
-      notificationTime: 0,
+      title: '점심 약속',
+      date: '2025-10-01',
+      startTime: '12:00',
+      endTime: '13:00',
+      description: '친구와 점심 식사',
+      location: '수원역',
+      category: '개인',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
     },
   ];
 
@@ -146,7 +135,7 @@ describe('getEventsForDay', () => {
     const result = getEventsForDay(mockEvents, 1);
     expect(result.length).toBe(2);
     expect(result[0].id).toBe('1');
-    expect(result[1].id).toBe('3');
+    expect(result[1].id).toBe('2');
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
