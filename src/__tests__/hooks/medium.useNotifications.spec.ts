@@ -4,7 +4,6 @@ import eventsData from '../../__mocks__/response/events.json';
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
 import { createNotificationMessage } from '../../utils/notificationUtils.ts';
-import { parseHM } from '../utils.ts';
 
 it('초기 상태에서는 알림이 없어야 한다', () => {
   const { result } = renderHook(() => useNotifications([]));
