@@ -175,13 +175,116 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
 });
 
 it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+  server.use(
+    http.get('/api/events', () => {
+      return new HttpResponse(null, {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+    })
+  );
+
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await waitFor(() => {
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '이벤트 로딩 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  expect(result.current.events).toHaveLength(0);
+
+  // 테스트 종료 후 핸들러 초기화 (다른 테스트에 영향 주지 않도록)
+  server.resetHandlers();
+});
+
+it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+  server.use(
+    http.put('/api/events/:id', () => {
+      return new HttpResponse(JSON.stringify({ message: '이벤트를 찾을 수 없습니다.' }), {
+        status: 404,
+      });
+    })
+  );
+
   const { result } = renderHook(() => useEventOperations(true));
 
   await waitFor(() => {
     expect(result.current.events).toEqual(eventsForTest);
   });
+
+  const nonExistentEvent: Event = {
+    id: 'non-existent-id-12345',
+    title: '존재하지 않는 이벤트',
+    date: '2025-01-01',
+    startTime: '10:00',
+    endTime: '15:00',
+    description: '이 이벤트는 존재하지 않습니다',
+    location: '어딘가',
+    category: '테스트',
+    notificationTime: 0,
+    repeat: {
+      type: 'none',
+      interval: 0,
+    },
+  };
+
+  // 존재하지 않는 이벤트 수정 시도
+  await act(async () => {
+    await result.current.saveEvent(nonExistentEvent);
+  });
+
+  await waitFor(() => {
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정 저장 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  // 테스트 후 핸들러 초기화
+  server.resetHandlers();
 });
 
-it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {});
+it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+  server.use(
+    http.delete('/api/events/:id', () => {
+      return new HttpResponse(null, {
+        status: 500,
+        statusText: 'Internal Server Error',
+      });
+    })
+  );
 
-it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {});
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await waitFor(() => {
+    expect(result.current.events).toEqual(eventsForTest);
+  });
+
+  await act(async () => {
+    await result.current.deleteEvent(eventsForTest[0].id);
+  });
+
+  await waitFor(() => {
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정 삭제 실패',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  // 테스트 후 핸들러 초기화
+  server.resetHandlers();
+});
