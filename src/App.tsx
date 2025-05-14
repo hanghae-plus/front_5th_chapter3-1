@@ -17,12 +17,12 @@ import {
   Select,
   Text,
   Tooltip,
-  useToast,
   VStack,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
 import { notificationOptions } from './base/lib/notification.constants.ts';
+import { useScheduleFormValidation } from './features/schedule/model/useScheduleFormValidation.ts';
 import ScheduleCategorySelectForm from './features/schedule/ui/ScheduleCategorySelectForm.tsx';
 import ScheduleSearch from './features/schedule/ui/ScheduleSearch.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
@@ -86,28 +86,11 @@ function App() {
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const toast = useToast();
+  const { validateRequiredFieldsCheck, validateTimeRangeCheck } = useScheduleFormValidation();
 
   const addOrUpdateEvent = async () => {
-    if (!title || !date || !startTime || !endTime) {
-      toast({
-        title: '필수 정보를 모두 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (startTimeError || endTimeError) {
-      toast({
-        title: '시간 설정을 확인해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+    validateRequiredFieldsCheck(title, date, startTime, endTime);
+    validateTimeRangeCheck(startTimeError, endTimeError);
 
     const eventData: Event | EventForm = {
       id: editingEvent ? editingEvent.id : undefined,
