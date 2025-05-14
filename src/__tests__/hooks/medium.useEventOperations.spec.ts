@@ -10,7 +10,6 @@ import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 import { events } from '../../__mocks__/response/events.json';
-import { aw } from 'vitest/dist/chunks/reporters.C4ZHgdxQ.js';
 
 const mockEvents = events as Event[];
 
@@ -56,6 +55,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   };
 
   setupMockHandlerCreation([...mockEvents, newEvent]);
+  setupMockHandlerUpdating();
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
@@ -82,6 +82,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
   };
 
   setupMockHandlerCreation([...mockEvents, newEvent]);
+  setupMockHandlerUpdating();
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
