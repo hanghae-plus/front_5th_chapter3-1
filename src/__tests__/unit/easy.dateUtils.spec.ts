@@ -1,4 +1,5 @@
-import { Event } from '../../types';
+import { dummyEvents } from '../../__mocks__/events';
+import type { Event } from '../../types';
 import {
   fillZero,
   formatDate,
@@ -121,13 +122,33 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+  it('입력한 일이 일치하는 이벤트만 반환한다 (ex. 1일 입력 시 1일인 이벤트들 반환)', () => {
+    expect(getEventsForDay(dummyEvents, 1)).toEqual([
+      expect.objectContaining({ date: '2025-06-01' }),
+      expect.objectContaining({ date: '2024-04-01' }),
+    ]);
+  });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    expect(getEventsForDay(dummyEvents, 3)).toHaveLength(0);
+    expect(getEventsForDay(dummyEvents, 30)).toHaveLength(0);
+  });
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    expect(getEventsForDay(dummyEvents, 0)).toHaveLength(0);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 음수일 경우 빈 배열을 반환한다', () => {
+    expect(getEventsForDay(dummyEvents, -4)).toHaveLength(0);
+    expect(getEventsForDay(dummyEvents, -20)).toHaveLength(0);
+    expect(getEventsForDay(dummyEvents, -10)).toHaveLength(0);
+  });
+
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    expect(getEventsForDay(dummyEvents, 32)).toHaveLength(0);
+    expect(getEventsForDay(dummyEvents, 35)).toHaveLength(0);
+    expect(getEventsForDay(dummyEvents, 40)).toHaveLength(0);
+  });
 });
 
 describe('formatWeek', () => {
