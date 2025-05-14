@@ -364,7 +364,25 @@ describe('일정 뷰', () => {
     expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].category);
   });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2025-01-01'));
+
+    setupMockHandlerCreation([] as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 월별 뷰 선택
+    const selectView = screen.getByLabelText('view');
+    await userEvent.selectOptions(selectView, 'month');
+
+    // "신정" 텍스트와 색상 확인
+    const holidayText = screen.getByText('신정');
+    expect(holidayText).toHaveStyle({ color: 'var(--chakra-colors-red-500)' });
+  });
 });
 
 describe('검색 기능', () => {
