@@ -1,3 +1,4 @@
+import realEvents from '../../__mocks__/response/realEvents.json';
 import { Event } from '../../types';
 import {
   fillZero,
@@ -125,13 +126,25 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+  it('특정 날짜(20일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const events = getEventsForDay(realEvents.events as Event[], 20);
+    expect(events).toHaveLength(1);
+  });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const events = getEventsForDay(realEvents.events as Event[], 1);
+    expect(events).toHaveLength(0);
+  });
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const events = getEventsForDay(realEvents.events as Event[], 0);
+    expect(events).toHaveLength(0);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const events = getEventsForDay(realEvents.events as Event[], 33);
+    expect(events).toHaveLength(0);
+  });
 });
 
 describe('formatWeek', () => {
