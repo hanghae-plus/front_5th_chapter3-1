@@ -1,7 +1,7 @@
 import { FormControl, FormLabel, HStack, Input, Tooltip } from '@chakra-ui/react';
 import { ChangeEvent } from 'react';
 
-import { getTimeErrorMessage } from '../../../utils/timeValidation';
+import { getTimeErrorMessage } from '../../../shared/utils/timeValidation';
 
 interface TimeSettingsProps {
   startTime: string;

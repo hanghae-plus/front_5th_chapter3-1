@@ -19,7 +19,7 @@ import {
   formatMonth,
   getEventsForDay,
   getWeeksAtMonth,
-} from '../../../utils/dateUtils';
+} from '../../../shared/utils/dateUtils';
 
 interface MonthViewProps {
   currentDate: Date;
