@@ -59,6 +59,30 @@
       "category": "개인",
       "repeat": { "type": "none", "interval": 0 },
       "notificationTime": 1
+    },
+    {
+      "id": "5b68ee07-97ec-4011-b18f-aedbb59607ba",
+      "title": "일정1",
+      "date": "2025-05-10",
+      "startTime": "17:10",
+      "endTime": "19:09",
+      "description": "ㅇㅇ",
+      "location": "ㅇㅇ",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 1 },
+      "notificationTime": 10
+    },
+    {
+      "id": "cafaa525-f054-4aeb-8f16-4d22f19084f1",
+      "title": "일정2",
+      "date": "2025-05-10",
+      "startTime": "17:10",
+      "endTime": "18:10",
+      "description": "",
+      "location": "",
+      "category": "",
+      "repeat": { "type": "none", "interval": 1 },
+      "notificationTime": 10
     }
   ]
 }
