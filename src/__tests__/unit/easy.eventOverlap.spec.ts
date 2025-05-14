@@ -183,6 +183,38 @@ describe('isOverlapping', () => {
 
     expect(result).toBe(false);
   });
+
+  // 추가 테스트 케이스
+  it('startTime과 endTime이 동일한 경우는 겹치지 않는 것으로 본다', () => {
+    const event1: Event = {
+      id: '1',
+      title: '테스트 A',
+      date: '2025-07-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
+    };
+    const event2: Event = {
+      id: '2',
+      title: '테스트 B',
+      date: '2025-07-01',
+      startTime: '11:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
+    };
+
+    const result = isOverlapping(event1, event2);
+
+    expect(result).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {
@@ -259,6 +291,39 @@ describe('findOverlappingEvents', () => {
     ];
 
     const result = findOverlappingEvents(newEvent, events);
+
+    expect(result).toEqual([]);
+  });
+
+  // 추가 테스트 케이스
+  it('날짜가 다른 이벤트는 시간이 겹쳐도 중첩되지 않는다', () => {
+    const baseEvent: Event = {
+      id: '1',
+      title: '기준 이벤트',
+      date: '2025-07-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
+    };
+
+    const otherEvent: Event = {
+      id: '2',
+      title: '다른 날짜 이벤트',
+      date: '2025-07-02', // 날짜 다름
+      startTime: '10:30',
+      endTime: '11:30',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 0,
+    };
+
+    const result = findOverlappingEvents(baseEvent, [otherEvent]);
 
     expect(result).toEqual([]);
   });
