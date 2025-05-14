@@ -10,6 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { MOCK_EVENTS } from '../mock';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -140,55 +141,23 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
-  const events: Event[] = [
-    {
-      id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
-      title: '팀 회의',
-      date: '2025-05-20',
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '주간 팀 미팅',
-      location: '회의실 A',
-      category: '업무',
-      repeat: {
-        type: 'none',
-        interval: 0,
-      },
-      notificationTime: 1,
-    },
-    {
-      id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
-      title: '팀 회의',
-      date: '2025-05-01',
-      startTime: '10:00',
-      endTime: '11:00',
-      description: '주간 팀 미팅',
-      location: '회의실 A',
-      category: '업무',
-      repeat: {
-        type: 'none',
-        interval: 0,
-      },
-      notificationTime: 1,
-    },
-  ];
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
-    const result = getEventsForDay(events, 1);
-    expect(result).toEqual([events[1]]);
+    const result = getEventsForDay(MOCK_EVENTS, 1);
+    expect(result).toEqual([MOCK_EVENTS[0], MOCK_EVENTS[1]]);
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
-    const result = getEventsForDay(events, 21);
+    const result = getEventsForDay(MOCK_EVENTS, 21);
     expect(result).toEqual([]);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
-    const result = getEventsForDay(events, 0);
+    const result = getEventsForDay(MOCK_EVENTS, 0);
     expect(result).toEqual([]);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
-    const result = getEventsForDay(events, 33);
+    const result = getEventsForDay(MOCK_EVENTS, 33);
     expect(result).toEqual([]);
   });
 });
