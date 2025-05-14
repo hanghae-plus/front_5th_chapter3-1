@@ -78,13 +78,52 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  it('한 이벤트가 다른 이벤트의 시간 범위에 완전히 포함되면 true를 반환한다', () => {
+    expect(isOverlapping(dummyEvents[4], dummyEvents[5])).toBeTruthy();
+  });
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+  it('두 이벤트의 시간이 겹치기만 해도 true를 반환한다', () => {
+    expect(isOverlapping(dummyEvents[5], dummyEvents[6])).toBeTruthy();
+  });
+
+  it('두 이벤트의 시간이 겹치지 않는 경우 false를 반환한다', () => {
+    expect(isOverlapping(dummyEvents[1], dummyEvents[5])).toBeFalsy();
+  });
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const newEvent: Event = {
+      id: '8',
+      title: '이벤트 8',
+      date: '2024-04-01',
+      startTime: '09:30',
+      endTime: '17:00',
+      description: '설명',
+      location: '장소',
+      category: '카테고리',
+      repeat: { type: 'none', interval: 1 },
+      notificationTime: 30,
+    };
+    const expectedResult = [dummyEvents[4], dummyEvents[5], dummyEvents[6]];
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+    expect(findOverlappingEvents(newEvent, dummyEvents)).toEqual(expectedResult);
+  });
+
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const newEvent: Event = {
+      id: '8',
+      title: '이벤트 8',
+      date: '2025-10-01',
+      startTime: '11:30',
+      endTime: '17:00',
+      description: '설명',
+      location: '장소',
+      category: '카테고리',
+      repeat: { type: 'none', interval: 1 },
+      notificationTime: 30,
+    };
+
+    expect(findOverlappingEvents(newEvent, dummyEvents)).toHaveLength(0);
+  });
 });
