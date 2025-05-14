@@ -195,11 +195,14 @@ describe('getEventsForDay', () => {
     {
       id: '1',
       title: '팀 회의',
-      description: '주간 스프린트 계획 회의',
-      location: '회의실 A',
       date: '2025-10-01',
+      description: '주간 스프린트 계획 회의',
       startTime: '10:00',
       endTime: '11:00',
+      location: '회의실 A',
+      category: '업무',
+      repeat: { type: 'none' },
+      notificationTime: 30,
     },
     {
       id: '2',
@@ -209,6 +212,9 @@ describe('getEventsForDay', () => {
       date: '2025-10-01',
       startTime: '14:00',
       endTime: '15:00',
+      category: '업무',
+      repeat: { type: 'none' },
+      notificationTime: 30,
     },
   ];
 
