@@ -14,7 +14,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Event } from '../../../entities/event/model/types';
-import { formatWeek, getWeekDates } from '../../../utils/dateUtils';
+import { formatWeek, getWeekDates } from '../../../shared/utils/dateUtils';
 
 interface WeekViewProps {
   currentDate: Date;
