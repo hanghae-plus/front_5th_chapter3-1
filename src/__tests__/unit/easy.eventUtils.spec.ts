@@ -1,5 +1,5 @@
-import { Event } from '../../types';
 import { getFilteredEvents } from '../../based/utils/eventUtils';
+import { Event } from '../../types';
 
 const MOCK_EVENTS: Event[] = [
   {
