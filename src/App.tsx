@@ -1,4 +1,3 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -14,7 +13,6 @@ import {
   FormLabel,
   Heading,
   HStack,
-  IconButton,
   Input,
   Select,
   Text,
@@ -32,6 +30,7 @@ import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
+import CalendarViewSelect from './modules/calendar/ui/CalendarViewSelect.tsx';
 import MonthCalendar from './modules/calendar/ui/MonthCalendar.tsx';
 import WeekCalendar from './modules/calendar/ui/WeekCalendar.tsx';
 import NotificationAlarm from './modules/notification/ui/NotificationAlarm.tsx';
@@ -266,26 +265,7 @@ function App() {
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
 
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
+          <CalendarViewSelect view={view} setView={setView} navigate={navigate} />
 
           {view === 'week' && (
             <WeekCalendar
