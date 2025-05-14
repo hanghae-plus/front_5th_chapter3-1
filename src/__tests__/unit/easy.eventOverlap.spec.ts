@@ -47,7 +47,7 @@ describe('parseDateTime', () => {
 describe('convertEventToDateRange', () => {
   it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
     const event: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '10:00',
@@ -71,7 +71,7 @@ describe('convertEventToDateRange', () => {
 
   it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
     const event: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-13-32',
       startTime: '10:00',
@@ -95,7 +95,7 @@ describe('convertEventToDateRange', () => {
 
   it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
     const event: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '25:00',
@@ -121,7 +121,7 @@ describe('convertEventToDateRange', () => {
 describe('isOverlapping', () => {
   it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
     const event1: Event = {
-      id: 'test-1b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '10:00',
@@ -134,7 +134,7 @@ describe('isOverlapping', () => {
     };
 
     const event2: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '2',
       title: '테스트 회의2',
       date: '2025-07-01',
       startTime: '10:00',
@@ -153,7 +153,7 @@ describe('isOverlapping', () => {
 
   it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
     const event1: Event = {
-      id: 'test-1b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '10:00',
@@ -166,7 +166,7 @@ describe('isOverlapping', () => {
     };
 
     const event2: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '2',
       title: '테스트 회의2',
       date: '2025-07-02',
       startTime: '10:00',
@@ -187,7 +187,7 @@ describe('isOverlapping', () => {
 describe('findOverlappingEvents', () => {
   it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
     const event1: Event = {
-      id: 'test-1b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '10:00',
@@ -200,7 +200,7 @@ describe('findOverlappingEvents', () => {
     };
 
     const event2: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '2',
       title: '테스트 회의2',
       date: '2025-07-01',
       startTime: '10:00',
@@ -213,7 +213,7 @@ describe('findOverlappingEvents', () => {
     };
 
     const event3: Event = {
-      id: 'test-3b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '3',
       title: '테스트 회의3',
       date: '2025-07-01',
       startTime: '10:00',
@@ -233,7 +233,7 @@ describe('findOverlappingEvents', () => {
 
   it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
     const event1: Event = {
-      id: 'test-1b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '1',
       title: '테스트 회의',
       date: '2025-07-01',
       startTime: '10:00',
@@ -246,7 +246,7 @@ describe('findOverlappingEvents', () => {
     };
 
     const event2: Event = {
-      id: 'test-2b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '2',
       title: '테스트 회의2',
       date: '2025-07-02',
       startTime: '10:00',
@@ -259,7 +259,7 @@ describe('findOverlappingEvents', () => {
     };
 
     const event3: Event = {
-      id: 'test-3b7545a6-ebee-426c-b906-2329bc8d62bd',
+      id: '3',
       title: '테스트 회의3',
       date: '2025-07-03',
       startTime: '10:00',

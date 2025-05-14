@@ -201,7 +201,7 @@ describe('getEventsForDay', () => {
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
     const events: Event[] = [
       {
-        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        id: '1',
         title: '팀 회의',
         date: '2025-07-01',
         startTime: '10:00',
@@ -213,7 +213,7 @@ describe('getEventsForDay', () => {
         notificationTime: 1,
       },
       {
-        id: '09702fb3-a478-40b3-905e-9ab3c8849dcd',
+        id: '2',
         title: '점심 약속',
         date: '2025-07-01',
         startTime: '12:30',
@@ -225,7 +225,7 @@ describe('getEventsForDay', () => {
         notificationTime: 1,
       },
       {
-        id: 'fcdee123-d654-4c11-b50a-28bb983be457',
+        id: '3',
         title: '운동',
         date: '2025-07-02',
         startTime: '18:00',
@@ -241,7 +241,7 @@ describe('getEventsForDay', () => {
     const date = 1;
     const expectedEvents = [
       {
-        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        id: '1',
         title: '팀 회의',
         date: '2025-07-01',
         startTime: '10:00',
@@ -253,7 +253,7 @@ describe('getEventsForDay', () => {
         notificationTime: 1,
       },
       {
-        id: '09702fb3-a478-40b3-905e-9ab3c8849dcd',
+        id: '2',
         title: '점심 약속',
         date: '2025-07-01',
         startTime: '12:30',
@@ -274,7 +274,7 @@ describe('getEventsForDay', () => {
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
     const events: Event[] = [
       {
-        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        id: '1',
         title: '팀 회의',
         date: '2025-05-20',
         startTime: '10:00',
@@ -297,7 +297,7 @@ describe('getEventsForDay', () => {
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
     const events: Event[] = [
       {
-        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        id: '1',
         title: '팀 회의',
         date: '2025-05-20',
         startTime: '10:00',
@@ -320,7 +320,7 @@ describe('getEventsForDay', () => {
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
     const events: Event[] = [
       {
-        id: '2b7545a6-ebee-426c-b906-2329bc8d62bd',
+        id: '1',
         title: '팀 회의',
         date: '2025-05-20',
         startTime: '10:00',
