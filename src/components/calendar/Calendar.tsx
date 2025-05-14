@@ -1,8 +1,7 @@
 import { Heading, VStack } from '@chakra-ui/react';
 
 import CalendarHeader from './CalendarHeader.tsx';
-import renderMonthView from './MonthView.tsx';
-import renderWeekView from './WeekView.tsx';
+import CalendarView from './CalendarView.tsx';
 import { Event } from '../../types.ts';
 
 interface Props {
@@ -30,9 +29,13 @@ const Calendar = ({
 
       <CalendarHeader view={view} onChangeView={setView} onNavigate={navigate} />
 
-      {view === 'week' && renderWeekView({ filteredEvents, notifiedEvents, currentDate })}
-      {view === 'month' &&
-        renderMonthView({ filteredEvents, notifiedEvents, currentDate, holidays })}
+      <CalendarView
+        view={view}
+        currentDate={currentDate}
+        holidays={holidays}
+        filteredEvents={filteredEvents}
+        notifiedEvents={notifiedEvents}
+      />
     </VStack>
   );
 };
