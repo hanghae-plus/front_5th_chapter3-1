@@ -388,17 +388,407 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  let user: UserEvent;
+  let inMemoryEvents: Event[];
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+  beforeEach(async () => {
+    user = userEvent.setup();
+    inMemoryEvents = [
+      // 기본 테스트 이벤트들 설정
+      {
+        id: 'event-1',
+        title: '팀 회의',
+        date: '2025-05-20',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: 'event-2',
+        title: '점심 약속',
+        date: '2025-05-21',
+        startTime: '12:30',
+        endTime: '13:30',
+        description: '동료와 점심 식사',
+        location: '회사 근처 식당',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: 'event-3',
+        title: '프로젝트 마감',
+        date: '2025-05-25',
+        startTime: '09:00',
+        endTime: '18:00',
+        description: '분기별 프로젝트 마감',
+        location: '사무실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    // 시스템 시간 설정 (2025-05-20)
+    vi.setSystemTime(new Date('2025-05-20'));
+
+    // MSW 핸들러 설정
+    server.use(
+      http.get('/api/events', async () => {
+        return HttpResponse.json({ events: [...inMemoryEvents] });
+      })
+    );
+
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    server.resetHandlers();
+  });
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    // 검색창 찾기
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+
+    // 존재하지 않는 키워드로 검색
+    await user.clear(searchInput);
+    await user.type(searchInput, '존재하지 않는 일정');
+
+    // 검색 결과가 없을 때 메시지 확인
+    await waitFor(() => {
+      expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+
+    // 일정 목록에 일정이 표시되지 않는지 확인
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).queryByText('팀 회의')).not.toBeInTheDocument();
+    expect(within(eventList).queryByText('점심 약속')).not.toBeInTheDocument();
+    expect(within(eventList).queryByText('프로젝트 마감')).not.toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    // 검색창 찾기
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+
+    // '팀 회의' 로 검색
+    await user.clear(searchInput);
+    await user.type(searchInput, '팀 회의');
+
+    // 일정 목록에서 '팀 회의' 일정만 표시되는지 확인
+    const eventList = screen.getByTestId('event-list');
+
+    // '팀 회의' 일정은 표시되어야 함
+    await waitFor(() => {
+      expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    });
+
+    // 다른 일정들은 표시되지 않아야 함
+    expect(within(eventList).queryByText('점심 약속')).not.toBeInTheDocument();
+    expect(within(eventList).queryByText('프로젝트 마감')).not.toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    // 검색창 찾기
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+
+    // 먼저 특정 키워드로 검색
+    await user.clear(searchInput);
+    await user.type(searchInput, '팀 회의');
+
+    // 검색 결과 확인 (팀 회의만 표시)
+    const eventList = screen.getByTestId('event-list');
+    await waitFor(() => {
+      expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+      expect(within(eventList).queryByText('점심 약속')).not.toBeInTheDocument();
+    });
+
+    // 검색어 지우기
+    await user.clear(searchInput);
+
+    // 모든 일정이 다시 표시되는지 확인
+    await waitFor(() => {
+      expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('점심 약속')).toBeInTheDocument();
+      expect(within(eventList).getByText('프로젝트 마감')).toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  let user: UserEvent;
+  let inMemoryEvents: Event[];
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+  beforeEach(async () => {
+    user = userEvent.setup();
+    inMemoryEvents = [
+      // 기존 일정 추가 (10:00-11:00)
+      {
+        id: 'existing-event',
+        title: '기존 회의',
+        date: '2025-05-20',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '기존 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+
+    // 시스템 시간 설정
+    vi.setSystemTime(new Date('2025-05-20'));
+
+    // MSW 핸들러 설정
+    server.use(
+      http.get('/api/events', async () => {
+        return HttpResponse.json({ events: [...inMemoryEvents] });
+      })
+    );
+
+    // 포스트 핸들러 - 이벤트 저장
+    server.use(
+      http.post('/api/events', async ({ request }) => {
+        const newEvent = (await request.json()) as Event;
+        const eventWithId = { ...newEvent, id: `new-event-${Date.now()}` };
+        inMemoryEvents.push(eventWithId);
+        return HttpResponse.json(eventWithId, { status: 201 });
+      })
+    );
+
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    server.resetHandlers();
+  });
+
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    // 1. 폼에 일정 정보 입력 (기존 일정과 시간이 겹치도록)
+    await user.type(screen.getByLabelText('제목'), '새 회의');
+    await user.type(screen.getByLabelText('날짜'), '2025-05-20');
+    await user.type(screen.getByLabelText('시작 시간'), '10:30'); // 기존 일정(10-11)과 겹침
+    await user.type(screen.getByLabelText('종료 시간'), '11:30');
+    await user.type(screen.getByLabelText('설명'), '새 미팅 설명');
+    await user.type(screen.getByLabelText('위치'), '회의실 B');
+    await user.selectOptions(screen.getByLabelText('카테고리'), '업무');
+
+    // 2. 일정 추가 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 3. 일정 겹침 경고 다이얼로그가 표시되는지 확인
+    // 다이얼로그 헤더 찾기
+    await waitFor(() => {
+      const dialogHeader = screen.getByText('일정 겹침 경고');
+      expect(dialogHeader).toBeInTheDocument();
+    });
+
+    // 다이얼로그 내용 확인 (class 또는 aria 속성으로 찾기)
+    // AlertDialogContent 또는 AlertDialogBody 클래스를 가진 요소 찾기
+    const dialogContent =
+      screen.getByText('일정 겹침 경고').closest('.chakra-alert-dialog__content') ||
+      screen.getByText('일정 겹침 경고').closest('[data-testid="alert-dialog-content"]') ||
+      screen.getByText('일정 겹침 경고').closest('section') ||
+      screen.getByText('일정 겹침 경고').parentElement?.parentElement;
+
+    expect(dialogContent).toBeInTheDocument();
+
+    // 다이얼로그 내용에서 '다음 일정과 겹칩니다' 텍스트 찾기
+    expect(screen.getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
+
+    // 다이얼로그 내에서 기존 회의가 포함된 요소 찾기
+    // 정확한 형식을 찾기보다는 부분 텍스트 매칭 사용
+    expect(
+      screen.getByText((content) => {
+        return content.includes('기존 회의') && content.includes('2025-05-20');
+      })
+    ).toBeInTheDocument();
+
+    // 4. 계속 진행 및 취소 버튼 확인
+    const cancelButton = screen.getByText('취소');
+    const continueButton = screen.getByText('계속 진행');
+    expect(cancelButton).toBeInTheDocument();
+    expect(continueButton).toBeInTheDocument();
+
+    // 5. 취소 버튼 클릭
+    await user.click(cancelButton);
+
+    // 6. 다이얼로그가 닫히는지 확인
+    await waitFor(() => {
+      expect(screen.queryByText('일정 겹침 경고')).not.toBeInTheDocument();
+    });
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    // 1. 충돌 대상이 될 두 번째 이벤트 추가
+    const secondEvent: Event = {
+      id: 'second-event',
+      title: '두 번째 회의',
+      date: '2025-05-20',
+      startTime: '11:30',
+      endTime: '12:30',
+      description: '오후 회의',
+      location: '회의실 C',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    inMemoryEvents.push(secondEvent);
+
+    // PUT 핸들러 추가 - 이벤트 업데이트
+    server.use(
+      http.put('/api/events/:id', async ({ params, request }) => {
+        const id = params.id as string;
+        const updatedEvent = (await request.json()) as Event;
+
+        // 메모리 내 이벤트 업데이트
+        const index = inMemoryEvents.findIndex((event) => event.id === id);
+        if (index !== -1) {
+          inMemoryEvents[index] = { ...updatedEvent, id };
+        }
+
+        return HttpResponse.json({ ...updatedEvent, id }, { status: 200 });
+      })
+    );
+
+    cleanup();
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+
+    const eventList = screen.getByTestId('event-list');
+    await waitFor(() => expect(within(eventList).getByText('기존 회의')).toBeInTheDocument());
+    await waitFor(() => expect(within(eventList).getByText('두 번째 회의')).toBeInTheDocument());
+
+    // 2. "기존 회의" 텍스트를 가진 요소를 찾습니다.
+    const existingEventTitleElement = within(eventList).getByText('기존 회의');
+
+    // 3. 해당 요소의 부모 요소들 중에서 Edit 버튼을 포함하는 컨테이너를 찾습니다.
+    let parentElement = existingEventTitleElement.parentElement;
+    let editButton: HTMLElement | null = null;
+
+    // 부모 요소를 최대 5단계까지 올라가며 Edit 버튼 찾기
+    for (let i = 0; i < 5 && parentElement && !editButton; i++) {
+      editButton = within(parentElement).queryByRole('button', { name: 'Edit event' });
+      parentElement = parentElement.parentElement;
+    }
+
+    expect(editButton).toBeInTheDocument();
+    await user.click(editButton!);
+
+    // 4. 편집 폼 확인
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '일정 수정' })).toBeInTheDocument();
+      expect(screen.getByLabelText('제목')).toHaveValue('기존 회의');
+    });
+
+    // 5. '기존 회의'의 종료 시간을 '두 번째 회의'와 겹치도록 수정
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, '12:00');
+
+    // 6. 수정(저장) 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 7. 일정 겹침 경고 다이얼로그 확인
+    const alertDialog = await screen.findByRole('alertdialog', { name: /일정 겹침 경고/i });
+    expect(alertDialog).toBeInTheDocument();
+    expect(within(alertDialog).getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
+    expect(
+      within(alertDialog).getByText((content) => content.includes('두 번째 회의'))
+    ).toBeInTheDocument();
+
+    // 8. "계속 진행" 버튼 클릭
+    const continueButton = within(alertDialog).getByRole('button', { name: '계속 진행' });
+    await user.click(continueButton);
+
+    // 9. 다이얼로그 닫힘 확인
+    await waitFor(() =>
+      expect(screen.queryByRole('alertdialog', { name: /일정 겹침 경고/i })).not.toBeInTheDocument()
+    );
+
+    // 10. 성공 토스트 메시지 확인 - 더 유연한 방식으로 확인
+    await waitFor(() => {
+      const successMessages = screen.queryAllByText((content, element) => {
+        return element?.textContent?.includes('일정이 수정되었습니다') || false;
+      });
+      expect(successMessages.length).toBeGreaterThan(0);
+    });
+
+    // 11. 폼이 "일정 추가" 모드로 변경되었는지 확인
+    await waitFor(() => {
+      expect(screen.getByRole('heading', { name: '일정 추가' })).toBeInTheDocument();
+    });
+
+    // 12. 이벤트 목록에서 '기존 회의'의 시간이 실제로 변경되었는지 확인
+    await waitFor(() => {
+      // 모든 시간 텍스트를 확인하여 수정된 시간(10:00 - 12:00)을 찾음
+      const timeTexts = within(eventList).queryAllByText(/\d{2}:\d{2} - \d{2}:\d{2}/);
+      const updatedTimeFound = timeTexts.some((element) => element.textContent === '10:00 - 12:00');
+      expect(updatedTimeFound).toBe(true);
+    });
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  // 1. 테스트를 위한 이벤트 설정
+  const testEvent: Event = {
+    id: 'notification-test-event',
+    title: '알림 테스트 회의',
+    date: '2025-05-20', // 오늘 날짜로 설정
+    startTime: '10:20', // 현재 시간보다 약간 뒤로 설정
+    endTime: '11:20',
+    description: '알림 기능 테스트',
+    location: '회의실 A',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10, // 10분 전 알림
+  };
+
+  // 이벤트 데이터 설정 및 핸들러 구성
+  const inMemoryEvents = [testEvent];
+  server.use(
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events: inMemoryEvents });
+    })
+  );
+
+  // 2. 현재 시간을 이벤트 시작 시간 직전으로 설정
+  // 필요하다면 이 시간을 조정하여 알림이 확실히 표시되도록 함
+  vi.setSystemTime(new Date('2025-05-20T10:10:30'));
+
+  // 3. 애플리케이션 렌더링
+  cleanup();
+  renderWithChakra(<App />);
+
+  // 4. 이벤트가 로드될 때까지 대기
+  await waitFor(() => {
+    expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument();
+  });
+
+  // 5. 알림 메시지 확인
+  // 이 부분이 가장 중요한 테스트 포인트 - 알림 메시지가 화면에 표시되는지
+  await waitFor(() => {
+    // 알림 메시지를 포함하는 요소 찾기
+    const notificationElement = screen.queryByText(
+      (content) =>
+        content.includes('10분 후') &&
+        content.includes('알림 테스트 회의') &&
+        content.includes('시작됩니다')
+    );
+
+    // 알림 메시지가 화면에 표시되어야 함
+    expect(notificationElement).toBeInTheDocument();
+  });
+
+  vi.useRealTimers();
+  server.resetHandlers();
+});
