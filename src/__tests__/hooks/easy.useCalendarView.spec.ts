@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useCalendarView } from '../../hooks/useCalendarView.ts';
-import { assertDate } from '../utils.ts';
+import { assertDate } from '@/__tests__/utils.ts';
+import { useCalendarView } from '@/hooks/useCalendarView.ts';
 
 act; // ? >> 동작 수행
 assertDate; // ? >> 날짜가 일치 하는 지 비교

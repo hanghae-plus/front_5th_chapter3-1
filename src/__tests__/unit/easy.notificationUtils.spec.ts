@@ -1,5 +1,5 @@
-import { Event } from '../../types';
-import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
+import { Event } from '@/types';
+import { createNotificationMessage, getUpcomingEvents } from '@/utils/notificationUtils';
 
 describe('getUpcomingEvents', () => {
   const common: Event = {

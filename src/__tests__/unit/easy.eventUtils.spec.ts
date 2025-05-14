@@ -1,5 +1,5 @@
-import { Event } from '../../types';
-import { getFilteredEvents } from '../../utils/eventUtils';
+import { Event } from '@/types';
+import { getFilteredEvents } from '@/utils/eventUtils';
 
 describe('getFilteredEvents', () => {
   const common: Event = {
