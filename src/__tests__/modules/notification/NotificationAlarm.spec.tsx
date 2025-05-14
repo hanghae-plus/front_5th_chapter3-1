@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 
 import { NotificationMessageType } from '../../../base/types/notification.types';
-import NotificationAlarm from '../../../modules/notification/NotificationAlarm';
+import NotificationAlarm from '../../../modules/notification/ui/NotificationAlarm';
 
 describe('알림 (NotificationAlarm)', () => {
   const mockNotifications: NotificationMessageType[] = [

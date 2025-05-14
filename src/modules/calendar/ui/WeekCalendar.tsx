@@ -13,9 +13,9 @@ import {
   Text,
 } from '@chakra-ui/react';
 
-import { weekDays } from '../../base/lib/day.constants';
-import { Event } from '../../types';
-import { formatWeek, getWeekDates } from '../../utils/dateUtils';
+import { weekDays } from '../../../base/lib/day.constants';
+import { Event } from '../../../types';
+import { formatWeek, getWeekDates } from '../../../utils/dateUtils';
 
 interface WeekCalendarProps {
   currentDate: Date;

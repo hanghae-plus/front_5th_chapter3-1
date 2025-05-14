@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 
 import { weekDays } from '../../../base/lib/day.constants';
-import WeekCalendar from '../../../modules/calendar/WeekCalendar';
+import WeekCalendar from '../../../modules/calendar/ui/WeekCalendar';
 import { Event } from '../../../types';
 
 describe('주간 캘린더 (WeekCalendar)', () => {

@@ -2,7 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 
 import { weekDays } from '../../../base/lib/day.constants';
-import MonthCalendar from '../../../modules/calendar/MonthCalendar';
+import MonthCalendar from '../../../modules/calendar/ui/MonthCalendar';
 import { Event } from '../../../types';
 
 describe('월간 캘린더 (MonthCalendar)', () => {

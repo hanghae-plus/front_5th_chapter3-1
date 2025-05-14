@@ -13,9 +13,14 @@ import {
   HStack,
 } from '@chakra-ui/react';
 
-import { weekDays } from '../../base/lib/day.constants';
-import { Event } from '../../types';
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../../utils/dateUtils';
+import { weekDays } from '../../../base/lib/day.constants';
+import { Event } from '../../../types';
+import {
+  formatDate,
+  formatMonth,
+  getEventsForDay,
+  getWeeksAtMonth,
+} from '../../../utils/dateUtils';
 
 interface MonthCalendarProps {
   currentDate: Date;

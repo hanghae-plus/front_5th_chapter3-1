@@ -1,7 +1,7 @@
 import { Alert, AlertIcon, AlertTitle, Box, CloseButton, VStack } from '@chakra-ui/react';
 import React from 'react';
 
-import { NotificationMessageType } from '../../base/types/notification.types';
+import { NotificationMessageType } from '../../../base/types/notification.types';
 
 interface NotificationAlarmProps {
   notifications: NotificationMessageType[];
