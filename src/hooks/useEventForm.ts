@@ -1,23 +1,36 @@
 import { ChangeEvent, useState } from 'react';
 
+import { INITIAL_FORM_STATE } from '../constants/initialFormState';
 import { Event, RepeatType } from '../types';
 import { getTimeErrorMessage } from '../utils/timeValidation';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 
 export const useEventForm = (initialEvent?: Event) => {
-  const [title, setTitle] = useState(initialEvent?.title || '');
-  const [date, setDate] = useState(initialEvent?.date || '');
-  const [startTime, setStartTime] = useState(initialEvent?.startTime || '');
-  const [endTime, setEndTime] = useState(initialEvent?.endTime || '');
-  const [description, setDescription] = useState(initialEvent?.description || '');
-  const [location, setLocation] = useState(initialEvent?.location || '');
-  const [category, setCategory] = useState(initialEvent?.category || '');
+  const [title, setTitle] = useState(initialEvent?.title ?? INITIAL_FORM_STATE.title);
+  const [date, setDate] = useState(initialEvent?.date ?? INITIAL_FORM_STATE.date);
+  const [startTime, setStartTime] = useState(
+    initialEvent?.startTime ?? INITIAL_FORM_STATE.startTime
+  );
+  const [endTime, setEndTime] = useState(initialEvent?.endTime ?? INITIAL_FORM_STATE.endTime);
+  const [description, setDescription] = useState(
+    initialEvent?.description ?? INITIAL_FORM_STATE.description
+  );
+  const [location, setLocation] = useState(initialEvent?.location ?? INITIAL_FORM_STATE.location);
+  const [category, setCategory] = useState(initialEvent?.category ?? INITIAL_FORM_STATE.category);
   const [isRepeating, setIsRepeating] = useState(initialEvent?.repeat.type !== 'none');
-  const [repeatType, setRepeatType] = useState<RepeatType>(initialEvent?.repeat.type || 'none');
-  const [repeatInterval, setRepeatInterval] = useState(initialEvent?.repeat.interval || 1);
-  const [repeatEndDate, setRepeatEndDate] = useState(initialEvent?.repeat.endDate || '');
-  const [notificationTime, setNotificationTime] = useState(initialEvent?.notificationTime || 10);
+  const [repeatType, setRepeatType] = useState<RepeatType>(
+    initialEvent?.repeat.type ?? INITIAL_FORM_STATE.repeatType
+  );
+  const [repeatInterval, setRepeatInterval] = useState(
+    initialEvent?.repeat.interval ?? INITIAL_FORM_STATE.repeatInterval
+  );
+  const [repeatEndDate, setRepeatEndDate] = useState(
+    initialEvent?.repeat.endDate ?? INITIAL_FORM_STATE.repeatEndDate
+  );
+  const [notificationTime, setNotificationTime] = useState(
+    initialEvent?.notificationTime ?? INITIAL_FORM_STATE.notificationTime
+  );
 
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
 
@@ -39,18 +52,18 @@ export const useEventForm = (initialEvent?: Event) => {
   };
 
   const resetForm = () => {
-    setTitle('');
-    setDate('');
-    setStartTime('');
-    setEndTime('');
-    setDescription('');
-    setLocation('');
-    setCategory('');
-    setIsRepeating(false);
-    setRepeatType('none');
-    setRepeatInterval(1);
-    setRepeatEndDate('');
-    setNotificationTime(10);
+    setTitle(INITIAL_FORM_STATE.title);
+    setDate(INITIAL_FORM_STATE.date);
+    setStartTime(INITIAL_FORM_STATE.startTime);
+    setEndTime(INITIAL_FORM_STATE.endTime);
+    setDescription(INITIAL_FORM_STATE.description);
+    setLocation(INITIAL_FORM_STATE.location);
+    setCategory(INITIAL_FORM_STATE.category);
+    setIsRepeating(INITIAL_FORM_STATE.isRepeating);
+    setRepeatType(INITIAL_FORM_STATE.repeatType);
+    setRepeatInterval(INITIAL_FORM_STATE.repeatInterval);
+    setRepeatEndDate(INITIAL_FORM_STATE.repeatEndDate);
+    setNotificationTime(INITIAL_FORM_STATE.notificationTime);
   };
 
   const editEvent = (event: Event) => {
