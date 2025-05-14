@@ -7,7 +7,7 @@ import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
-import { findOverlappingEvents } from './utils/eventOverlap.ts';
+import { findOverlappingEvents } from './shared/utils/eventOverlap.ts';
 import { AlertWidget } from './widgets/AlertWidget/ui/AlertWidget.tsx';
 import { CalendarWidget } from './widgets/CalendarWidget/ui/CalendarWidget.tsx';
 import { EventFormWidget } from './widgets/EventFormWidget/ui/EventFormWidget.tsx';

@@ -1,9 +1,14 @@
-import { Event } from '../types.ts';
+import { Event } from '../../entities/event/model/types';
 
 /**
  * 주어진 년도와 월의 일수를 반환합니다.
  */
-export function getDaysInMonth(year: number, month: number): number {
+export function getDaysInMonth(year: number, month: number): number | undefined {
+  // 유효성 검사 추가
+  if (year < 0 || month < 1 || month > 12) {
+    return undefined;
+  }
+
   return new Date(year, month, 0).getDate();
 }
 
