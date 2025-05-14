@@ -1,11 +1,4 @@
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  CloseButton,
-  VStack
-} from '@chakra-ui/react';
+import { Alert, AlertIcon, AlertTitle, Box, CloseButton, VStack } from '@chakra-ui/react';
 
 export default function Notifications({ notifications, setNotifications }) {
   return (
@@ -18,9 +11,7 @@ export default function Notifications({ notifications, setNotifications }) {
               <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
             </Box>
             <CloseButton
-              onClick={() =>
-                setNotifications((prev) => prev.filter((_, i) => i !== index))
-              }
+              onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
             />
           </Alert>
         ))}

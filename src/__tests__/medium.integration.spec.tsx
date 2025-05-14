@@ -1,12 +1,13 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
-const setup = (element: ReactElement) => {
+const setup = (element: any) => {
   const user = userEvent.setup();
 
   return { ...render(<ChakraProvider>{element}</ChakraProvider>), user }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
@@ -104,7 +105,7 @@ describe('일정 CRUD 및 기본 기능', () => {
       },
     ]);
 
-    const { user } = setup(<App />);
+    // const { user } = setup(<App />);
 
     // Delete the event
     // await user.click(screen.getByLabelText('Delete event'));
@@ -204,13 +205,13 @@ describe('일정 뷰', () => {
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
     setupMockHandlerCreation([]);
-  
+
     const { user } = setup(<App />);
-  
+
     await user.selectOptions(screen.getByLabelText('view'), 'month');
-  
+
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
-  
+
     // const holidayElement = screen.findByText('신정');
     // expect(holidayElement).toBeInTheDocument();
     // expect(holidayElement).toHaveStyle('color: #E53E3E');

@@ -7,7 +7,7 @@ import {
   IconButton,
   Input,
   Text,
-  VStack
+  VStack,
 } from '@chakra-ui/react';
 
 const notificationOptions = [
@@ -24,7 +24,7 @@ export default function EventList({
   filteredEvents,
   notifiedEvents,
   editEvent,
-  deleteEvent
+  deleteEvent,
 }) {
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">

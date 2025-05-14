@@ -1,16 +1,5 @@
 import { BellIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Heading,
-  HStack,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr
-} from '@chakra-ui/react';
+import { Box, Heading, HStack, Table, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react';
 
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -33,7 +22,7 @@ export default function MonthView({
           <Tr>
             {weekDays.map((day) => (
               <Th key={day} width="14.28%">
-                {day}
+                {day},
               </Th>
             ))}
           </Tr>

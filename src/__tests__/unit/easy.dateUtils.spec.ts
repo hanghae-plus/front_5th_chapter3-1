@@ -7,7 +7,6 @@ import {
   getDaysInMonth,
   getEventsForDay,
   getWeekDates,
-  getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
 

@@ -8,7 +8,7 @@ import {
   VStack,
   HStack,
   Button,
-  Heading
+  Heading,
 } from '@chakra-ui/react';
 
 import { RepeatType } from '../types';

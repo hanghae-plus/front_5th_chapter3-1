@@ -6,16 +6,11 @@ import {
   AlertDialogHeader,
   AlertDialogOverlay,
   Button,
-  Text
+  Text,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-export default function OverlapDialog({
-  isOpen,
-  onClose,
-  overlappingEvents,
-  onConfirm
-}) {
+export default function OverlapDialog({ isOpen, onClose, overlappingEvents, onConfirm }) {
   const cancelRef = useRef(null);
 
   return (

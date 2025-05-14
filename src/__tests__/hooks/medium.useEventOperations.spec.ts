@@ -8,7 +8,6 @@ import {
 } from '../../__mocks__/handlersUtils.ts';
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
-import { Event } from '../../types.ts';
 
 // ? Medium: 아래 toastFn과 mock과 이 fn은 무엇을 해줄까요?
 const toastFn = vi.fn();

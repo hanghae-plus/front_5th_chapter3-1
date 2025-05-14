@@ -33,64 +33,62 @@ const mockEvents: Event[] = [
   },
 ];
 
-// describe('useNotifications', () => {
-  it('초기 상태에서는 알림이 없어야 한다', () => {
-    const { result } = renderHook(() => useNotifications([]));
-    expect(result.current.notifications).toEqual([]);
-    expect(result.current.notifiedEvents).toEqual([]);
+it('초기 상태에서는 알림이 없어야 한다', () => {
+  const { result } = renderHook(() => useNotifications([]));
+  expect(result.current.notifications).toEqual([]);
+  expect(result.current.notifiedEvents).toEqual([]);
+});
+
+it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
+  const { result } = renderHook(() => useNotifications(mockEvents));
+
+  act(() => {
+    vi.setSystemTime(new Date('2025-05-13T09:55:00')); // 첫 번째 이벤트 알림 시간
+    vi.advanceTimersByTime(1000); // 1초 경과
   });
 
-  it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
-    const { result } = renderHook(() => useNotifications(mockEvents));
+  expect(result.current.notifications).toHaveLength(1);
+  expect(result.current.notifications[0].message).toContain('Meeting');
 
-    act(() => {
-      vi.setSystemTime(new Date('2025-05-13T09:55:00')); // 첫 번째 이벤트 알림 시간
-      vi.advanceTimersByTime(1000); // 1초 경과
-    });
-
-    expect(result.current.notifications).toHaveLength(1);
-    expect(result.current.notifications[0].message).toContain('Meeting');
-
-    act(() => {
-      vi.setSystemTime(new Date('2025-05-13T11:50:00')); // 두 번째 이벤트 알림 시간
-      vi.advanceTimersByTime(1000); // 1초 경과
-    });
-
-    expect(result.current.notifications).toHaveLength(2);
-    expect(result.current.notifications[1].message).toContain('Lunch');
+  act(() => {
+    vi.setSystemTime(new Date('2025-05-13T11:50:00')); // 두 번째 이벤트 알림 시간
+    vi.advanceTimersByTime(1000); // 1초 경과
   });
 
-  it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
-    const { result } = renderHook(() => useNotifications(mockEvents));
+  expect(result.current.notifications).toHaveLength(2);
+  expect(result.current.notifications[1].message).toContain('Lunch');
+});
 
-    act(() => {
-      vi.setSystemTime(new Date('2025-05-13T09:55:00'));
-      vi.advanceTimersByTime(1000);
-    });
+it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
+  const { result } = renderHook(() => useNotifications(mockEvents));
 
-    expect(result.current.notifications).toHaveLength(1);
-
-    act(() => {
-      result.current.removeNotification(0);
-    });
-
-    expect(result.current.notifications).toHaveLength(0);
+  act(() => {
+    vi.setSystemTime(new Date('2025-05-13T09:55:00'));
+    vi.advanceTimersByTime(1000);
   });
 
-  it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
-    const { result } = renderHook(() => useNotifications(mockEvents));
+  expect(result.current.notifications).toHaveLength(1);
 
-    act(() => {
-      vi.setSystemTime(new Date('2025-05-13T09:55:00'));
-      vi.advanceTimersByTime(1000);
-    });
-
-    expect(result.current.notifications).toHaveLength(1);
-
-    act(() => {
-      vi.advanceTimersByTime(1000); // 다시 1초 경과
-    });
-
-    expect(result.current.notifications).toHaveLength(1); // 중복 알림 없음
+  act(() => {
+    result.current.removeNotification(0);
   });
-// });
+
+  expect(result.current.notifications).toHaveLength(0);
+});
+
+it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
+  const { result } = renderHook(() => useNotifications(mockEvents));
+
+  act(() => {
+    vi.setSystemTime(new Date('2025-05-13T09:55:00'));
+    vi.advanceTimersByTime(1000);
+  });
+
+  expect(result.current.notifications).toHaveLength(1);
+
+  act(() => {
+    vi.advanceTimersByTime(1000); // 다시 1초 경과
+  });
+
+  expect(result.current.notifications).toHaveLength(1); // 중복 알림 없음
+});

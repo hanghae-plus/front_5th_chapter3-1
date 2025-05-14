@@ -9,19 +9,11 @@ export default function CalendarToolbar({ view, setView, navigate }) {
         icon={<ChevronLeftIcon />}
         onClick={() => navigate('prev')}
       />
-      <Select
-        aria-label="view"
-        value={view}
-        onChange={(e) => setView(e.target.value)}
-      >
+      <Select aria-label="view" value={view} onChange={(e) => setView(e.target.value)}>
         <option value="week">Week</option>
         <option value="month">Month</option>
       </Select>
-      <IconButton
-        aria-label="Next"
-        icon={<ChevronRightIcon />}
-        onClick={() => navigate('next')}
-      />
+      <IconButton aria-label="Next" icon={<ChevronRightIcon />} onClick={() => navigate('next')} />
     </HStack>
   );
 }
