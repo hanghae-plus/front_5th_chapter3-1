@@ -438,7 +438,57 @@ describe('검색 기능', () => {
     expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].endTime);
   });
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const MOCK_EVENTS = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2025-05-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+      },
+      {
+        id: '2',
+        title: '과제 제출',
+        date: '2025-05-16',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '항해 과제가 끝나게 해주세요 제발',
+        location: '아이콘역삼빌딩',
+        category: '학습',
+        repeat: { type: 'none', interval: 0 },
+      },
+    ];
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await userEvent.type(searchInput, '팀 회의');
+
+    const eventList = screen.getByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+    expect(eventItems).toHaveLength(1);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].title);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].date);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].startTime);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].endTime);
+
+    await userEvent.clear(searchInput);
+
+    const eventItemsAfterClear = within(eventList).getAllByTestId('event-item');
+    expect(eventItemsAfterClear).toHaveLength(2);
+    expect(eventItemsAfterClear[0]).toHaveTextContent(MOCK_EVENTS[0].title);
+    expect(eventItemsAfterClear[1]).toHaveTextContent(MOCK_EVENTS[1].title);
+  });
 });
 
 describe('일정 충돌', () => {
