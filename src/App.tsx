@@ -35,7 +35,8 @@ import MonthCalendar from './modules/calendar/ui/MonthCalendar.tsx';
 import WeekCalendar from './modules/calendar/ui/WeekCalendar.tsx';
 import NotificationAlarm from './modules/notification/ui/NotificationAlarm.tsx';
 import ScheduleDetailItem from './modules/schedule/ui/ScheduleDetailItem.tsx';
-import { Event, EventForm, RepeatType } from './types';
+import ScheduleRepeatAlarmForm from './modules/schedule/ui/ScheduleRepeatAlarmForm.tsx';
+import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
 
@@ -222,39 +223,14 @@ function App() {
           </FormControl>
 
           {isRepeating && (
-            <VStack width="100%">
-              <FormControl>
-                <FormLabel>반복 유형</FormLabel>
-                <Select
-                  value={repeatType}
-                  onChange={(e) => setRepeatType(e.target.value as RepeatType)}
-                >
-                  <option value="daily">매일</option>
-                  <option value="weekly">매주</option>
-                  <option value="monthly">매월</option>
-                  <option value="yearly">매년</option>
-                </Select>
-              </FormControl>
-              <HStack width="100%">
-                <FormControl>
-                  <FormLabel>반복 간격</FormLabel>
-                  <Input
-                    type="number"
-                    value={repeatInterval}
-                    onChange={(e) => setRepeatInterval(Number(e.target.value))}
-                    min={1}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>반복 종료일</FormLabel>
-                  <Input
-                    type="date"
-                    value={repeatEndDate}
-                    onChange={(e) => setRepeatEndDate(e.target.value)}
-                  />
-                </FormControl>
-              </HStack>
-            </VStack>
+            <ScheduleRepeatAlarmForm
+              repeatType={repeatType}
+              repeatInterval={repeatInterval}
+              repeatEndDate={repeatEndDate}
+              setRepeatType={setRepeatType}
+              setRepeatInterval={setRepeatInterval}
+              setRepeatEndDate={setRepeatEndDate}
+            />
           )}
 
           <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
