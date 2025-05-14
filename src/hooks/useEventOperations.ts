@@ -5,6 +5,7 @@ import { Event, EventForm } from '../types';
 
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
+
   const toast = useToast();
 
   const fetchEvents = async () => {
@@ -14,6 +15,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
         throw new Error('Failed to fetch events');
       }
       const { events } = await response.json();
+
       setEvents(events);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -48,7 +50,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       }
 
       await fetchEvents();
+
       onSave?.();
+
       toast({
         title: editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',
         status: 'success',
@@ -69,7 +73,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const deleteEvent = async (id: string) => {
     try {
       const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
-
+      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to delete event');
       }
