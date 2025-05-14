@@ -509,6 +509,7 @@ function App() {
                     <IconButton
                       aria-label="Edit event"
                       icon={<EditIcon />}
+                      data-testid="edit-button"
                       onClick={() => editEvent(event)}
                     />
                     <IconButton

@@ -4,12 +4,43 @@ import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
+const MOCK_EVENTS = [
+  {
+    id: '1',
+    title: '이벤트 1',
+    date: '2025-05-15',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '이벤트 1 설명',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  },
+  {
+    id: '2',
+    title: '이벤트 2',
+    date: '2025-05-16',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '이벤트 2 설명',
+    location: '회의실 C',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  },
+];
+
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    // 최초 데이터 설정
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
     render(
       <ChakraProvider>
         <App />
@@ -41,14 +72,16 @@ describe('일정 CRUD 및 기본 기능', () => {
     const eventList = screen.getByTestId('event-list');
     const eventItems = within(eventList).getAllByTestId('event-item');
 
-    expect(eventItems).toHaveLength(1);
-    expect(eventItems[0]).toHaveTextContent('팀 회의');
-    expect(eventItems[0]).toHaveTextContent('2025-05-20');
-    expect(eventItems[0]).toHaveTextContent('14:00');
-    expect(eventItems[0]).toHaveTextContent('15:00');
-    expect(eventItems[0]).toHaveTextContent('주간 회의');
-    expect(eventItems[0]).toHaveTextContent('회의실');
-    expect(eventItems[0]).toHaveTextContent('업무');
+    expect(eventItems).toHaveLength(MOCK_EVENTS.length + 1);
+
+    const newEvent = eventItems[eventItems.length - 1];
+    expect(newEvent).toHaveTextContent('팀 회의');
+    expect(newEvent).toHaveTextContent('2025-05-20');
+    expect(newEvent).toHaveTextContent('14:00');
+    expect(newEvent).toHaveTextContent('15:00');
+    expect(newEvent).toHaveTextContent('주간 회의');
+    expect(newEvent).toHaveTextContent('회의실');
+    expect(newEvent).toHaveTextContent('업무');
 
     // 월별 뷰에 일정이 정확히 표시되는지 확인
     const monthView = screen.getByTestId('month-view');
@@ -56,7 +89,82 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(monthViewEvent).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = await screen.findByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+
+    const eventItem = eventItems[0];
+
+    const editButton = within(eventItem).getByTestId('edit-button');
+    await userEvent.click(editButton);
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categoryInput = screen.getByLabelText('카테고리');
+
+    await Promise.all([
+      userEvent.clear(titleInput),
+      userEvent.clear(dateInput),
+      userEvent.clear(startTimeInput),
+      userEvent.clear(endTimeInput),
+      userEvent.clear(descriptionInput),
+      userEvent.clear(locationInput),
+    ]);
+
+    const editedEvent = {
+      title: '이벤트 수정',
+      date: '2025-05-17',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '이벤트 수정 설명',
+      location: '회의실 수정',
+      category: '기타',
+    };
+
+    // 일정 수정 정보 입력
+    await userEvent.type(titleInput, editedEvent.title);
+    await userEvent.type(dateInput, editedEvent.date);
+    await userEvent.type(startTimeInput, editedEvent.startTime);
+    await userEvent.type(endTimeInput, editedEvent.endTime);
+    await userEvent.type(descriptionInput, editedEvent.description);
+    await userEvent.type(locationInput, editedEvent.location);
+    await userEvent.selectOptions(categoryInput, editedEvent.category);
+
+    // 수정 정보 저장
+    const saveButton = screen.getByTestId('event-submit-button');
+    await userEvent.click(saveButton);
+
+    // 수정된 일정이 리스트에 표시되는지 확인
+    const newEventList = await screen.findByTestId('event-list');
+    const newEventItems = within(newEventList).getAllByTestId('event-item');
+
+    const updatedEvent = newEventItems[0];
+
+    expect(updatedEvent).toHaveTextContent(editedEvent.title);
+    expect(updatedEvent).toHaveTextContent(editedEvent.date);
+    expect(updatedEvent).toHaveTextContent(editedEvent.startTime);
+    expect(updatedEvent).toHaveTextContent(editedEvent.endTime);
+    expect(updatedEvent).toHaveTextContent(editedEvent.description);
+    expect(updatedEvent).toHaveTextContent(editedEvent.location);
+    expect(updatedEvent).toHaveTextContent(editedEvent.category);
+
+    // 월별 뷰에 수정된 일정이 정확히 표시되는지 확인
+    const monthView = screen.getByTestId('month-view');
+    const monthViewEvent = within(monthView).getByText(editedEvent.title);
+    expect(monthViewEvent).toBeInTheDocument();
+  });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
 });
