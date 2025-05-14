@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, useCallback } from 'react';
 
 import { INITIAL_FORM_STATE } from '../constants/initialFormState';
 import { Event, RepeatType } from '../types';
@@ -66,7 +66,7 @@ export const useEventForm = (initialEvent?: Event) => {
     setNotificationTime(INITIAL_FORM_STATE.notificationTime);
   };
 
-  const editEvent = (event: Event) => {
+  const editEvent = useCallback((event: Event) => {
     setEditingEvent(event);
     setTitle(event.title);
     setDate(event.date);
@@ -80,7 +80,7 @@ export const useEventForm = (initialEvent?: Event) => {
     setRepeatInterval(event.repeat.interval);
     setRepeatEndDate(event.repeat.endDate || '');
     setNotificationTime(event.notificationTime);
-  };
+  }, []);
 
   return {
     values: {
