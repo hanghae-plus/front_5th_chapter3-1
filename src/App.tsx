@@ -111,11 +111,13 @@ function App() {
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  console.log('filteredEvents', filteredEvents);
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
+  console.log('isOverlapDialogOpen', isOverlapDialogOpen);
+  console.log('currentDate', currentDate);
+  console.log('notifications', notifications);
   const toast = useToast();
 
   const addOrUpdateEvent = async () => {
@@ -156,7 +158,12 @@ function App() {
       notificationTime,
     };
 
+    console.log('eventData', eventData);
+    console.log('events', events);
+
     const overlapping = findOverlappingEvents(eventData, events);
+
+    console.log('overlapping', overlapping);
     if (overlapping.length > 0) {
       setOverlappingEvents(overlapping);
       setIsOverlapDialogOpen(true);
@@ -537,7 +544,7 @@ function App() {
         onClose={() => setIsOverlapDialogOpen(false)}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent data-testid="overlap-dialog">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               일정 겹침 경고
             </AlertDialogHeader>

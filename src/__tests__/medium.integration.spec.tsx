@@ -202,6 +202,7 @@ describe('일정 view', () => {
         expect(within(eventList).queryByText(event.title)).not.toBeInTheDocument();
       });
     });
+    vi.useRealTimers();
   });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
@@ -248,6 +249,8 @@ describe('일정 view', () => {
     await waitFor(() => {
       expect(screen.getByText('신정')).toBeInTheDocument();
     });
+
+    vi.useRealTimers();
   });
 });
 
@@ -302,9 +305,96 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+  beforeEach(async () => {
+    // ← async 추가
+    server.use(...handlers);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('Event A')).toBeInTheDocument();
+    });
+  });
+
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+
+    fireEvent.change(titleInput, { target: { value: 'Test Event' } });
+    fireEvent.change(dateInput, { target: { value: '2025-05-01' } });
+    fireEvent.change(startTimeInput, { target: { value: '09:00' } });
+    fireEvent.change(endTimeInput, { target: { value: '11:00' } });
+    fireEvent.change(descriptionInput, { target: { value: '테스트 설명' } });
+    fireEvent.change(locationInput, { target: { value: '테스트 위치' } });
+
+    const addButton = screen.getByTestId('event-submit-button');
+    fireEvent.click(addButton);
+
+    const dialog = await screen.findByTestId('overlap-dialog');
+
+    await waitFor(() => {
+      expect(within(dialog).getByText('일정 겹침 경고')).toBeInTheDocument();
+    });
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const { handlers } = setupMockHandlerUpdating(mockTestDataList as Event[]);
+    server.use(...handlers);
+    // 테스트 중에 event.id 가 '3' 이라고 가정
+    const eventId = mockTestDataList[0].id;
+
+    // 1) 해당 이벤트 박스 컨테이너를 가져온다
+    const eventBox = await screen.findByTestId(`event-${eventId}`);
+    // 2) within 으로 scope 를 좁히고 edit button 클릭
+    const { getByRole } = within(eventBox);
+    const editButton = getByRole('button', { name: 'Edit event' });
+    fireEvent.click(editButton);
+
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+
+    fireEvent.change(startTimeInput, { target: { value: '13:00' } });
+    fireEvent.change(endTimeInput, { target: { value: '14:00' } });
+
+    const submitButton = screen.getByTestId('event-submit-button');
+    fireEvent.click(submitButton);
+
+    const dialog = await screen.findByTestId('overlap-dialog');
+
+    await waitFor(() => {
+      expect(within(dialog).getByText('일정 겹침 경고')).toBeInTheDocument();
+    });
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 20으로 하면 지정 시간 20분 전 알람 텍스트가 노출된다', async () => {
+  act(() => {
+    vi.setSystemTime(new Date('2025-05-27T12:50:00'));
+
+    const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+    server.use(...handlers);
+  });
+
+  render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+
+  const notification = await screen.findByText('20분 후 Event D 일정이 시작됩니다.');
+
+  await waitFor(() => {
+    expect(notification).toBeInTheDocument();
+  });
+});
