@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { formatDate } from '../../based/utils/dateUtils.ts';
 import { useCalendarView } from '../../hooks/useCalendarView.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
 import { assertDate } from '../utils.ts';
 
 describe('초기 상태', () => {

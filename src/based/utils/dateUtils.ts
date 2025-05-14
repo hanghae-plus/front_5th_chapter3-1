@@ -1,4 +1,4 @@
-import { Event } from '../types.ts';
+import { Event } from '../../types.ts';
 
 /**
  * 주어진 년도와 월의 일수를 반환합니다.

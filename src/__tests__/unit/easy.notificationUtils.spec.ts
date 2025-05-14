@@ -1,6 +1,6 @@
+import { formatDate } from '../../based/utils/dateUtils';
+import { createNotificationMessage, getUpcomingEvents } from '../../based/utils/notificationUtils';
 import { Event } from '../../types';
-import { formatDate } from '../../utils/dateUtils';
-import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
 
 const MOCK_EVENTS: Event = {
   id: '1',

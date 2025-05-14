@@ -1,10 +1,10 @@
-import { Event } from '../../types';
 import {
   convertEventToDateRange,
   findOverlappingEvents,
   isOverlapping,
   parseDateTime,
-} from '../../utils/eventOverlap';
+} from '../../based/utils/eventOverlap';
+import { Event } from '../../types';
 
 const MOCK_EVENT: Event = {
   id: '1',

@@ -1,4 +1,4 @@
-import { fillZero } from '../utils/dateUtils';
+import { fillZero } from '../based/utils/dateUtils';
 
 // 두 날짜가 같은지 확인
 export const assertDate = (date1: Date, date2: Date) => {
