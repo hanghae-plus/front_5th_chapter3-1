@@ -45,6 +45,9 @@ it("주간 뷰에서 다음으로 navigate시 7일 후 '2025-10-08' 날짜로 �
 
   act(() => {
     result.current.setView('week');
+  });
+
+  act(() => {
     result.current.navigate('next');
   });
 
@@ -56,6 +59,9 @@ it("주간 뷰에서 이전으로 navigate시 7일 전 '2025-09-24' 날짜로 �
 
   act(() => {
     result.current.setView('week');
+  });
+
+  act(() => {
     result.current.navigate('prev');
   });
 
