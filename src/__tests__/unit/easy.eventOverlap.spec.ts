@@ -1,4 +1,4 @@
-import { dummyEvents } from '../../__mocks__/events';
+import realEvents from '../../__mocks__/response/realEvents.json';
 import type { Event } from '../../types';
 import {
   convertEventToDateRange,
@@ -36,7 +36,7 @@ describe('parseDateTime', () => {
 
 describe('convertEventToDateRange', () => {
   it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
-    const event = dummyEvents[0];
+    const event = realEvents.events[0] as Event;
     const { date, startTime, endTime } = event;
     const convertedDateRange = convertEventToDateRange(event);
 
@@ -47,7 +47,7 @@ describe('convertEventToDateRange', () => {
   });
 
   it("이벤트 날짜 형식이 'YYYY', 'YYYY-MM', 'YYYY-MM-DD'가 아닌 경우 시작과 종료 시간이 Invalid Date인 객체로 변환한다", () => {
-    const event = dummyEvents[0];
+    const event = realEvents.events[0] as Event;
     const date = '2025-001';
     const convertedDateRange = convertEventToDateRange({ ...event, date });
 
@@ -56,7 +56,7 @@ describe('convertEventToDateRange', () => {
   });
 
   it("이벤트 시작 시간 형식이 'hh:mm'나 'hh:mm:ss'가 아닌 경우 시작 시간이 Invalid Date인 객체로 변환한다", () => {
-    const event = dummyEvents[0];
+    const event = realEvents.events[0] as Event;
     const startTime = '12';
     const { date, endTime } = event;
     const convertedDateRange = convertEventToDateRange({ ...event, startTime });
@@ -65,7 +65,7 @@ describe('convertEventToDateRange', () => {
     expect(convertedDateRange.end.toISOString()).toBe(new Date(`${date}T${endTime}`).toISOString());
   });
   it("이벤트 종료 시간 형식이 'hh:mm'나 'hh:mm:ss'가 아닌 경우 종료 시간이 Invalid Date인 객체로 변환한다", () => {
-    const event = dummyEvents[0];
+    const event = realEvents.events[0] as Event;
     const endTime = '14';
     const { date, startTime } = event;
     const convertedDateRange = convertEventToDateRange({ ...event, endTime });
@@ -79,15 +79,21 @@ describe('convertEventToDateRange', () => {
 
 describe('isOverlapping', () => {
   it('한 이벤트가 다른 이벤트의 시간 범위에 완전히 포함되면 true를 반환한다', () => {
-    expect(isOverlapping(dummyEvents[4], dummyEvents[5])).toBeTruthy();
+    const firstEvent = { ...realEvents.events[0], startTime: '11:30', endTime: '15:00' } as Event;
+    const secondEvent = { ...realEvents.events[0], startTime: '12:30', endTime: '14:00' } as Event;
+
+    expect(isOverlapping(firstEvent, secondEvent)).toBeTruthy();
   });
 
   it('두 이벤트의 시간이 겹치기만 해도 true를 반환한다', () => {
-    expect(isOverlapping(dummyEvents[5], dummyEvents[6])).toBeTruthy();
+    const firstEvent = { ...realEvents.events[0], startTime: '11:30', endTime: '15:00' } as Event;
+    const secondEvent = { ...realEvents.events[0], startTime: '13:30', endTime: '14:00' } as Event;
+
+    expect(isOverlapping(firstEvent, secondEvent)).toBeTruthy();
   });
 
   it('두 이벤트의 시간이 겹치지 않는 경우 false를 반환한다', () => {
-    expect(isOverlapping(dummyEvents[1], dummyEvents[5])).toBeFalsy();
+    expect(isOverlapping(realEvents.events[0] as Event, realEvents.events[1] as Event)).toBeFalsy();
   });
 });
 
@@ -96,18 +102,20 @@ describe('findOverlappingEvents', () => {
     const newEvent: Event = {
       id: '8',
       title: '이벤트 8',
-      date: '2024-04-01',
-      startTime: '09:30',
-      endTime: '17:00',
+      date: '2025-05-10',
+      startTime: '17:00',
+      endTime: '22:00',
       description: '설명',
       location: '장소',
       category: '카테고리',
       repeat: { type: 'none', interval: 1 },
       notificationTime: 30,
     };
-    const expectedResult = [dummyEvents[4], dummyEvents[5], dummyEvents[6]];
 
-    expect(findOverlappingEvents(newEvent, dummyEvents)).toEqual(expectedResult);
+    expect(findOverlappingEvents(newEvent, realEvents.events as Event[])).toEqual([
+      expect.objectContaining({ date: '2025-05-10', startTime: '17:10', endTime: '19:09' }),
+      expect.objectContaining({ date: '2025-05-10', startTime: '17:10', endTime: '18:10' }),
+    ]);
   });
 
   it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
@@ -124,6 +132,6 @@ describe('findOverlappingEvents', () => {
       notificationTime: 30,
     };
 
-    expect(findOverlappingEvents(newEvent, dummyEvents)).toHaveLength(0);
+    expect(findOverlappingEvents(newEvent, realEvents.events as Event[])).toHaveLength(0);
   });
 });
