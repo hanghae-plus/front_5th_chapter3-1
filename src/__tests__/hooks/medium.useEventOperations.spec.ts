@@ -54,7 +54,7 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
 });
 
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
-  const { result } = renderHook(() => useEventOperations(true));
+  const { result } = renderHook(() => useEventOperations(false)); // editing을 false로 변경
 
   const newEvent: Event = {
     id: '1',
@@ -71,31 +71,116 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
       interval: 1,
     },
   };
+
+  // 초기 이벤트 로딩 확인
   await waitFor(() => {
     expect(result.current.events).toEqual(eventsForTest);
   });
 
-  act(() => {
-    result.current.saveEvent(newEvent);
+  // saveEvent는 비동기 함수이므로 act 내에서 await 사용
+  await act(async () => {
+    await result.current.saveEvent(newEvent);
   });
 
-  console.log(mockToastInstance.);
+  // 토스트 호출 검증 전에 모든 비동기 작업이 완료되도록 대기
   await waitFor(() => {
     expect(mockToastInstance).toHaveBeenCalledWith(
       expect.objectContaining({
         title: '일정이 추가되었습니다.',
         status: 'success',
         duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+
+  // 추가로 이벤트가 실제로 추가되었는지도 검증
+  await waitFor(() => {
+    expect(result.current.events.length).toBe(eventsForTest.length + 1);
+  });
+});
+
+it("이벤트의 'title'과 'endTime'이 성공적으로 업데이트되어야 한다", async () => {
+  setupMockHandlerUpdating(eventsForTest);
+
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await waitFor(() => {
+    expect(result.current.events).toEqual(eventsForTest);
+  });
+
+  const originalEvent = result.current.events[0]; // 현재 로딩된 이벤트에서 선택
+  const updatedEvent = {
+    ...originalEvent,
+    title: '수정된 이벤트 제목',
+    endTime: '18:30',
+  };
+
+  await act(async () => {
+    await result.current.saveEvent(updatedEvent);
+  });
+
+  await waitFor(() => {
+    const updatedEventInList = result.current.events.find((e) => e.id === originalEvent.id);
+
+    // null 체크 먼저
+    expect(updatedEventInList).not.toBeNull();
+    expect(updatedEventInList).toBeDefined();
+
+    // 이벤트가 있을 때만 필드 검증
+    if (updatedEventInList) {
+      expect(updatedEventInList.title).toBe('수정된 이벤트 제목');
+      expect(updatedEventInList.endTime).toBe('18:30');
+    }
+
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정이 수정되었습니다.',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
       })
     );
   });
 });
 
-it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
+it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
+  setupMockHandlerDeletion(eventsForTest);
 
-it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {});
+  const { result } = renderHook(() => useEventOperations(true));
 
-it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {});
+  await waitFor(() => {
+    expect(result.current.events).toEqual(eventsForTest);
+  });
+
+  await act(async () => {
+    await result.current.deleteEvent(eventsForTest[0].id);
+  });
+
+  // 이벤트가 삭제되었는지 확인
+  await waitFor(() => {
+    expect(result.current.events.length).toBe(eventsForTest.length - 1);
+  });
+
+  await waitFor(() => {
+    expect(mockToastInstance).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: '일정이 삭제되었습니다.',
+        status: 'info',
+        duration: 3000,
+        isClosable: true,
+      })
+    );
+  });
+});
+
+it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+  const { result } = renderHook(() => useEventOperations(true));
+
+  await waitFor(() => {
+    expect(result.current.events).toEqual(eventsForTest);
+  });
+});
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {});
 

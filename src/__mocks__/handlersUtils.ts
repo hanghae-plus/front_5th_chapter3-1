@@ -21,6 +21,47 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   );
 };
 
-export const setupMockHandlerUpdating = () => {};
+export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
+  const mockEvents: Event[] = [...initEvents]; // 테스트용 이벤트 복사
 
-export const setupMockHandlerDeletion = () => {};
+  server.use(
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events: mockEvents });
+    }),
+    http.put('/api/events/:id', async ({ request, params }) => {
+      const updatedEvent = (await request.json()) as Event;
+      const index = mockEvents.findIndex((e) => e.id === params.id);
+
+      if (index !== -1) {
+        mockEvents[index] = updatedEvent;
+        return HttpResponse.json({ updatedEvent }, { status: 200 });
+      }
+
+      return HttpResponse.json({ message: '이벤트를 찾을 수 없습니다.' }, { status: 404 });
+    })
+  );
+};
+export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
+  const mockEvents: Event[] = [...initEvents];
+
+  server.use(
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events: mockEvents });
+    })
+  );
+
+  server.use(
+    http.delete('/api/events/:id', async ({ params }) => {
+      const index = mockEvents.findIndex((e) => e.id === params.id);
+      if (index !== -1) {
+        mockEvents.splice(index, 1);
+        return HttpResponse.json(
+          { message: '이벤트가 성공적으로 삭제되었습니다.' },
+          { status: 200 }
+        );
+      }
+
+      return HttpResponse.json({ message: '이벤트를 찾을 수 없습니다.' }, { status: 404 });
+    })
+  );
+};
