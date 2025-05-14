@@ -240,4 +240,26 @@ describe('getFilteredEvents', () => {
 
     expect(filteredEvents).toEqual([]);
   });
+
+  // 추가 테스트 케이스
+  it('검색어가 공백일 때도 모든 이벤트를 반환한다', () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '이벤트 1',
+        date: '2025-07-01',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '설명 1',
+        location: '장소 1',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+    ];
+
+    const filtered = getFilteredEvents(events, '   ', new Date('2025-07-01'), 'month');
+
+    expect(filtered).toEqual(events); // 공백은 검색어 없는 것으로 간주
+  });
 });
