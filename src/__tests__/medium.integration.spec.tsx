@@ -9,34 +9,34 @@ import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
-const MOCK_EVENTS = [
-  {
-    id: '1',
-    title: '이벤트 1',
-    date: '2025-05-15',
-    startTime: '09:00',
-    endTime: '10:00',
-    description: '이벤트 1 설명',
-    location: '회의실 B',
-    category: '업무',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 10,
-  },
-  {
-    id: '2',
-    title: '이벤트 2',
-    date: '2025-05-16',
-    startTime: '09:00',
-    endTime: '10:00',
-    description: '이벤트 2 설명',
-    location: '회의실 C',
-    category: '업무',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 10,
-  },
-];
-
 describe('일정 CRUD 및 기본 기능', () => {
+  const MOCK_EVENTS = [
+    {
+      id: '1',
+      title: '이벤트 1',
+      date: '2025-05-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '이벤트 1 설명',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '2',
+      title: '이벤트 2',
+      date: '2025-05-16',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '이벤트 2 설명',
+      location: '회의실 C',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // 최초 데이터 설정
     setupMockHandlerCreation(MOCK_EVENTS as Event[]);
@@ -198,7 +198,45 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const MOCK_EVENTS = [
+      {
+        id: '1',
+        title: '이벤트 1',
+        date: '2025-07-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '이벤트 1 설명',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+      },
+    ];
+
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const selectView = screen.getByLabelText('view');
+    await userEvent.selectOptions(selectView, 'week');
+
+    const weekView = screen.getByTestId('week-view');
+    // 해당 주의 모든 날짜 셀에 이벤트가 없는지 확인
+    const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+    weekDays.forEach((day) => {
+      const dateCell = within(weekView).getByText(day);
+      const eventBoxes = within(dateCell.parentElement!).queryAllByTestId('event-item');
+      expect(eventBoxes).toHaveLength(0);
+    });
+
+    // 이벤트 리스트에서 "검색 결과가 없습니다." 텍스트가 표시되는지 확인
+    const noResultsText = screen.getByText('검색 결과가 없습니다.');
+    expect(noResultsText).toBeInTheDocument();
+  });
 
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
 
