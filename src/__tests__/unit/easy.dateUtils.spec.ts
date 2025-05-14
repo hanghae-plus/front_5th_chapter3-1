@@ -180,7 +180,10 @@ describe('formatWeek', () => {
 });
 
 describe('formatMonth', () => {
-  it("2025년 7월 10일을 '2025년 7월'로 반환한다", () => {});
+  it("2025년 7월 10일을 '2025년 7월 2주'로 반환한다", () => {
+    const formattedMonth = formatWeek(new Date('2025-7-10'));
+    expect(formattedMonth).toBe('2025년 7월 2주');
+  });
 });
 
 describe('isDateInRange', () => {
