@@ -109,7 +109,16 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     console.log('1');
 
-    await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
+    // const titleInput = screen.getByLabelText('제목');
+    // expect(titleInput).toBeInTheDocument();
+
+    const titleInput = screen.getByLabelText('제목');
+    await user.type(titleInput, '새로운 일정');
+    screen.debug();
+    expect(titleInput).toHaveValue('새로운 일정');
+
+    console.log('2');
+
     await user.type(screen.getByLabelText('날짜'), NEW_EVENT_FORM.date);
     await user.type(screen.getByLabelText('시작 시간'), NEW_EVENT_FORM.startTime);
     await user.type(screen.getByLabelText('종료 시간'), NEW_EVENT_FORM.endTime);
