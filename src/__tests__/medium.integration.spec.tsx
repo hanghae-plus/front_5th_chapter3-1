@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 import {
@@ -10,7 +9,6 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
@@ -173,7 +171,7 @@ describe('일정 뷰', () => {
   });
 });
 
-describe('검색 기능', async () => {
+describe('검색 기능', () => {
   beforeEach(() => {
     setupMockHandlerCreation([
       {
@@ -322,6 +320,7 @@ describe('일정 충돌', () => {
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  // eslint-disable-next-line jest/valid-expect
   vi.setSystemTime(new Date('2025-10-15 08:49:00'));
 
   setup(<App />);

@@ -14,17 +14,17 @@ describe('parseDateTime', () => {
 
   it('잘못된 날짜 형식에 대해 Invalid Date를 반환한다', () => {
     const date = parseDateTime('2025_07_01', '14:30');
-    expect(date.toString()).toEqual('Invalid Date');
+    expect(date.toString()).toBe('Invalid Date');
   });
 
   it('잘못된 시간 형식에 대해 Invalid Date를 반환한다', () => {
     const date = parseDateTime('2025-06-01', '14/30');
-    expect(date.toString()).toEqual('Invalid Date');
+    expect(date.toString()).toBe('Invalid Date');
   });
 
   it('날짜 문자열이 비어있을 때 Invalid Date를 반환한다', () => {
     const date = parseDateTime('', '16:30');
-    expect(date.toString()).toEqual('Invalid Date');
+    expect(date.toString()).toBe('Invalid Date');
   });
 });
 
