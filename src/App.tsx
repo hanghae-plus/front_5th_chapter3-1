@@ -248,6 +248,7 @@ function App() {
                       verticalAlign="top"
                       width="14.28%"
                       position="relative"
+                      data-testid="month-view-td"
                     >
                       {day && (
                         <>

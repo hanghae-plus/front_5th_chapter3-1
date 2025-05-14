@@ -284,7 +284,38 @@ describe('일정 뷰', () => {
     expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].category);
   });
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    // 5월은 어린이날이 존재하기 때문에 공휴일이 없는 7월로 테스트
+    const mockDate = new Date('2025-07-01');
+    vi.setSystemTime(mockDate);
+
+    setupMockHandlerCreation([] as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const selectView = screen.getByLabelText('view');
+    await userEvent.selectOptions(selectView, 'month');
+
+    const monthView = screen.getByTestId('month-view');
+    const tdList = within(monthView).getAllByTestId('month-view-td');
+
+    tdList.forEach((td) => {
+      const textChildren = Array.from(td.children).filter(
+        (child) => child.tagName === 'P' || child.tagName === 'SPAN'
+      );
+
+      // 날짜 숫자 텍스트 외에 다른 일정 관련 내용이 없어야 함
+      expect(textChildren.length).toBeLessThanOrEqual(1);
+    });
+
+    // 이벤트 리스트에서 "검색 결과가 없습니다." 텍스트가 표시되는지 확인
+    const noResultsText = screen.getByText('검색 결과가 없습니다.');
+    expect(noResultsText).toBeInTheDocument();
+  });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
 
