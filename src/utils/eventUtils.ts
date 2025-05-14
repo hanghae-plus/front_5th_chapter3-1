@@ -26,7 +26,7 @@ function filterEventsByDateRangeAtWeek(events: Event[], currentDate: Date) {
 
 function filterEventsByDateRangeAtMonth(events: Event[], currentDate: Date) {
   const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 9); // 한국 시간이랑 안맞아서 +9시간
   return filterEventsByDateRange(events, monthStart, monthEnd);
 }
 
