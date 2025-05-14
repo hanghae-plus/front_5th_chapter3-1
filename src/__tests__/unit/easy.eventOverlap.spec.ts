@@ -1,5 +1,5 @@
-import { tr } from 'framer-motion/client';
 import mockEvents from '../../__mocks__/response/events.json';
+import realEvents from '../../__mocks__/response/realEvents.json';
 import { Event } from '../../types';
 import {
   convertEventToDateRange,
@@ -138,7 +138,39 @@ describe('isOverlapping', () => {
 });
 
 describe('findOverlappingEvents', () => {
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {});
+  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+    const overlapEvent: Event = {
+      id: '1',
+      title: '겹치는 회의',
+      date: '2025-05-25',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '겹치는 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    const events = realEvents.events as Event[];
+    const result = findOverlappingEvents(overlapEvent, events);
+    expect(result.length).toBe(1);
+  });
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {});
+  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+    const notOverlapEvent: Event = {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-05-14',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    const events = realEvents.events as Event[];
+    const result = findOverlappingEvents(notOverlapEvent, events);
+    expect(result.length).toBe(0);
+  });
 });
