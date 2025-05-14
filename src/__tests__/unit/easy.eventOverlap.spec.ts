@@ -1,3 +1,4 @@
+import { tr } from 'framer-motion/client';
 import mockEvents from '../../__mocks__/response/events.json';
 import { Event } from '../../types';
 import {
@@ -91,9 +92,49 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {});
+  const event1: Event = {
+    id: '1',
+    title: '기존 회의',
+    date: '2025-05-14',
+    startTime: '09:00',
+    endTime: '10:00',
+    description: '기존 팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  };
+  const event2: Event = {
+    id: '2',
+    title: '추가 회의',
+    date: '2025-05-14',
+    startTime: '09:10',
+    endTime: '09:55',
+    description: '추가 팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  };
+  const event3: Event = {
+    id: '2',
+    title: '추가 회의',
+    date: '2025-05-15',
+    startTime: '09:10',
+    endTime: '09:55',
+    description: '추가 팀 미팅',
+    location: '회의실 B',
+    category: '업무',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 10,
+  };
+  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+    expect(isOverlapping(event1, event2)).toBe(true);
+  });
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {});
+  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+    expect(isOverlapping(event1, event3)).toBe(false);
+  });
 });
 
 describe('findOverlappingEvents', () => {
