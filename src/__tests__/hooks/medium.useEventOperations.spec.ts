@@ -1,4 +1,3 @@
-import { ChakraProvider, useToast as useChakraToast } from '@chakra-ui/react';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
@@ -26,6 +25,14 @@ const newEvent: Omit<Event, 'id'> = {
   repeat: { type: 'none', interval: 0 },
   notificationTime: 10,
 };
+const mockToast = vi.fn();
+vi.mock('@chakra-ui/react', async () => {
+  const actual = await vi.importActual('@chakra-ui/react');
+  return {
+    ...actual,
+    useToast: () => mockToast,
+  };
+});
 
 describe('useEventOperations', () => {
   // 각 테스트 전에 목 이벤트 데이터 설정
@@ -34,6 +41,7 @@ describe('useEventOperations', () => {
   beforeEach(() => {
     // 각 테스트마다 고유한 ID와 초기 데이터로 설정
     testId = setupMockHandlerCreation([...mockEvents]);
+    mockToast.mockClear();
   });
 
   afterEach(() => {
@@ -167,10 +175,122 @@ describe('useEventOperations', () => {
     // 이벤트가 삭제되었는지 확인
     expect(result.current.events.find((event) => event.id === eventToDelete.id)).toBeUndefined();
   });
+
+  it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+    server.use(
+      http.get('/api/events', () => {
+        // 서버 에러 (500) 반환
+        return new HttpResponse(null, { status: 500 });
+      })
+    );
+
+    // 2. 훅 렌더링 및 실행
+    const { result } = renderHook(() => useEventOperations(false));
+
+    // 3. 에러 처리 확인
+    await waitFor(() => {
+      // toast가 호출되었는지 확인
+      expect(mockToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '이벤트 로딩 실패',
+          status: 'error',
+        })
+      );
+    });
+
+    // 4. events 배열이 빈 상태로 유지되는지 확인
+    expect(result.current.events).toHaveLength(0);
+  });
+
+  it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
+    // 1. 초기 렌더링
+    const { result } = renderHook(() => useEventOperations(true));
+
+    // 2. 데이터 로딩 대기
+    await waitFor(() => {
+      expect(result.current.events.length).toBeGreaterThan(0);
+    });
+
+    // 3. 존재하지 않는 이벤트 ID로 업데이트 요청 설정
+    const nonExistentId = 'non-existent-id';
+    const updatedEvent: Event = {
+      id: nonExistentId,
+      title: '존재하지 않는 이벤트',
+      date: '2025-05-20',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '에러 테스트',
+      location: '테스트',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    // 4. PUT 요청 실패 모의 설정
+    server.use(
+      http.put(`/api/events/${nonExistentId}`, () => {
+        return new HttpResponse(null, { status: 404 });
+      })
+    );
+
+    // 5. 이벤트 업데이트 시도
+    await act(async () => {
+      await result.current.saveEvent(updatedEvent);
+    });
+
+    // 6. 에러 토스트 확인
+    await waitFor(() => {
+      expect(mockToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '일정 저장 실패',
+          status: 'error',
+        })
+      );
+    });
+
+    // 7. 원래 이벤트 목록이 변경되지 않았는지 확인
+    expect(result.current.events).not.toContainEqual(
+      expect.objectContaining({ id: nonExistentId })
+    );
+  });
+
+  it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+    // 1. 초기 렌더링
+    const { result } = renderHook(() => useEventOperations(false));
+
+    // 2. 데이터 로딩 대기
+    await waitFor(() => {
+      expect(result.current.events.length).toBeGreaterThan(0);
+    });
+
+    const initialLength = result.current.events.length;
+    const eventToDelete = result.current.events[0];
+
+    // 3. DELETE 요청 실패 모의 설정 (네트워크 오류)
+    server.use(
+      http.delete(`/api/events/${eventToDelete.id}`, () => {
+        // 네트워크 오류 상태 코드 사용
+        return new HttpResponse(null, { status: 500 });
+      })
+    );
+
+    // 4. 이벤트 삭제 시도
+    await act(async () => {
+      await result.current.deleteEvent(eventToDelete.id);
+    });
+
+    // 5. 에러 토스트 확인
+    await waitFor(() => {
+      expect(mockToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: '일정 삭제 실패',
+          status: 'error',
+        })
+      );
+    });
+
+    // 6. 이벤트가 삭제되지 않고 여전히 목록에 있는지 확인
+    expect(result.current.events.length).toBe(initialLength);
+    expect(result.current.events.find((event) => event.id === eventToDelete.id)).toBeDefined();
+  });
 });
-
-it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => { });
-
-it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => { });
-
-it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => { });
