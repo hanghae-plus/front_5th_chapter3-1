@@ -60,4 +60,15 @@ describe('getTimeErrorMessage >', () => {
       endTimeError: null,
     });
   });
+
+  // 추가 테스트 케이스
+  it('잘못된 시간 포맷이 주어진 경우에도 null을 반환한다', () => {
+    const startTime = '99:99'; // 유효하지 않은 시각
+    const endTime = '12:00';
+    const errorMessage = getTimeErrorMessage(startTime, endTime);
+    expect(errorMessage).toEqual({
+      startTimeError: null,
+      endTimeError: null,
+    });
+  });
 });
