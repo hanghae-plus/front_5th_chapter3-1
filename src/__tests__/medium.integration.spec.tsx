@@ -1,16 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
-
-import {
-  setupMockHandlerCreation,
-  setupMockHandlerDeletion,
-  setupMockHandlerUpdating,
-} from '../__mocks__/handlersUtils';
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
@@ -64,17 +56,155 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    setupMockHandlerCreation([]); // No events to simulate empty search results
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    const { user } = setup(<App />);
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    // Search for a term
+    await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), 'nonexistent');
+
+    // Verify the "검색 결과가 없습니다." message is displayed
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '팀 회의',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    // Search for "팀 회의"
+    await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '회의실');
+
+    // Verify the event is displayed
+    expect(await screen.findByText('회의실')).toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '팀 회의',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: 'event-2',
+        title: '개인 일정',
+        date: '2025-10-17',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '개인 일정 설명',
+        location: '카페',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    // Search for "팀 회의"
+    await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '회의실');
+
+    // Verify only "팀 회의" is displayed
+    expect(await screen.findByText('회의실')).toBeInTheDocument();
+    expect(screen.queryByText('카페')).not.toBeInTheDocument();
+
+    // Clear the search term
+    await user.clear(screen.getByPlaceholderText('검색어를 입력하세요'));
+
+    // Verify all events are displayed again
+    expect(await screen.findByText('회의실')).toBeInTheDocument();
+    expect(await screen.findByText('카페')).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '기존 일정',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 일정 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    const { user } = setup(<App />);
+
+    await saveSchedule(user, {
+      title: '겹치는 일정',
+      date: '2025-10-16',
+      startTime: '09:30',
+      endTime: '10:30',
+      description: '겹치는 일정 설명',
+      location: '회의실',
+      category: '업무',
+    });
+
+    // OverlapDialog가 표시되는지 확인
+    expect(await screen.findByText(/일정 겹침 경고/)).toBeInTheDocument();
+    expect(await screen.findByText(/기존 일정 \(2025-10-16 09:00-10:00\)/)).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: 'event-1',
+        title: '기존 일정',
+        date: '2025-10-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 일정 설명',
+        location: '회의실',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    const { user } = setup(<App />);
+
+    await saveSchedule(user, {
+      title: '시간 수정 충돌',
+      date: '2025-10-16',
+      startTime: '09:00',
+      endTime: '90:00',
+      description: '시간 수정 설명',
+      location: '회의실',
+      category: '업무',
+    });
+
+    // OverlapDialog가 표시되는지 확인
+    expect(await screen.findByText(/시작 시간은 종료 시간보다 빨라야 합니다./)).toBeInTheDocument();
+    expect(await screen.findByText(/종료 시간은 시작 시간보다 늦어야 합니다./)).toBeInTheDocument();
+  });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {

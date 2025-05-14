@@ -74,9 +74,8 @@ export default function EventList({
                 <Text>
                   알림:{' '}
                   {
-                    notificationOptions.find(
-                      (option) => option.value === event.notificationTime
-                    )?.label
+                    notificationOptions.find((option) => option.value === event.notificationTime)
+                      ?.label
                   }
                 </Text>
               </VStack>
