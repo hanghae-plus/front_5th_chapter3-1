@@ -10,7 +10,50 @@ import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 일정 정보 입력
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categoryInput = screen.getByLabelText('카테고리');
+
+    await userEvent.type(titleInput, '팀 회의');
+    await userEvent.type(dateInput, '2025-05-20');
+    await userEvent.type(startTimeInput, '14:00');
+    await userEvent.type(endTimeInput, '15:00');
+    await userEvent.type(descriptionInput, '주간 회의');
+    await userEvent.type(locationInput, '회의실');
+    await userEvent.selectOptions(categoryInput, '업무');
+
+    // 저장 버튼 클릭
+    const saveButton = screen.getByTestId('event-submit-button');
+    await userEvent.click(saveButton);
+
+    // 저장된 일정이 리스트에 표시되는지 확인
+    const eventList = screen.getByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+
+    expect(eventItems).toHaveLength(1);
+    expect(eventItems[0]).toHaveTextContent('팀 회의');
+    expect(eventItems[0]).toHaveTextContent('2025-05-20');
+    expect(eventItems[0]).toHaveTextContent('14:00');
+    expect(eventItems[0]).toHaveTextContent('15:00');
+    expect(eventItems[0]).toHaveTextContent('주간 회의');
+    expect(eventItems[0]).toHaveTextContent('회의실');
+    expect(eventItems[0]).toHaveTextContent('업무');
+
+    // 월별 뷰에 일정이 정확히 표시되는지 확인
+    const monthView = screen.getByTestId('month-view');
+    const monthViewEvent = within(monthView).getByText('팀 회의');
+    expect(monthViewEvent).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
