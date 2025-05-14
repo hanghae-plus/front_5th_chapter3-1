@@ -15,9 +15,13 @@ function App() {
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
   );
-  const { notifications, notifiedEvents } = useNotifications(events);
+  const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
+
+  const handleClose = (index: number) => {
+    setNotifications((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
@@ -49,7 +53,9 @@ function App() {
         />
       </Flex>
 
-      {notifications.length > 0 && <NotificationList events={events} />}
+      {notifications.length > 0 && (
+        <NotificationList notifications={notifications} onClose={handleClose} />
+      )}
     </Box>
   );
 }

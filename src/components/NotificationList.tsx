@@ -1,15 +1,13 @@
 import { Alert, AlertIcon, AlertTitle, Box, CloseButton, VStack } from '@chakra-ui/react';
 
-import { useNotifications } from '../hooks/useNotifications';
-import { Event } from '../types';
+import { Notification } from '../types';
 
 interface Props {
-  events: Event[];
+  notifications: Notification[];
+  onClose: (id: number) => void;
 }
 
-const NotificationList = ({ events }: Props) => {
-  const { notifications, setNotifications } = useNotifications(events);
-
+const NotificationList = ({ notifications, onClose }: Props) => {
   if (notifications.length === 0) return null;
 
   return (
@@ -20,9 +18,7 @@ const NotificationList = ({ events }: Props) => {
           <Box flex="1">
             <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
           </Box>
-          <CloseButton
-            onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-          />
+          <CloseButton onClick={() => onClose(index)} />
         </Alert>
       ))}
     </VStack>
