@@ -192,6 +192,7 @@ function App() {
                       return (
                         <Box
                           key={event.id}
+                          data-testid={`event-view-item`}
                           p={1}
                           my={1}
                           bg={isNotified ? 'red.100' : 'gray.100'}
@@ -247,6 +248,7 @@ function App() {
                       verticalAlign="top"
                       width="14.28%"
                       position="relative"
+                      data-testid="month-view-td"
                     >
                       {day && (
                         <>
@@ -267,6 +269,7 @@ function App() {
                                 borderRadius="md"
                                 fontWeight={isNotified ? 'bold' : 'normal'}
                                 color={isNotified ? 'red.500' : 'inherit'}
+                                data-testid={`event-view-item`}
                               >
                                 <HStack spacing={1}>
                                   {isNotified && <BellIcon />}
@@ -459,7 +462,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                key={event.id}
+                data-testid={`event-item`}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
@@ -502,11 +512,13 @@ function App() {
                     <IconButton
                       aria-label="Edit event"
                       icon={<EditIcon />}
+                      data-testid="edit-button"
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
+                      data-testid="delete-button"
                       onClick={() => deleteEvent(event.id)}
                     />
                   </HStack>
