@@ -8,6 +8,8 @@ import { Event } from '../types';
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   let mockEvents = [...initEvents];
 
+  // console.log('mockEvents=>', mockEvents);
+
   return [
     http.get('/api/events', () => {
       console.log('🟢 [MSW] GET /api/events called');
@@ -23,6 +25,38 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   ];
 };
 
-export const setupMockHandlerUpdating = () => {};
+export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
+  let mockEvents = [...initEvents];
 
-export const setupMockHandlerDeletion = () => {};
+  return [
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events: mockEvents }, { status: 200 });
+    }),
+
+    http.put('/api/events/:id', async ({ request }) => {
+      const updatedEvent = (await request.json()) as Event;
+      const hasEvent = mockEvents.some((event) => event.id === updatedEvent.id);
+      if (!hasEvent) {
+        return HttpResponse.json({ success: false }, { status: 404 });
+      }
+      mockEvents = mockEvents.map((event) => (event.id === updatedEvent.id ? updatedEvent : event));
+      return HttpResponse.json({ success: true }, { status: 200 });
+    }),
+  ];
+};
+
+export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
+  let mockEvents = [...initEvents];
+
+  return [
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events: mockEvents }, { status: 200 });
+    }),
+
+    http.delete('/api/events/:id', ({ params }) => {
+      const { id } = params;
+      mockEvents = mockEvents.filter((event) => event.id !== id);
+      return HttpResponse.json({ success: true }, { status: 200 });
+    }),
+  ];
+};

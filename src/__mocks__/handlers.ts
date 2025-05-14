@@ -6,42 +6,37 @@ import { events } from './response/events.json' assert { type: 'json' };
 // ! HARD
 // ! 각 응답에 대한 MSW 핸들러를 작성해주세요. GET 요청은 이미 작성되어 있는 events json을 활용해주세요.
 export const handlers = [
-  // ✅ GET 이벤트 목록 조회
   http.get('/api/events', () => {
-    return HttpResponse.json({ events }, { status: 200 });
+    return HttpResponse.json({ events });
   }),
 
-  // ✅ POST 새로운 이벤트 추가
   http.post('/api/events', async ({ request }) => {
     const newEvent = (await request.json()) as Event;
+    newEvent.id = String(events.length + 1);
     events.push(newEvent);
-    return HttpResponse.json({ message: 'created', event: newEvent });
+    return HttpResponse.json(newEvent, { status: 201 });
   }),
 
-  // ✅ PUT 이벤트 수정
-  http.put('/api/events/:id', async ({ request, params }) => {
-    const id = params.id as string;
-    const updateDate = (await request.json()) as Partial<Event>;
+  http.put('/api/events/:id', async ({ params, request }) => {
+    const { id } = params;
+    const updatedEvent = (await request.json()) as Event;
+    const index = events.findIndex((event) => event.id === id);
 
-    const index = events.findIndex((e) => e.id === id);
-    if (index === -1) {
-      return HttpResponse.json({ message: 'not found' }, { status: 404 });
+    if (index !== -1) {
+      events[index] = { ...events[index], ...updatedEvent };
+      return HttpResponse.json(events[index]);
     }
-
-    events[index] = { ...events[index], ...updateDate };
-    return HttpResponse.json({ message: 'updated', event: events[index] });
+    return new HttpResponse(null, { status: 404 });
   }),
 
-  // ✅ DELETE 이벤트 삭제
   http.delete('/api/events/:id', ({ params }) => {
-    const id = params.id as string;
-    const index = events.findIndex((e) => e.id === id);
+    const { id } = params;
+    const index = events.findIndex((event) => event.id === id);
 
-    if (index === -1) {
-      return HttpResponse.json({ message: 'not found' }, { status: 404 });
+    if (index !== -1) {
+      events.splice(index, 1);
+      return new HttpResponse(null, { status: 204 });
     }
-
-    events.splice(index, 1);
-    return HttpResponse.json({ message: 'deleted' });
+    return new HttpResponse(null, { status: 404 });
   }),
 ];

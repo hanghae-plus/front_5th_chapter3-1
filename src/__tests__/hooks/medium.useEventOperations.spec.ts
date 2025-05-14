@@ -28,6 +28,14 @@ vi.mock('@chakra-ui/react', async (importOriginal) => {
   };
 });
 
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  server.resetHandlers();
+});
+
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
   const { result } = renderHook(() => useEventOperations(false));
 

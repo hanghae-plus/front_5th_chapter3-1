@@ -1,7 +1,24 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { setupServer } from 'msw/node';
 
+import { handlers } from '../../__mocks__/handlers.ts';
 import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
+
+/* msw */
+export const server = setupServer(...handlers);
+
+// ✅ 모든 테스트 전 가짜 타이머 + 고정 시간 설정
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-10-01')); // 시스템 시간 고정
+});
+
+// ✅ 모든 테스트 후 타이머 복원
+afterEach(() => {
+  vi.useRealTimers();
+  server.resetHandlers();
+});
 
 describe('초기 상태', () => {
   it('view는 "month"이어야 한다', () => {
