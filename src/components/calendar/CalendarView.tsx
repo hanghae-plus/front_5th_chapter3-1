@@ -1,5 +1,5 @@
-import renderMonthView from './MonthView';
-import renderWeekView from './WeekView';
+import MonthView from './MonthView';
+import WeekView from './WeekView';
 import { Event } from '../../types';
 
 interface Props {
@@ -11,10 +11,20 @@ interface Props {
 }
 
 const CalendarView = ({ view, currentDate, holidays, filteredEvents, notifiedEvents }: Props) => {
-  if (view === 'week') {
-    return renderWeekView({ currentDate, filteredEvents, notifiedEvents });
-  }
-  return renderMonthView({ currentDate, holidays, filteredEvents, notifiedEvents });
+  return view === 'week' ? (
+    <WeekView
+      currentDate={currentDate}
+      filteredEvents={filteredEvents}
+      notifiedEvents={notifiedEvents}
+    />
+  ) : (
+    <MonthView
+      currentDate={currentDate}
+      holidays={holidays}
+      filteredEvents={filteredEvents}
+      notifiedEvents={notifiedEvents}
+    />
+  );
 };
 
 export default CalendarView;
