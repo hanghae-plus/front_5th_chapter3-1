@@ -612,4 +612,37 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+describe('알림 기능', () => {
+  const MOCK_EVENTS = [
+    {
+      id: '1',
+      title: '과제 제출',
+      date: '2025-05-16',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '항해 과제가 끝나게 해주세요 제발',
+      location: '아이콘역삼빌딩',
+      category: '학습',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+
+  it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+    act(() => {
+      vi.setSystemTime(new Date('2025-05-16 09:50:00'));
+
+      setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+    });
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const notification = await screen.findByText(
+      `10분 후 ${MOCK_EVENTS[0].title} 일정이 시작됩니다.`
+    );
+    expect(notification).toBeInTheDocument();
+  });
+});
