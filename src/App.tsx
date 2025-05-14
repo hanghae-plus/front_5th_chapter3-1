@@ -192,6 +192,7 @@ function App() {
                       return (
                         <Box
                           key={event.id}
+                          data-testid={`event-view-item`}
                           p={1}
                           my={1}
                           bg={isNotified ? 'red.100' : 'gray.100'}
