@@ -166,7 +166,35 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(monthViewEvent).toBeInTheDocument();
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = await screen.findByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+
+    const eventItem = eventItems[0];
+    const deleteButton = within(eventItem).getByTestId('delete-button');
+    await userEvent.click(deleteButton);
+
+    // 삭제된 일정이 리스트에 표시되지 않는지 확인
+    const newEventList = await screen.findByTestId('event-list');
+    const newEventItems = within(newEventList).getAllByTestId('event-item');
+
+    const deletedEvent = newEventItems[0];
+    expect(newEventItems).toHaveLength(MOCK_EVENTS.length - 1);
+    expect(deletedEvent).not.toHaveTextContent(MOCK_EVENTS[0].title);
+
+    // 월별 뷰에 삭제된 일정이 표시되지 않는지 확인
+    const monthView = screen.getByTestId('month-view');
+    const monthViewEvent = within(monthView).queryByText(MOCK_EVENTS[0].title);
+    expect(monthViewEvent).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
