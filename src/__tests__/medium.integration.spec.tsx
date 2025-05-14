@@ -492,7 +492,51 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const MOCK_EVENTS = [
+      {
+        id: '1',
+        title: '과제 제출',
+        date: '2025-05-16',
+        startTime: '10:00',
+        endTime: '11:00',
+        description: '항해 과제가 끝나게 해주세요 제발',
+        location: '아이콘역삼빌딩',
+        category: '학습',
+        repeat: { type: 'none', interval: 0 },
+      },
+    ];
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categoryInput = screen.getByLabelText('카테고리');
+
+    await userEvent.type(titleInput, '꿀잠');
+    await userEvent.type(dateInput, '2025-05-16');
+    await userEvent.type(startTimeInput, '10:00');
+    await userEvent.type(endTimeInput, '11:00');
+    await userEvent.type(descriptionInput, '꿀잠 좋아');
+    await userEvent.type(locationInput, '침대');
+    await userEvent.selectOptions(categoryInput, '개인');
+
+    // 저장 버튼 클릭
+    const saveButton = screen.getByTestId('event-submit-button');
+    await userEvent.click(saveButton);
+
+    const alert = screen.getByText('일정 겹침 경고');
+    expect(alert).toBeInTheDocument();
+  });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
 });
