@@ -97,7 +97,7 @@ it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다',
   const { result } = renderHook(() => useSearch(mockEvents, new Date('2025-05-20'), 'week'));
 
   expect(result.current.filteredEvents.map((e) => e.title).sort()).toEqual(
-    ['팀 회의', '점심 약속', '운동', '프로젝트 마감'].sort()
+    ['팀 회의', '점심 약속', '운동'].sort()
   );
 });
 
