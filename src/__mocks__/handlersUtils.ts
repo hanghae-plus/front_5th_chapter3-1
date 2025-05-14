@@ -10,11 +10,13 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
 
   return [
     http.get('/api/events', () => {
+      console.log('🟢 [MSW] GET /api/events called');
       return HttpResponse.json({ events: mockEvents }, { status: 200 });
     }),
 
     http.post('/api/events', async ({ request }) => {
       const newEvent = (await request.json()) as Event;
+      console.log('🟢 [MSW] POST /api/events called with:', newEvent);
       mockEvents.push(newEvent);
       return HttpResponse.json({ success: true }, { status: 201 });
     }),
