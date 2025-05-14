@@ -1,3 +1,4 @@
+import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Box,
   FormControl,
@@ -8,7 +9,6 @@ import {
   Text,
   VStack
 } from '@chakra-ui/react';
-import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 
 const notificationOptions = [
   { value: 1, label: '1분 전' },

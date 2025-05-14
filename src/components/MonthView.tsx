@@ -1,3 +1,4 @@
+import { BellIcon } from '@chakra-ui/icons';
 import {
   Box,
   Heading,
@@ -10,7 +11,6 @@ import {
   Thead,
   Tr
 } from '@chakra-ui/react';
-import { BellIcon } from '@chakra-ui/icons';
 
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 

@@ -1,5 +1,5 @@
-import { HStack, IconButton, Select } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { HStack, IconButton, Select } from '@chakra-ui/react';
 
 export default function CalendarToolbar({ view, setView, navigate }) {
   return (
