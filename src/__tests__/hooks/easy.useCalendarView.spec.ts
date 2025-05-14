@@ -6,6 +6,7 @@ import { assertDate } from '../utils.ts';
 
 describe('초기 상태', () => {
   beforeEach(() => {
+    vi.useRealTimers();
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2025-10-01'));
   });
