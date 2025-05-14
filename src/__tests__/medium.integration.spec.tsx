@@ -373,10 +373,121 @@ describe('검색 기능', () => {
   });
 });
 
-// describe('일정 충돌', () => {
-//   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+describe('일정 충돌', () => {
+  beforeEach(() => {
+    server.resetHandlers();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-10-15T00:00:00Z'));
+  });
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const initialEvents: Event[] = [
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(initialEvents);
 
-//   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    const { user } = setup(<App />);
+    const newEvent = {
+      title: '겹치는 일정',
+      date: '2025-10-15',
+      startTime: '09:30',
+      endTime: '10:30',
+      location: '회의실 A',
+      description: '겹치는 일정 설명',
+      category: '업무',
+    };
+
+    await saveSchedule(user, newEvent);
+
+    const alertDialog = await screen.findByRole('alertdialog');
+    const alertTitle = alertDialog.querySelector('header');
+    expect(alertTitle).toHaveTextContent('일정 겹침 경고');
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const initialEvents: Event[] = [
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+    const eventListContainer = screen.getByTestId('event-list');
+
+    const originalCardTitleElement = await within(eventListContainer).findByText(
+      initialEvents[0].title
+    );
+    const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
+    expect(eventCard).toBeInTheDocument();
+
+    const editButton = within(eventCard!).getByRole('button', { name: /edit event/i });
+    await user.click(editButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('제목')).toHaveValue(initialEvents[0].title);
+      expect(screen.getByRole('button', { name: '일정 수정' })).toBeInTheDocument();
+    });
+
+    await editSchedule(user, {
+      ...initialEvents[0],
+      startTime: '09:30',
+      endTime: '10:30',
+    });
+
+    waitFor(async () => {
+      const alertDialog = await screen.findByRole('alertdialog');
+      const alertTitle = alertDialog.querySelector('header');
+      expect(alertTitle).toHaveTextContent('일정 겹침 경고');
+    });
+  });
+});
+
+// it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+//   const initialEvents: Event[] = [
+//     {
+//       id: '1',
+//       title: '기존 회의',
+//       date: '2025-10-15',
+//       startTime: '09:00',
+//       endTime: '10:00',
+//       description: '기존 팀 미팅',
+//       location: '회의실 B',
+//       category: '업무',
+//       repeat: { type: 'none', interval: 0 },
+//       notificationTime: 10,
+//     },
+//   ];
+//   setupMockHandlerCreation(initialEvents);
+
+//   const { user } = setup(<App />);
+//   const eventListContainer = screen.getByTestId('event-list');
+
+//   const originalCardTitleElement = await within(eventListContainer).findByText(
+//     initialEvents[0].title
+//   );
+//   const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
+//   expect(eventCard).toBeInTheDocument();
+
+//   const notificationText = within(eventCard!).getByText('10분 전 알림');
+//   expect(notificationText).toBeInTheDocument();
 // });
-
-// it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
