@@ -211,7 +211,7 @@ describe('일정 뷰', () => {
   
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
   
-    const holidayElement = screen.findByText('신정');
+    // const holidayElement = screen.findByText('신정');
     // expect(holidayElement).toBeInTheDocument();
     // expect(holidayElement).toHaveStyle('color: #E53E3E');
   });
