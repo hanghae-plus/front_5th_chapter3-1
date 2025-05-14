@@ -382,6 +382,8 @@ describe('일정 뷰', () => {
     // "신정" 텍스트와 색상 확인
     const holidayText = screen.getByText('신정');
     expect(holidayText).toHaveStyle({ color: 'var(--chakra-colors-red-500)' });
+
+    vi.useRealTimers();
   });
 });
 
@@ -402,7 +404,39 @@ describe('검색 기능', () => {
     expect(noResultsText).toBeInTheDocument();
   });
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const MOCK_EVENTS = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2025-05-16',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의 설명',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+      },
+    ];
+    setupMockHandlerCreation(MOCK_EVENTS as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await userEvent.type(searchInput, '팀 회의');
+
+    const eventList = screen.getByTestId('event-list');
+    const eventItems = within(eventList).getAllByTestId('event-item');
+    expect(eventItems).toHaveLength(1);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].title);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].date);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].startTime);
+    expect(eventItems[0]).toHaveTextContent(MOCK_EVENTS[0].endTime);
+  });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
 });
