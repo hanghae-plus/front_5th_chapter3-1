@@ -11,17 +11,10 @@ describe('useNotifications', () => {
   const min = 60 * sec;
   const hour = 60 * min;
 
-  beforeEach(() => {
-    vi.useFakeTimers();
-    vi.setSystemTime(new Date('2025-05-13T20:50'));
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
+  const fakeTime = '2025-10-01T00:00';
 
   it('초기 상태에서는 알림이 없어야 한다', () => {
-    const eventDate = new Date('2025-05-13T20:50');
+    const eventDate = new Date(fakeTime);
     const events: Event[] = [
       {
         id: '1',
@@ -46,7 +39,7 @@ describe('useNotifications', () => {
   });
 
   it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
-    const eventDate = new Date('2025-05-13T20:50');
+    const eventDate = new Date(fakeTime);
     const targetEvent: Event = {
       id: '1',
       title: '이벤트1',
