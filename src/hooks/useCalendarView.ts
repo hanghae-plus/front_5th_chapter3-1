@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import { fetchHolidays } from '../apis/fetchHolidays';
+import { useAtom } from 'jotai';
+import { calanderViewAtom } from '../state/calancerViewAtom';
 
 export const useCalendarView = () => {
-  const [view, setView] = useState<'week' | 'month'>('month');
+  const [calanderView, setCalanderView] = useAtom(calanderViewAtom);
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const [holidays, setHolidays] = useState<{ [key: string]: string }>({});
@@ -11,9 +13,9 @@ export const useCalendarView = () => {
   const navigate = (direction: 'prev' | 'next') => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
-      if (view === 'week') {
+      if (calanderView === 'week') {
         newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
-      } else if (view === 'month') {
+      } else if (calanderView === 'month') {
         newDate.setDate(1); // 항상 1일로 설정
         newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
       }
@@ -25,5 +27,5 @@ export const useCalendarView = () => {
     setHolidays(fetchHolidays(currentDate));
   }, [currentDate]);
 
-  return { view, setView, currentDate, setCurrentDate, holidays, navigate };
+  return { currentDate, setCurrentDate, holidays, navigate, calanderView, setCalanderView };
 };
