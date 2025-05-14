@@ -11,7 +11,7 @@ describe('parseDateTime', () => {
   it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
     const parsedDate = parseDateTime('2025-07-01', '14:30');
 
-    expect(parsedDate.toISOString()).toBe(new Date('2025-07-01T$14:30').toISOString());
+    expect(parsedDate.toISOString()).toBe(new Date('2025-07-01T14:30').toISOString());
   });
 
   it("날짜 형식이 'YYYY', 'YYYY-MM', 'YYYY-MM-DD'가 아닐 경우 Invalid Date를 반환한다", () => {
