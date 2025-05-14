@@ -11,11 +11,11 @@ describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
   const mockEditEvent = vi.fn();
   const mockDeleteEvent = vi.fn();
 
-  const renderScheduleDetailItem = (event: Event = mockEvent, notifiedEvents: string[] = []) => {
+  const renderScheduleDetailItem = (event: Event, notifiedEvents: string[] = []) => {
     return render(
       <ChakraProvider>
         <ScheduleDetailItem
-          event={mockEvent}
+          event={event}
           notifiedEvents={notifiedEvents}
           editEvent={mockEditEvent}
           deleteEvent={mockDeleteEvent}
@@ -25,7 +25,7 @@ describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
   };
 
   it('일정 상세 정보가 표시된다', () => {
-    renderScheduleDetailItem();
+    renderScheduleDetailItem(mockEvent);
 
     // 기본 정보 표시 확인
     expect(screen.getByText(mockEvent.title)).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
   });
 
   it('편집 버튼 클릭시 editEvent가 호출된다', () => {
-    renderScheduleDetailItem();
+    renderScheduleDetailItem(mockEvent);
 
     const editButton = screen.getByLabelText('Edit event');
     fireEvent.click(editButton);
@@ -46,7 +46,7 @@ describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
   });
 
   it('삭제 버튼 클릭시 deleteEvent가 호출된다', () => {
-    renderScheduleDetailItem();
+    renderScheduleDetailItem(mockEvent);
 
     const deleteButton = screen.getByLabelText('Delete event');
     fireEvent.click(deleteButton);
