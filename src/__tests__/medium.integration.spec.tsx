@@ -3,7 +3,7 @@ import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 
 import { handlers } from '../__mocks__/handlers';
-import { setupMockHandlerCreation, setupMockHandlerFetch } from '../__mocks__/handlersUtils';
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import App from '../App';
 import { server } from '../setupTests';
