@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor, cleanup } from '@testing-library/react';
+import { render, screen, within, waitFor, cleanup } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
@@ -235,15 +235,156 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  let user: UserEvent;
+  let inMemoryEvents: Event[];
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  beforeEach(async () => {
+    user = userEvent.setup();
+    inMemoryEvents = [];
+    vi.setSystemTime(new Date('2025-05-20')); // 기본 시스템 시간을 5월 20일로 설정
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    // MSW 핸들러 설정
+    server.use(
+      http.get('/api/events', async () => {
+        return HttpResponse.json({ events: [...inMemoryEvents] });
+      })
+    );
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  afterEach(() => {
+    vi.useRealTimers();
+    cleanup();
+    server.resetHandlers();
+  });
+
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    // 주별 뷰로 전환
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // 주별 뷰 컨테이너 확인
+    const weekView = screen.getByTestId('week-view');
+    expect(weekView).toBeInTheDocument();
+
+    const table = screen.getByRole('table');
+    expect(table).toBeInTheDocument();
+
+    // 테이블에서 이벤트가 표시되는 Box 요소가 없는지 확인
+    const eventBoxes = within(table).queryAllByText(/회의|약속|프로젝트|생일|운동/);
+    expect(eventBoxes.length).toBe(0);
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    // 테스트 이벤트 추가 (5월 20일 - 현재 날짜)
+    const testEvent: Event = {
+      id: 'test-event-1',
+      title: '주간 테스트 회의',
+      date: '2025-05-20', // 현재 날짜
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '주간 테스트 설명',
+      location: '테스트 위치',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    inMemoryEvents.push(testEvent);
+
+    // 페이지 리렌더링
+    cleanup();
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+
+    // 주별 뷰로 변경
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // 주별 뷰가 표시되었는지 확인
+    await waitFor(() => {
+      expect(screen.getByText(/2025년 5월.*주$/)).toBeInTheDocument();
+    });
+
+    // 테이블 요소 찾기 (주별 뷰 내의 테이블)
+    const weekTable = screen.getByRole('table');
+
+    // 주별 뷰의 테이블 내에서 이벤트 확인
+    expect(within(weekTable).getByText('주간 테스트 회의')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    expect(screen.getByText('2025년 5월')).toBeInTheDocument();
+
+    // 월별 뷰 테이블 확인
+    const table = screen.getByRole('table');
+    expect(table).toBeInTheDocument();
+
+    // 테이블에서 이벤트가 표시되는 Box 요소가 없는지 확인
+    const eventBoxes = within(table).queryAllByText(/회의|약속|프로젝트|생일|운동/);
+    expect(eventBoxes.length).toBe(0);
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const testEvent: Event = {
+      id: 'test-event-1',
+      title: '월간 테스트 회의',
+      date: '2025-05-15', // 현재 월 내 날짜
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '월간 테스트 설명',
+      location: '테스트 위치',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    inMemoryEvents.push(testEvent);
+
+    // 페이지 리렌더링
+    cleanup();
+    renderWithChakra(<App />);
+    await waitFor(() => expect(screen.queryByText('일정 로딩 완료!')).not.toBeInTheDocument());
+
+    // 월별 뷰 제목이 표시되었는지 확인
+    expect(screen.getByText('2025년 5월')).toBeInTheDocument();
+
+    // 테이블 요소 찾기 (월별 뷰 내의 테이블)
+    const monthTable = screen.getByRole('table');
+
+    // 월별 뷰의 테이블 내에서 이벤트 확인
+    expect(within(monthTable).getByText('월간 테스트 회의')).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    const prevButton = screen.getByLabelText('Previous');
+
+    const months = [4, 3, 2, 1]; // 이동하려는 월 (5월에서 시작)
+
+    for (const month of months) {
+      await user.click(prevButton);
+      await waitFor(() => {
+        expect(screen.getByText(`2025년 ${month}월`)).toBeInTheDocument();
+      });
+    }
+
+    // 1일이 표시된 셀 찾기
+    const cells = screen.getAllByRole('cell');
+    const firstDayCell = Array.from(cells).find((cell) => {
+      // 셀 안에 '1'이라는 텍스트가 있고, 다른 숫자가 아닌지 확인 (예: '10', '11' 등과 구분)
+      const dayTextElement = within(cell).queryByText(/^1$/); // 정확히 '1'만 있는 텍스트
+      return dayTextElement !== null;
+    });
+    // 셀이 존재하는지 확인
+    expect(firstDayCell).toBeDefined();
+
+    // 1일 셀에 '신정' 텍스트가 있는지 확인
+    const holidayText = within(firstDayCell!).getByText('신정');
+    expect(holidayText).toBeInTheDocument();
+
+    // 공휴일은 빨간색으로 표시되는지 확인
+    expect(holidayText).toHaveStyle('color: var(--chakra-colors-red-500)');
+  });
 });
 
 describe('검색 기능', () => {
