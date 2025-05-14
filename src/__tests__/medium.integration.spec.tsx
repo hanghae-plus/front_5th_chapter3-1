@@ -71,6 +71,7 @@ const editSchedule = async (
 // 그러면, "검색 결과가 없습니다"라는 문구는 노출되지 않은 상태에서, 일정 수정, 삭제 등을 일관성있게 검증할 수 있습니다.
 describe('일정 CRUD 및 기본 기능', () => {
   beforeEach(() => {
+    server.resetHandlers();
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2025-10-15T00:00:00Z'));
   });
@@ -161,17 +162,105 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 });
 
-// describe('일정 뷰', () => {
-//   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+describe('일정 뷰', () => {
+  beforeEach(() => {
+    server.resetHandlers();
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-05-13T00:00:00Z'));
+  });
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const { user } = setup(<App />);
+    const viewButton = screen.getByLabelText('view');
 
-//   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    await user.click(viewButton);
+    const weekButton = screen.getByRole('option', { name: /Week/i });
+    await user.click(weekButton);
 
-//   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const noEventText = screen.getByText('검색 결과가 없습니다.');
+    expect(noEventText).toBeInTheDocument();
+  });
 
-//   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const initialEvents: Event[] = [
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-05-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(initialEvents);
 
-//   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
-// });
+    const { user } = setup(<App />);
+
+    const viewButton = screen.getByLabelText('view');
+    const weekButton = screen.getByRole('option', { name: /Week/i });
+
+    await user.click(viewButton);
+    await user.click(weekButton);
+
+    const eventList = screen.getByTestId('event-list');
+    const eventCard = within(eventList).getByText(initialEvents[0].title).closest('div');
+    expect(eventCard).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    const { user } = setup(<App />);
+    const viewButton = screen.getByLabelText('view');
+    await user.click(viewButton);
+    const monthButton = screen.getByRole('option', { name: /Month/i });
+    await user.click(monthButton);
+
+    const noEventText = screen.getByText('검색 결과가 없습니다.');
+    expect(noEventText).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation([]);
+
+    const { user } = setup(<App />);
+    const newEvent = {
+      title: '팀 회의',
+      date: '2025-05-13',
+      startTime: '9:00',
+      endTime: '10:00',
+      location: '회의실 A',
+      description: '주간 정기 회의',
+      category: '업무',
+    };
+
+    await saveSchedule(user, newEvent);
+
+    const viewButton = screen.getByLabelText('view');
+    const monthButton = screen.getByRole('option', { name: /Month/i });
+
+    await user.click(viewButton);
+    await user.click(monthButton);
+
+    const noEventText = screen.queryByText('검색 결과가 없습니다.');
+    expect(noEventText).not.toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2025-01-01T00:00:00Z'));
+
+    const { user } = setup(<App />);
+    const viewButton = screen.getByLabelText('view');
+    const monthButton = screen.getByRole('option', { name: /Month/i });
+
+    await user.click(viewButton);
+    await user.click(monthButton);
+
+    const holidayText = screen.getByText('신정');
+    expect(holidayText).toBeInTheDocument();
+  });
+});
 
 // describe('검색 기능', () => {
 //   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
