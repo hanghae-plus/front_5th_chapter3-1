@@ -286,7 +286,6 @@ describe('검색 기능', () => {
 
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
     const eventList = screen.getByTestId('event-list');
-    console.log(setupMockHandlerFetch());
 
     await act(async () => {
       await userSetup.clear(searchInput);
@@ -331,9 +330,68 @@ describe('일정 충돌', () => {
   });
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    vi.setSystemTime(new Date('2025-10-15'));
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const scheduleButton = screen.getByTestId('event-submit-button');
+    const eventList = screen.getByTestId('event-list');
+
+    await userSetup.type(titleInput, '팀 회의');
+    await userSetup.type(dateInput, new Date().toISOString().split('T')[0]);
+    await userSetup.type(startTimeInput, '10:00');
+    await userSetup.type(endTimeInput, '11:00');
+
+    await act(async () => {
+      await userSetup.click(scheduleButton);
+    });
+
+    const editButtons = within(eventList).getAllByLabelText('Edit event');
+
+    await act(async () => {
+      await userSetup.click(editButtons[1]);
+    });
+
+    await userSetup.clear(titleInput);
+    await userSetup.type(titleInput, '팀 회의 수정');
+    await userSetup.clear(startTimeInput);
+    await userSetup.type(startTimeInput, '09:00');
+    await userSetup.clear(endTimeInput);
+    await userSetup.type(endTimeInput, '10:00');
+
+    const submitButton = screen.getByTestId('event-submit-button');
+
+    await act(async () => {
+      await userSetup.click(submitButton);
+    });
+
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+  });
+});
+
+describe('알림 기능', () => {
+  beforeEach(() => {
+    vi.useRealTimers();
     vi.useFakeTimers();
 
-    const currentDate = new Date('2025-10-15T12:00:00');
+    setupMockHandlerCreation(events as Event[]);
+    server.use(handlers[0]);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+    const currentDate = new Date('2025-10-15T08:50:00');
     vi.setSystemTime(currentDate);
 
     render(
@@ -342,75 +400,13 @@ describe('일정 충돌', () => {
       </ChakraProvider>
     );
 
-    // const titleInput = screen.getByLabelText('제목');
-    // const dateInput = screen.getByLabelText('날짜');
-    const startTimeInput = screen.getByLabelText('시작 시간');
-    const endTimeInput = screen.getByLabelText('종료 시간');
-    const scheduleButton = screen.getByTestId('event-submit-button');
-
-    // await userSetup.type(titleInput, '기존 회의');
-    // await userSetup.type(dateInput, '2025-10-15');
-    // await userSetup.type(startTimeInput, '11:00');
-    // await userSetup.type(endTimeInput, '12:00');
-
-    // await userSetup.click(scheduleButton);
-
-    const eventList = screen.getByTestId('event-list');
-    console.log(screen.debug(eventList));
-    const editButtons = within(eventList).getAllByLabelText('Edit event');
-
-    await userSetup.click(editButtons[0]);
-
-    await userSetup.clear(startTimeInput);
-    await userSetup.type(startTimeInput, '09:30');
-    await userSetup.clear(endTimeInput);
-    await userSetup.type(endTimeInput, '10:30');
-
-    await act(() => {
-      userSetup.click(scheduleButton);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1000);
     });
 
-    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
-
-    vi.useRealTimers();
+    expect(screen.getByText(/10분 후 기존 회의 일정이 시작됩니다./)).toBeInTheDocument();
   });
-});
-
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-  vi.useFakeTimers();
-  const userSetup: UserEvent = userEvent.setup();
-
-  const currentDate = new Date('2025-10-15T08:50:00');
-  vi.setSystemTime(currentDate);
-
-  render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  );
-
-  // const titleInput = screen.getByLabelText('제목');
-  // const dateInput = screen.getByLabelText('날짜');
-  // const startTimeInput = screen.getByLabelText('시작 시간');
-  // const endTimeInput = screen.getByLabelText('종료 시간');
-  // const notificationSelect = screen.getByLabelText('알림 설정');
-  // const scheduleButton = screen.getByTestId('event-submit-button');
-
-  // await userSetup.type(titleInput, '새로운 회의');
-  // await userSetup.type(dateInput, '2025-10-15');
-  // await userSetup.type(startTimeInput, '08:50');
-  // await userSetup.type(endTimeInput, '13:00');
-  // await userSetup.selectOptions(notificationSelect, '10');
-
-  // await userSetup.click(scheduleButton);
-
-  await act(async () => {
-    vi.advanceTimersByTime(1000);
-  });
-
-  await waitFor(() => {
-    expect(screen.getByText(/10분 후 새로운 회의 일정이 시작됩니다./)).toBeInTheDocument();
-  });
-
-  vi.useRealTimers();
 });
