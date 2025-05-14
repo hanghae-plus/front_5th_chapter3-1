@@ -386,7 +386,21 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    setupMockHandlerCreation([] as Event[]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await userEvent.type(searchInput, '검색어');
+
+    const noResultsText = screen.getByText('검색 결과가 없습니다.');
+    expect(noResultsText).toBeInTheDocument();
+  });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
 
