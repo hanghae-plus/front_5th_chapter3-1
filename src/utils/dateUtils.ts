@@ -105,7 +105,7 @@ export function formatDate(currentDate: Date, day?: number) {
 
 export function getNavigatedDate(
   prevDate: Date,
-  view: 'week' | 'month', 
+  view: 'week' | 'month',
   direction: 'prev' | 'next'
 ): Date {
   const newDate = new Date(prevDate);
