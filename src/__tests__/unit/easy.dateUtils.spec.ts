@@ -38,7 +38,11 @@ describe('getDaysInMonth', () => {
   });
 
   it('유효하지 않은 월에 대해 적절히 처리한다', () => {
-    // TODO!!!!!
+    const year = 2025;
+    expect(getDaysInMonth(year, NaN)).toBeNaN();
+    expect(getDaysInMonth(year, 0)).toBe(31); // 2024년 12월
+    expect(getDaysInMonth(year, 13)).toBe(31); // 2026년 1월
+    expect(getDaysInMonth(year, -1)).toBe(30); // 2024년 11월
   });
 });
 
