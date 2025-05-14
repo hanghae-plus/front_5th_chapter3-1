@@ -1,24 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import {
-  render,
-  screen,
-  within,
-  act,
-  renderHook,
-  fireEvent,
-  waitFor,
-} from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { render, screen, within, act, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
 import App from '../App';
-import { useSearch } from '../hooks/useSearch';
 import { server } from '../setupTests';
 import { Event } from '../types';
 import { mockTestDataList } from './data/mockTestData';
-import { handlers } from '../__mocks__/handlers';
 import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
