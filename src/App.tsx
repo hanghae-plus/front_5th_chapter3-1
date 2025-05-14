@@ -422,11 +422,13 @@ function App() {
 
           <HStack mx="auto" justifyContent="space-between">
             <IconButton
+              data-testid="previous-button"
               aria-label="Previous"
               icon={<ChevronLeftIcon />}
               onClick={() => navigate('prev')}
             />
             <Select
+              data-testid="view-selector"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
@@ -435,6 +437,7 @@ function App() {
               <option value="month">Month</option>
             </Select>
             <IconButton
+              data-testid="next-button"
               aria-label="Next"
               icon={<ChevronRightIcon />}
               onClick={() => navigate('next')}
@@ -500,12 +503,14 @@ function App() {
                   </VStack>
                   <HStack>
                     <IconButton
-                      aria-label="Edit event"
+                      data-testid={`edit-button-${event.id}`}
+                      aria-label={`edit-button-${event.id}`}
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
-                      aria-label="Delete event"
+                      data-testid={`delete-button-${event.id}`}
+                      aria-label={`delete-button-${event.id}`}
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
                     />
