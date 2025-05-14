@@ -22,8 +22,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
-import { categories } from './base/lib/categorie.constants.ts';
 import { notificationOptions } from './base/lib/notification.constants.ts';
+import ScheduleCategorySelectForm from './features/schedule/ui/ScheduleCategorySelectForm.tsx';
 import ScheduleSearch from './features/schedule/ui/ScheduleSearch.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -189,17 +189,7 @@ function App() {
             <Input value={location} onChange={(e) => setLocation(e.target.value)} />
           </FormControl>
 
-          <FormControl>
-            <FormLabel>카테고리</FormLabel>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">카테고리 선택</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
+          <ScheduleCategorySelectForm category={category} setCategory={setCategory} />
 
           <FormControl>
             <FormLabel>반복 설정</FormLabel>
