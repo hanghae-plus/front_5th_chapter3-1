@@ -9,6 +9,8 @@ import {
   getWeekDates,
   getWeeksAtMonth,
   isDateInRange,
+  getNextMonthDate,
+  getNextWeekDate,
 } from '../../utils/dateUtils';
 
 describe('getDaysInMonth', () => {
@@ -580,5 +582,49 @@ describe('formatDate', () => {
     const result = formatDate(date);
 
     expect(result).toBe(expectedFormat);
+  });
+});
+
+describe('getNextMonthDate', () => {
+  it('다음 달의 첫 날을 반환한다', () => {
+    const base = new Date('2025-07-01');
+    const direction: 'next' = 'next';
+    const expectedDate = new Date('2025-08-01');
+
+    const result = getNextMonthDate(base, direction);
+
+    expect(result).toEqual(expectedDate);
+  });
+
+  it('이전 달의 첫 날을 반환한다', () => {
+    const base = new Date('2025-07-01');
+    const direction: 'prev' = 'prev';
+    const expectedDate = new Date('2025-06-01');
+
+    const result = getNextMonthDate(base, direction);
+
+    expect(result).toEqual(expectedDate);
+  });
+});
+
+describe('getNextWeekDate', () => {
+  it('다음 주의 첫 날을 반환한다', () => {
+    const base = new Date('2025-07-01');
+    const direction: 'next' = 'next';
+    const expectedDate = new Date('2025-07-08');
+
+    const result = getNextWeekDate(base, direction);
+
+    expect(result).toEqual(expectedDate);
+  });
+
+  it('이전 주의 첫 날을 반환한다', () => {
+    const base = new Date('2025-07-01');
+    const direction: 'prev' = 'prev';
+    const expectedDate = new Date('2025-06-24');
+
+    const result = getNextWeekDate(base, direction);
+
+    expect(result).toEqual(expectedDate);
   });
 });

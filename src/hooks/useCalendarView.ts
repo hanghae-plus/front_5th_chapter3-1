@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { fetchHolidays } from '../apis/fetchHolidays';
+import { getNextWeekDate, getNextMonthDate } from '../utils/dateUtils';
 
 export const useCalendarView = () => {
   const [view, setView] = useState<'week' | 'month'>('month');
@@ -11,10 +12,9 @@ export const useCalendarView = () => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
       if (view === 'week') {
-        newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
+        return getNextWeekDate(prevDate, direction);
       } else if (view === 'month') {
-        newDate.setDate(1); // 항상 1일로 설정
-        newDate.setMonth(newDate.getMonth() + (direction === 'next' ? 1 : -1));
+        return getNextMonthDate(prevDate, direction);
       }
       return newDate;
     });
