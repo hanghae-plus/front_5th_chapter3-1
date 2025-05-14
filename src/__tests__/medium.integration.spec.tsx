@@ -11,6 +11,7 @@ import {
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
+import { vi } from 'vitest';
 
 import App from '../App';
 import { useSearch } from '../hooks/useSearch';
@@ -24,9 +25,13 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 
-//TODO: useFakeTimer로 날짜 고정
-const weekStart = new Date('2025-05-02'); // 이 날이 속한 주: 6/29~7/5
-const monthDate = new Date('2025-05-01'); // 7월 전체
+beforeAll(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date('2025-05-10T08:00:00'));
+});
+afterAll(() => {
+  vi.useRealTimers();
+});
 
 describe('일정 CRUD 및 기본 기능', () => {
   const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
@@ -124,16 +129,126 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 });
 
-describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+describe('일정 view', () => {
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+    server.use(...handlers);
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    fireEvent.change(viewSelect, { target: { value: 'week' } });
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const eventList = await screen.findByTestId('event-list');
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    await waitFor(() => {
+      mockTestDataList.forEach((event) => {
+        expect(within(eventList).queryByText(event.title)).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    act(() => {
+      vi.setSystemTime(new Date('2025-05-27'));
+    });
+
+    const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+
+    fireEvent.change(viewSelect, { target: { value: 'week' } });
+
+    const eventList = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText(mockTestDataList[3].title)).toBeInTheDocument();
+    });
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    act(() => {
+      vi.setSystemTime(new Date('2025-10-27'));
+
+      const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+      server.use(...handlers);
+    });
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+
+    fireEvent.change(viewSelect, { target: { value: 'month' } });
+
+    const eventList = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      mockTestDataList.forEach((event) => {
+        expect(within(eventList).queryByText(event.title)).not.toBeInTheDocument();
+      });
+    });
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+
+    fireEvent.change(viewSelect, { target: { value: 'month' } });
+
+    const eventList = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      mockTestDataList.forEach((event) => {
+        expect(within(eventList).queryByText(event.title)).toBeInTheDocument();
+      });
+    });
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    act(() => {
+      vi.setSystemTime(new Date('2025-01-11'));
+
+      const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
+      server.use(...handlers);
+    });
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+
+    fireEvent.change(viewSelect, { target: { value: 'month' } });
+
+    await waitFor(() => {
+      expect(screen.getByText('신정')).toBeInTheDocument();
+    });
+  });
 });
 
 describe('검색 기능', () => {

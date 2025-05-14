@@ -5,6 +5,8 @@ import { fetchHolidays } from '../apis/fetchHolidays';
 export const useCalendarView = () => {
   const [view, setView] = useState<'week' | 'month'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  console.log('currentDate', currentDate);
   const [holidays, setHolidays] = useState<{ [key: string]: string }>({});
 
   const navigate = (direction: 'prev' | 'next') => {
