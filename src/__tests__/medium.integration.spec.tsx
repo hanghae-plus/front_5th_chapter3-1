@@ -1,6 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
+import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
@@ -44,9 +45,76 @@ const saveSchedule = async (
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    setupMockHandlerCreation();
+
+    const { user } = setup(<App />);
+
+    const newEvent: Event = {
+      id: '1',
+      title: '새로운 일정',
+      date: '2025-10-11',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '새로운 일정 설명',
+      location: '회의실',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    await saveSchedule(user, newEvent);
+
+    const eventList = await screen.findByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
+      expect(within(eventList).getByText(newEvent.description)).toBeInTheDocument();
+      expect(within(eventList).getByText(newEvent.location)).toBeInTheDocument();
+      // expect(within(eventList).getByText(newEvent.category)).toBeInTheDocument(); // ?
+    });
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    const event: Event = {
+      id: '1',
+      title: '기존 일정',
+      date: '2025-10-12',
+      startTime: '11:00',
+      endTime: '12:00',
+      description: '기존 일정 설명',
+      location: '회의실 A',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    setupMockHandlerCreation([event]);
+
+    const { user } = setup(<App />);
+
+    // 렌더링 대기
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText('기존 일정')).toBeInTheDocument();
+
+    // 버튼 존재 여부 대기
+    const editButton = await within(eventList).findByTestId('edit-event-button-1');
+    await user.click(editButton);
+
+    // 제목 수정
+    const titleInput = await screen.findByLabelText('제목');
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 일정');
+
+    // 제출
+    const submitButton = screen.getByTestId('event-submit-button');
+    await user.click(submitButton);
+
+    // 결과 확인
+    const updatedEventList = await screen.findByTestId('event-list');
+    await waitFor(() => {
+      expect(within(updatedEventList).getByText('수정된 일정')).toBeInTheDocument();
+    });
+  });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
 });

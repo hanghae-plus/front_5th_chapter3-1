@@ -6,10 +6,10 @@ import {
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../../__mocks__/handlersUtils.ts';
+import { events } from '../../__mocks__/response/events.json';
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
-import { events } from '../../__mocks__/response/events.json';
 
 const mockEvents = events as Event[];
 
@@ -55,7 +55,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   };
 
   setupMockHandlerCreation([...mockEvents, newEvent]);
-  setupMockHandlerUpdating();
+  // setupMockHandlerUpdating();
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
@@ -82,7 +82,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
   };
 
   setupMockHandlerCreation([...mockEvents, newEvent]);
-  setupMockHandlerUpdating();
+  // setupMockHandlerUpdating();
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
