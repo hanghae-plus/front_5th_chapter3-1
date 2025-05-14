@@ -42,53 +42,53 @@ describe('getDaysInMonth', () => {
 
 describe('getWeekDates', () => {
   it('주중의 날짜(수요일)에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2025, 4, 7);
-    const weekDates = getFollowing7Days(new Date(2025, 4, 4));
+    const date = new Date('2025-05-07');
+    const weekDates = getFollowing7Days(new Date('2025-05-04'));
 
     expect(new Date(date).getDay()).toBe(3);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('주의 시작(월요일)에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2025, 3, 7);
-    const weekDates = getFollowing7Days(new Date(2025, 3, 6));
+    const date = new Date('2025-04-07');
+    const weekDates = getFollowing7Days(new Date('2025-04-06'));
 
     expect(new Date(date).getDay()).toBe(1);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('주의 끝(일요일)에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2025, 2, 9);
-    const weekDates = getFollowing7Days(new Date(2025, 2, 9));
+    const date = new Date('2025-03-09');
+    const weekDates = getFollowing7Days(new Date('2025-03-09'));
 
     expect(new Date(date).getDay()).toBe(0);
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('연도를 넘어가는 주의 날짜(연말)에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2024, 11, 31);
-    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
+    const date = new Date('2024-12-31');
+    const weekDates = getFollowing7Days(new Date('2024-12-29'));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('연도를 넘어가는 주의 날짜(연초)에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2025, 0, 1);
-    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
+    const date = new Date('2025-01-01');
+    const weekDates = getFollowing7Days(new Date('2024-12-29'));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('윤년의 2월 29일을 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다', () => {
-    const date = new Date(2025, 0, 1);
-    const weekDates = getFollowing7Days(new Date(2024, 11, 29));
+    const date = new Date('2024-02-29');
+    const weekDates = getFollowing7Days(new Date('2024-02-25'));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
 
   it('월의 마지막 날짜를 포함한 주의 날짜에 대해 해당 주의 날짜들을 반환한다.', () => {
-    const date = new Date(2024, 1, 29);
-    const weekDates = getFollowing7Days(new Date(2024, 1, 25));
+    const date = new Date('2024-04-30');
+    const weekDates = getFollowing7Days(new Date('2024-04-28'));
 
     expect(getWeekDates(new Date(date))).toEqual(weekDates);
   });
@@ -104,7 +104,7 @@ describe('getWeeksAtMonth', () => {
       [27, 28, 29, 30, 31, null, null],
     ];
 
-    expect(getWeeksAtMonth(new Date(2025, 6, 1))).toEqual(weeks);
+    expect(getWeeksAtMonth(new Date('2025-07-01'))).toEqual(weeks);
   });
 
   it('다른 달과 겹치는 주도 포함해 해당 월에 속한 모든 주를 배열로 반환한다', () => {
@@ -117,7 +117,7 @@ describe('getWeeksAtMonth', () => {
       [31, null, null, null, null, null, null],
     ];
 
-    expect(getWeeksAtMonth(new Date(2025, 7, 11))).toEqual(weeks);
+    expect(getWeeksAtMonth(new Date('2025-08-11'))).toEqual(weeks);
   });
 });
 
@@ -153,37 +153,37 @@ describe('getEventsForDay', () => {
 
 describe('formatWeek', () => {
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 4, 14))).toBe('2025년 5월 3주');
+    expect(formatWeek(new Date('2025-05-14'))).toBe('2025년 5월 3주');
   });
 
   it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 3, 2))).toBe('2025년 4월 1주');
+    expect(formatWeek(new Date('2025-04-02'))).toBe('2025년 4월 1주');
   });
 
   it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 2, 25))).toBe('2025년 3월 4주');
+    expect(formatWeek(new Date('2025-03-25'))).toBe('2025년 3월 4주');
   });
 
   it('월이 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 5, 29))).toBe('2025년 7월 1주');
+    expect(formatWeek(new Date('2025-06-29'))).toBe('2025년 7월 1주');
   });
 
   it('연도가 바뀌는 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 11, 30))).toBe('2026년 1월 1주');
+    expect(formatWeek(new Date('2025-12-30'))).toBe('2026년 1월 1주');
   });
 
   it('윤년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2024, 1, 27))).toBe('2024년 2월 5주');
+    expect(formatWeek(new Date('2024-02-27'))).toBe('2024년 2월 5주');
   });
 
   it('평년 2월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {
-    expect(formatWeek(new Date(2025, 1, 25))).toBe('2025년 2월 4주');
+    expect(formatWeek(new Date('2025-02-25'))).toBe('2025년 2월 4주');
   });
 });
 
 describe('formatMonth', () => {
   it("2025년 7월 10일을 '2025년 7월'로 반환한다", () => {
-    expect(formatMonth(new Date(2025, 6, 10))).toBe('2025년 7월');
+    expect(formatMonth(new Date('2025-07-10'))).toBe('2025년 7월');
   });
 });
 
