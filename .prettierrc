@@ -21,5 +21,6 @@
         "parser": "html"
       }
     }
-  ]
+  ],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }
