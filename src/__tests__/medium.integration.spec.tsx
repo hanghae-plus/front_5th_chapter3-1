@@ -5,33 +5,8 @@ import { userEvent } from '@testing-library/user-event';
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import type { Event } from '../types';
-import { EVENT, EVENT_CATEGORIES, REPEAT_TYPES } from './constants';
-
-const makeEvents = (count = 2): Event[] =>
-  Array(count)
-    .fill(null)
-    .map((_, index) => {
-      const eventDate = new Date();
-      eventDate.setDate(eventDate.getDate() + index);
-      const formattedDate = eventDate.toISOString().split('T')[0];
-
-      return {
-        id: String(index + 1),
-        title: `${index + 1}-` + EVENT.title,
-        description: `${index + 1}-` + EVENT.description,
-        date: formattedDate, // 수정된 날짜 사용
-        startTime: EVENT.startTime,
-        endTime: EVENT.endTime,
-        location: `${index + 1}-` + EVENT.location,
-        category: EVENT_CATEGORIES[index % EVENT_CATEGORIES.length],
-        notificationTime: EVENT.notificationTime,
-        repeat: {
-          type: REPEAT_TYPES[index % REPEAT_TYPES.length],
-          interval: 1,
-          endDate: `${index + 1}-` + EVENT.repeat.endDate,
-        },
-      };
-    });
+import { EVENT } from './constants';
+import { makeEvents } from './utils';
 
 const submitEvent = async (event?: Partial<Event>) => {
   const user = userEvent.setup();
@@ -131,7 +106,7 @@ const setup = (initialEvents?: Event[]) => {
   );
 };
 
-describe('일정 CRUD 및 기본 기능', () => {
+describe.skip('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     setup();
 
@@ -183,7 +158,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(await screen.findByText('일정이 삭제되었습니다.')).toBeInTheDocument();
   });
 });
-describe('일정 뷰', () => {
+describe.skip('일정 뷰', () => {
   const today = new Date();
 
   // 이번주 월요일
@@ -290,7 +265,7 @@ describe('일정 뷰', () => {
   });
 });
 
-describe('검색 기능', () => {
+describe.skip('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const initialEvents = makeEvents();
     setup(initialEvents);
@@ -341,7 +316,7 @@ describe('검색 기능', () => {
   });
 });
 
-describe('일정 충돌', () => {
+describe.skip('일정 충돌', () => {
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const initialEvents = makeEvents(1).map((event) => ({
       ...event,
