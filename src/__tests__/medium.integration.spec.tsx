@@ -462,32 +462,36 @@ describe('일정 충돌', () => {
   });
 });
 
-// it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-//   const initialEvents: Event[] = [
-//     {
-//       id: '1',
-//       title: '기존 회의',
-//       date: '2025-10-15',
-//       startTime: '09:00',
-//       endTime: '10:00',
-//       description: '기존 팀 미팅',
-//       location: '회의실 B',
-//       category: '업무',
-//       repeat: { type: 'none', interval: 0 },
-//       notificationTime: 10,
-//     },
-//   ];
-//   setupMockHandlerCreation(initialEvents);
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-10-15T00:00:00Z'));
+  const initialEvents: Event[] = [
+    {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '00:10',
+      endTime: '00:30',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+  setupMockHandlerCreation(initialEvents);
 
-//   const { user } = setup(<App />);
-//   const eventListContainer = screen.getByTestId('event-list');
+  setup(<App />);
+  const eventListContainer = screen.getByTestId('event-list');
 
-//   const originalCardTitleElement = await within(eventListContainer).findByText(
-//     initialEvents[0].title
-//   );
-//   const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
-//   expect(eventCard).toBeInTheDocument();
+  const originalCardTitleElement = await within(eventListContainer).findByText(
+    initialEvents[0].title
+  );
+  const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
+  expect(eventCard).toBeInTheDocument();
 
-//   const notificationText = within(eventCard!).getByText('10분 전 알림');
-//   expect(notificationText).toBeInTheDocument();
-// });
+  await act(() => vi.advanceTimersByTime(1000));
+
+  const alertBox = await screen.findByRole('alert');
+  expect(alertBox.textContent).toContain('10분 후 기존 회의 일정이 시작됩니다.');
+});
