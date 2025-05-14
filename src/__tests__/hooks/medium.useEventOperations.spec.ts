@@ -188,24 +188,43 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
 });
 
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
-  // server.use(
-  //   http.post(`/api/events/1`, () => {
-  //     return HttpResponse.json({ error: '이벤트 로딩 실패' }, { status: 500 });
-  //   })
-  // );
-  // await waitFor(() => {
-  //   expect(toastFn).toHaveBeenCalledOnce();
-  // });
-  // const { result } = renderHook(() => useEventOperations(true));
-  // act(() => {
-  //   result.current.deleteEvent('1');
-  // });
-  // await waitFor(() => {
-  //   expect(toastFn).toHaveBeenCalledWith({
-  //     title: '일정 삭제 실패',
-  //     status: 'error',
-  //     duration: 3000,
-  //     isClosable: true,
-  //   });
-  // });
+  server.use(
+    http.delete(`/api/events/1`, () => {
+      return HttpResponse.json({ error: '이벤트 로딩 실패' }, { status: 500 });
+    })
+  );
+
+  const { result } = renderHook(() => useEventOperations(false));
+
+  await waitFor(() => {
+    expect(toastFn).toHaveBeenCalledOnce();
+  });
+
+  expect(result.current.events).toEqual([
+    {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ]);
+
+  act(() => {
+    result.current.deleteEvent('1');
+  });
+
+  await waitFor(() => {
+    expect(toastFn).toHaveBeenCalledWith({
+      title: '일정 삭제 실패',
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  });
 });
