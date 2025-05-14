@@ -4,10 +4,11 @@ import { vi } from 'vitest';
 import { useNotifications } from '../../hooks/useNotifications';
 import type { Event } from '../../types';
 import { createNotificationMessage } from '../../utils/notificationUtils';
+import { mockTestData } from '../data/mockTestData';
 
 beforeAll(() => {
   vi.useFakeTimers();
-  vi.setSystemTime(new Date('2025-10-01T00:00:00'));
+  vi.setSystemTime(new Date('2025-05-01T08:50:00'));
 });
 
 afterAll(() => {
@@ -15,25 +16,14 @@ afterAll(() => {
 });
 
 describe('useNotifications hook notification 테스트', () => {
-  // 30초 뒤에 시작, 알림은 1분 전
-  const upcomingEvent: Event = {
-    id: '100',
-    title: '테스트 이벤트',
-    date: '2025-10-01',
-    startTime: '00:00:30', // 30초 뒤
-    endTime: '00:10:00',
-    description: '',
-    location: '',
-    category: '',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 1, // 1분 전까지 알림
-  };
+  // 10초 뒤에 시작, 알림은 10분 전
+  const upcomingEvent = mockTestData;
 
-  // 알림 시간이 아닌 이벤트(절대 알림 대상이 아님)
+  // 알림 시간이 아닌 이벤트
   const distantEvent: Event = {
     ...upcomingEvent,
-    id: 'evt-2',
-    startTime: '01:00:00', // 1시간 뒤
+    id: '2',
+    startTime: '11:00:00', // 1시간 뒤
     notificationTime: 5, // 5분 전
   };
 
