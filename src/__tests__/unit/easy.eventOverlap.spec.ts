@@ -1,3 +1,4 @@
+import mockEvents from '../../__mocks__/response/events.json';
 import { Event } from '../../types';
 import {
   convertEventToDateRange,
@@ -34,11 +35,59 @@ describe('parseDateTime', () => {
 });
 
 describe('convertEventToDateRange', () => {
-  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {});
+  it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
+    const eventTime = convertEventToDateRange(mockEvents.events[0] as Event);
 
-  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+    expect(eventTime.start).toBeInstanceOf(Date);
+    expect(eventTime.start.getFullYear()).toBe(2025);
+    expect(eventTime.start.getMonth()).toBe(9);
+    expect(eventTime.start.getDate()).toBe(15);
+    expect(eventTime.start.getHours()).toBe(9);
+    expect(eventTime.start.getMinutes()).toBe(0);
 
-  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {});
+    expect(eventTime.end).toBeInstanceOf(Date);
+    expect(eventTime.end.getFullYear()).toBe(2025);
+    expect(eventTime.end.getMonth()).toBe(9);
+    expect(eventTime.end.getDate()).toBe(15);
+    expect(eventTime.end.getHours()).toBe(10);
+    expect(eventTime.end.getMinutes()).toBe(0);
+  });
+
+  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    const event: Event = {
+      id: '1',
+      title: '기존 회의',
+      date: '2025.10.15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    const eventTime = convertEventToDateRange(event);
+    expect(eventTime.start.toString()).toBe('Invalid Date');
+    expect(eventTime.end.toString()).toBe('Invalid Date');
+  });
+
+  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    const event: Event = {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '09.00',
+      endTime: '10.00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    const eventTime = convertEventToDateRange(event);
+    expect(eventTime.start.toString()).toBe('Invalid Date');
+    expect(eventTime.end.toString()).toBe('Invalid Date');
+  });
 });
 
 describe('isOverlapping', () => {
