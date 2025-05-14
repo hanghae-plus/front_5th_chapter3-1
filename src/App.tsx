@@ -43,6 +43,7 @@ import NotificationAlarm from './modules/notification/ui/NotificationAlarm.tsx';
 import { Event, EventForm, RepeatType } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+import ScheduleSearch from './features/schedule/ui/ScheduleSearch.tsx';
 
 function App() {
   const {
@@ -309,14 +310,7 @@ function App() {
         </VStack>
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-          <FormControl>
-            <FormLabel>일정 검색</FormLabel>
-            <Input
-              placeholder="검색어를 입력하세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </FormControl>
+          <ScheduleSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
           {filteredEvents.length === 0 ? (
             <Text>검색 결과가 없습니다.</Text>
