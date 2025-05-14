@@ -3,6 +3,7 @@ import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
+import { vi } from 'vitest';
 
 import App from '../App';
 import { server } from '../setupTests';
@@ -10,7 +11,79 @@ import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    // 오늘 날짜로 맞추기
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const initialEvents: Event[] = [];
+    const newEvent: Event = {
+      id: '1',
+      title: '테스트 일정',
+      date: todayStr,
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '테스트 설명',
+      location: '테스트 장소',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    const fetchSpy = vi
+      .spyOn(global, 'fetch')
+      .mockResolvedValueOnce(new Response(JSON.stringify({ events: initialEvents }))) // 초기 로딩
+      .mockResolvedValueOnce(new Response(JSON.stringify({ success: true }))) // POST 저장
+      .mockResolvedValueOnce(new Response(JSON.stringify({ events: [newEvent] }))); // 저장 후 리스트
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 월별 뷰로 전환
+    await act(async () => {
+      await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+    });
+
+    // 검색어가 비어있는지 확인
+    expect(screen.getByLabelText('일정 검색')).toHaveValue('');
+
+    // 각 입력 필드에 값 입력
+    await userEvent.type(screen.getByLabelText('제목'), newEvent.title);
+    await userEvent.type(screen.getByLabelText('날짜'), newEvent.date);
+    await userEvent.type(screen.getByLabelText('시작 시간'), newEvent.startTime);
+    await userEvent.type(screen.getByLabelText('종료 시간'), newEvent.endTime);
+    await userEvent.type(screen.getByLabelText('설명'), newEvent.description);
+    await userEvent.type(screen.getByLabelText('위치'), newEvent.location);
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), newEvent.category);
+    await userEvent.selectOptions(
+      screen.getByLabelText('알림 설정'),
+      String(newEvent.notificationTime)
+    );
+
+    // 저장 버튼 클릭
+    await act(async () => {
+      await userEvent.click(screen.getByRole('button', { name: '일정 추가' }));
+    });
+
+    // 디버깅: event-list의 실제 DOM 출력
+    screen.debug(screen.getByTestId('event-list'));
+
+    // 4. 저장 후 리스트에 새 이벤트가 정확히 반영됐는지 확인 (타임아웃 5초)
+    expect(
+      await screen.findByText((content) => content.includes(newEvent.title), {}, { timeout: 5000 })
+    ).toBeInTheDocument();
+    expect(screen.getByText(newEvent.description)).toBeInTheDocument();
+    expect(screen.getByText(newEvent.location)).toBeInTheDocument();
+    expect(screen.getByText(`카테고리: ${newEvent.category}`)).toBeInTheDocument();
+    expect(screen.getByText('알림: 10분 전')).toBeInTheDocument();
+
+    // fetch 호출 횟수 검증
+    expect(fetchSpy).toHaveBeenCalledTimes(3);
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
