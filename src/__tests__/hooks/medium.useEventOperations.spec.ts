@@ -1,5 +1,4 @@
-import * as chakra from '@chakra-ui/react';
-import { act, renderHook, screen, waitFor } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import { events } from '../../__mocks__/response/events.json';
@@ -8,17 +7,14 @@ import { server } from '../../setupTests.ts';
 import { Event, EventForm } from '../../types.ts';
 
 const mockToast = vi.fn();
-const mockToastFunction = Object.assign(mockToast, {
-  update: vi.fn(),
-  promise: vi.fn(),
-  closeAll: vi.fn(),
-  close: vi.fn(),
-  isActive: vi.fn(),
-});
 
-vi.mock('@chakra-ui/react', () => ({
-  useToast: () => mockToastFunction,
-}));
+vi.mock('@chakra-ui/react', () => {
+  const actual = require('@chakra-ui/react');
+  return {
+    ...actual,
+    useToast: () => mockToast,
+  };
+});
 
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
   const onSave = vi.fn();
@@ -153,26 +149,25 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
   vi.resetModules();
 
-  const onSave = vi.fn();
+  const { result } = renderHook(() => useEventOperations(true));
 
-  const { result } = renderHook(() => useEventOperations(true, onSave));
+  const input: Event = {
+    id: 'asd',
+    title: '새로운 이벤트',
+    date: '2024-03-21',
+    startTime: '14:00',
+    endTime: '15:00',
+    description: '새로운 테스트 설명',
+    notificationTime: 10,
+    location: '새로운 장소',
+    category: '미팅',
+    repeat: { type: 'none', interval: 0 },
+  };
 
   await act(async () => {
-    await result.current.saveEvent({
-      id: '9999',
-      title: '새로운 이벤트',
-      date: '2024-03-21',
-      startTime: '14:00',
-      endTime: '15:00',
-      description: '새로운 테스트 설명',
-      notificationTime: 10,
-      location: '새로운 장소',
-      category: '미팅',
-      repeat: { type: 'none', interval: 0 },
-    });
+    return await result.current.saveEvent(input);
   });
 
-  expect(onSave).toHaveBeenCalled();
   expect(mockToast).toHaveBeenCalled();
   expect(mockToast).toHaveBeenCalledWith({
     title: '일정 저장 실패',

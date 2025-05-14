@@ -2,7 +2,6 @@ import { http, HttpResponse } from 'msw';
 
 import { Event } from '../types';
 import { createMockHandlersUtils } from './handlersUtils';
-import { events } from './response/events.json' assert { type: 'json' };
 
 // ! HARD
 // ! 각 응답에 대한 MSW 핸들러를 작성해주세요. GET 요청은 이미 작성되어 있는 events json을 활용해주세요.
@@ -21,6 +20,12 @@ export function createHandlers(utils: ReturnType<typeof createMockHandlersUtils>
       const id = params.id as string;
       const update = (await request.json()) as Event;
       const currentEvents = utils.setupMockHandlerFetch();
+
+      const eventIndex = currentEvents.findIndex((event) => event.id === id);
+      if (eventIndex === -1) {
+        throw new Error('해당 id의 이벤트가 존재하지 않습니다.');
+      }
+
       const updatedEvent = currentEvents.map((event) =>
         event.id === id ? { ...event, ...update } : event
       );
