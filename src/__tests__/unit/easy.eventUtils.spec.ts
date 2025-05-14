@@ -90,7 +90,7 @@ describe('getFilteredEvents', () => {
 
   it('월간 뷰에서 2025년 7월의 모든 이벤트를 반환한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-01'), 'month');
-    expect(result.map((e) => e.id)).toEqual(['1', '2', '3']);
+    expect(result.map((e) => e.id)).toEqual(['1', '2', '3', '6']);
   });
 
   it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다", () => {
@@ -104,7 +104,7 @@ describe('getFilteredEvents', () => {
     expect(weekResult.map((e) => e.id)).toEqual(['1', '2', '4']);
 
     const monthResult = getFilteredEvents(events, '', new Date('2025-07-01'), 'month');
-    expect(monthResult.map((e) => e.id)).toEqual(['1', '2', '3']);
+    expect(monthResult.map((e) => e.id)).toEqual(['1', '2', '3', '6']);
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
@@ -115,7 +115,7 @@ describe('getFilteredEvents', () => {
   it('월의 경계에 있는 이벤트를 올바르게 필터링한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-15'), 'month');
     // 7월 1일~7월 31일만 포함: id '1' and '6'
-    expect(result.map((e) => e.id).sort()).toEqual(['1', '2', '3']);
+    expect(result.map((e) => e.id).sort()).toEqual(['1', '2', '3', '6']);
   });
 
   it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {
