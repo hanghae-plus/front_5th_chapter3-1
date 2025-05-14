@@ -25,6 +25,7 @@ const newEvent: Omit<Event, 'id'> = {
   repeat: { type: 'none', interval: 0 },
   notificationTime: 10,
 };
+
 const mockToast = vi.fn();
 vi.mock('@chakra-ui/react', async () => {
   const actual = await vi.importActual('@chakra-ui/react');
@@ -48,20 +49,17 @@ describe('useEventOperations', () => {
     if (testId) {
       cleanupMockHandler(testId);
     }
+    server.resetHandlers();
   });
 
   it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
     const { result } = renderHook(() => useEventOperations(false));
 
     await waitFor(() => {
-      // events 배열이 채워질 때까지 기다림
-      expect(result.current.events.length).toBeGreaterThan(0);
+      expect(result.current.events.length).toBe(mockEvents.length); // toBeGreaterThan(0) 대신 정확한 길이로
+      expect(result.current.events[0].id).toBe(mockEvents[0].id);
+      expect(result.current.events[0].title).toBe(mockEvents[0].title);
     });
-
-    await expect(result.current.events).toHaveLength(mockEvents.length);
-
-    expect(result.current.events[0].id).toBe(mockEvents[0].id);
-    expect(result.current.events[0].title).toBe(mockEvents[0].title);
   });
 
   it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
@@ -196,10 +194,9 @@ describe('useEventOperations', () => {
           status: 'error',
         })
       );
+      // 4. events 배열이 빈 상태로 유지되는지 확인
+      expect(result.current.events).toEqual([]);
     });
-
-    // 4. events 배열이 빈 상태로 유지되는지 확인
-    expect(result.current.events).toHaveLength(0);
   });
 
   it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
@@ -208,8 +205,10 @@ describe('useEventOperations', () => {
 
     // 2. 데이터 로딩 대기
     await waitFor(() => {
-      expect(result.current.events.length).toBeGreaterThan(0);
+      expect(result.current.events.length).toBe(mockEvents.length);
     });
+
+    const originalEvents = [...result.current.events];
 
     // 3. 존재하지 않는 이벤트 ID로 업데이트 요청 설정
     const nonExistentId = 'non-existent-id';
@@ -249,9 +248,7 @@ describe('useEventOperations', () => {
     });
 
     // 7. 원래 이벤트 목록이 변경되지 않았는지 확인
-    expect(result.current.events).not.toContainEqual(
-      expect.objectContaining({ id: nonExistentId })
-    );
+    expect(result.current.events).toEqual(originalEvents);
   });
 
   it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
