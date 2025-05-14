@@ -111,7 +111,7 @@ describe('getFilteredEvents', () => {
     const events: Event[] = [
       {
         id: '1',
-        date: '2025-06-30', // 포함 ❌
+        date: '2025-06-30',
         startTime: '10:00',
         endTime: '11:00',
         title: '',
@@ -123,7 +123,7 @@ describe('getFilteredEvents', () => {
       },
       {
         id: '2',
-        date: '2025-07-01', // 포함 ✅
+        date: '2025-07-01',
         startTime: '10:00',
         endTime: '11:00',
         title: '',
@@ -135,7 +135,7 @@ describe('getFilteredEvents', () => {
       },
       {
         id: '3',
-        date: '2025-07-15', // 포함 ✅
+        date: '2025-07-15',
         startTime: '10:00',
         endTime: '11:00',
         title: '',
@@ -147,7 +147,7 @@ describe('getFilteredEvents', () => {
       },
       {
         id: '4',
-        date: '2025-07-31', // 포함 ✅
+        date: '2025-07-31',
         startTime: '10:00',
         endTime: '11:00',
         title: '',
@@ -159,7 +159,7 @@ describe('getFilteredEvents', () => {
       },
       {
         id: '5',
-        date: '2025-08-01', // 포함 ❌
+        date: '2025-08-01',
         startTime: '10:00',
         endTime: '11:00',
         title: '',
@@ -174,11 +174,10 @@ describe('getFilteredEvents', () => {
     const currentDate = new Date('2025-07');
     const result = getFilteredEvents(events, '', currentDate, 'month');
 
-    // ✅ 7월(월 index 6)에 해당하는 이벤트만 있어야 한다
-    const getLocalMonth = (dateString: string) => new Date(dateString).getMonth(); // 0-indexed: 6 = 7월
+    const getLocalMonth = (dateString: string) => new Date(dateString).getMonth(); // 0-indexed
 
     expect(result).toHaveLength(2);
-    expect(result.every((e) => getLocalMonth(e.date) === 6)).toBe(true);
+    expect(result.every((e) => getLocalMonth(e.date) === 6)).toBe(true); // 6 = July
   });
 
   it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다", () => {

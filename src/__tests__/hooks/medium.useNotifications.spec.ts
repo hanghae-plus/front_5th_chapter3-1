@@ -11,8 +11,8 @@ import { events } from '../../__mocks__/response/events.json' assert { type: 'js
 import { useNotifications } from '../../hooks/useNotifications.ts';
 // import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
+// import { formatDate } from '../../utils/dateUtils.ts';
+// import { parseHM } from '../utils.ts';
 
 const INITIAL_EVENTS = events as Event[];
 
