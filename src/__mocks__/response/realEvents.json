@@ -18,7 +18,7 @@
       "date": "2025-05-21",
       "startTime": "12:30",
       "endTime": "13:30",
-      "description": "동료와 점심 식사",
+      "description": "주간 미팅 후 동료와 점심 식사",
       "location": "회사 근처 식당",
       "category": "개인",
       "repeat": { "type": "none", "interval": 0 },
