@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
@@ -40,41 +40,151 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
+const editSchedule = async (
+  user: UserEvent,
+  form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>
+) => {
+  const { title, startTime, endTime, location, description } = form;
+
+  if (title) {
+    const input = screen.getByLabelText('제목');
+    await user.clear(input);
+    await user.type(input, title);
+  }
+  if (description) {
+    const input = screen.getByLabelText('설명');
+    await user.clear(input);
+    await user.type(input, title);
+  }
+  if (location) {
+    const input = screen.getByLabelText('위치');
+    await user.clear(input);
+    await user.type(input, location);
+  }
+  await user.type(screen.getByLabelText('시작 시간'), startTime);
+  await user.type(screen.getByLabelText('종료 시간'), endTime);
+  await user.click(screen.getByTestId('event-submit-button'));
+};
+
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
+// A) 테스트를 시작하기 전에, 날짜를 모킹하여, 일정이 있는 상태로 만들었습니다.
+// 그러면, "검색 결과가 없습니다"라는 문구는 노출되지 않은 상태에서, 일정 수정, 삭제 등을 일관성있게 검증할 수 있습니다.
 describe('일정 CRUD 및 기본 기능', () => {
-  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-10-15T00:00:00Z'));
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    setupMockHandlerCreation([]);
+    const { user } = setup(<App />);
+    const newEvent = {
+      title: '팀 회의',
+      date: '2025-10-15',
+      startTime: '9:00',
+      endTime: '10:00',
+      location: '회의실 A',
+      description: '주간 정기 회의',
+      category: '업무',
+    };
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    await saveSchedule(user, newEvent);
+
+    const eventList = screen.getByTestId('event-list');
+    const eventCard = within(eventList).getByText(newEvent.title).closest('div');
+    expect(eventCard).toBeInTheDocument();
+  });
+
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+    const originalTitle = '기존 회의';
+    const updatedEventData = {
+      title: '수정된 회의 제목',
+      startTime: '08:30',
+      endTime: '09:30',
+      location: '변경된 회의실',
+      description: '수정된 회의 설명입니다.',
+    };
+
+    const eventListContainer = screen.getByTestId('event-list');
+
+    const originalCardTitleElement = await within(eventListContainer).findByText(originalTitle);
+    const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
+    expect(eventCard).toBeInTheDocument();
+
+    const editButton = within(eventCard!).getByRole('button', { name: /edit event/i });
+    await user.click(editButton);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('제목')).toHaveValue(originalTitle);
+      expect(screen.getByRole('button', { name: '일정 수정' })).toBeInTheDocument();
+    });
+
+    await editSchedule(user, updatedEventData);
+
+    waitFor(async () => {
+      const updatedEventTitleElement = await within(eventListContainer).findByText(
+        updatedEventData.title
+      );
+      const updatedEventCard = updatedEventTitleElement.closest('[data-testid="event-card"]');
+      expect(updatedEventCard).toBeInTheDocument();
+
+      expect(within(updatedEventCard!).getByText(updatedEventData.description)).toBeInTheDocument();
+      expect(within(updatedEventCard!).getByText(updatedEventData.location)).toBeInTheDocument();
+      expect(
+        within(updatedEventCard!).getByText(
+          `${updatedEventData.startTime} - ${updatedEventData.endTime}`
+        )
+      ).toBeInTheDocument();
+      expect(within(eventListContainer).queryByText(originalTitle)).not.toBeInTheDocument();
+    });
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion();
+    const { user } = setup(<App />);
+    const eventListContainer = screen.getByTestId('event-list');
+
+    const originalTitle = '삭제할 이벤트';
+    const originalCardTitleElement = await within(eventListContainer).findByText(originalTitle);
+    const eventCard = originalCardTitleElement.closest('[data-testid="event-card"]');
+    expect(eventCard).toBeInTheDocument();
+
+    const deleteButton = within(eventCard!).getByRole('button', { name: /delete event/i });
+    await user.click(deleteButton);
+
+    await waitFor(() => {
+      expect(screen.queryByText(originalTitle)).not.toBeInTheDocument();
+    });
+  });
 });
 
-describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+// describe('일정 뷰', () => {
+//   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+//   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+//   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+//   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
-});
+//   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+// });
 
-describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+// describe('검색 기능', () => {
+//   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+//   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
-});
+//   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+// });
 
-describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+// describe('일정 충돌', () => {
+//   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
-});
+//   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+// });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+// it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
