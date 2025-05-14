@@ -1,19 +1,10 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, waitFor, fireEvent } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
 import App from '../App';
 import { server } from '../setupTests';
+import { render, screen, within, waitFor, fireEvent } from './test-utils';
 import { EventForm } from '../types';
-
-const renderApp = () => {
-  return render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  );
-};
 
 const createCurrentMonthEvent = (title = '테스트 일정', description = '테스트 일정 설명') => {
   const currentDate = new Date();
@@ -63,7 +54,7 @@ describe('일정 CUD 기능', () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -83,7 +74,7 @@ describe('일정 CUD 기능', () => {
   it('일정을 수정하면 캘린더와 일정 목록에서 확인할 수 있다.', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -151,7 +142,7 @@ describe('일정 CUD 기능', () => {
   it('일정을 삭제하면 캘린더와 일정 목록에서 확인할 수 없다.', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -184,7 +175,7 @@ describe('일정 뷰', () => {
       })
     );
 
-    renderApp();
+    render(<App />);
 
     // 2. 주간 뷰로 전환
     const viewSelect = screen.getByLabelText('view');
@@ -207,7 +198,7 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -235,7 +226,7 @@ describe('일정 뷰', () => {
       })
     );
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -257,7 +248,7 @@ describe('일정 뷰', () => {
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent();
 
@@ -280,7 +271,7 @@ describe('일정 뷰', () => {
     const currentDate = new Date('2025-01-01');
     vi.spyOn(global, 'Date').mockImplementation(() => currentDate);
 
-    renderApp();
+    render(<App />);
 
     const monthView = screen.getByTestId('month-view');
     const holidayElement = within(monthView).getByText('신정');
@@ -293,7 +284,7 @@ describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const searchInput = screen.getByTestId('search-input');
     await user.type(searchInput, '트랄라레오트랄랄라.');
@@ -304,7 +295,7 @@ describe('검색 기능', () => {
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     // 이미 events에 있지만 날짜를 고려해서 생성
     const createEvent = createCurrentMonthEvent('팀 회의');
@@ -321,7 +312,7 @@ describe('검색 기능', () => {
     // "모든일정"의 기준은?
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     // 1. 초기 상태에서 일정 개수 저장
     const eventList = screen.getByTestId('event-list');
@@ -344,7 +335,7 @@ describe('일정 충돌', () => {
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     const NEW_EVENT = createCurrentMonthEvent('새로운 일정');
 
@@ -390,7 +381,7 @@ describe('일정 충돌', () => {
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
     const user = userEvent.setup();
 
-    renderApp();
+    render(<App />);
 
     // 첫 번째 일정 등록
     const FIRST_EVENT = createCurrentMonthEvent('첫 번째 일정');
@@ -451,7 +442,7 @@ describe('일정 충돌', () => {
 });
 
 it('notificationTime을 10으로 하면 알림이 노출된다', async () => {
-  renderApp();
+  render(<App />);
 
   const user = userEvent.setup();
 
