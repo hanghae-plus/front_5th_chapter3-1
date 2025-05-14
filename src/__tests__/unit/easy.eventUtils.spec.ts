@@ -159,13 +159,9 @@ describe('getFilteredEvents', () => {
       },
     ];
 
-    const currentDate = new Date('2025-07');
-    const result = getFilteredEvents(events, '', currentDate, 'month');
-
-    const getLocalMonth = (dateString: string) => new Date(dateString).getMonth(); // 0-indexed: 6 = 7월
-
-    expect(result).toHaveLength(3); // ✅ 수정
-    expect(result.every((e) => getLocalMonth(e.date) === 6)).toBe(true);
+    const result = getFilteredEvents(events, '', new Date('2025-07-01'), 'month');
+    expect(result.length).toBe(3); // 7월 이벤트 총 4개
+    expect(result.every((e) => new Date(e.date).getMonth() === 6)).toBe(true); // 0-indexed, 6 = July
   });
 
   it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다", () => {
