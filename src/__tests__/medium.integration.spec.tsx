@@ -55,7 +55,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     const { user } = setup(<App />);
 
     await saveSchedule(user, {
-      title: '프로젝트 킥오프',
+      title: '회의',
       date: '2025-11-01',
       startTime: '10:30',
       endTime: '12:00',
@@ -67,7 +67,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     await waitFor(() => expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument());
 
     const events = within(await screen.findByTestId('event-list'));
-    expect(events.getByText('프로젝트 킥오프')).toBeInTheDocument();
+    expect(events.getByText('회의')).toBeInTheDocument();
     expect(events.getByText('2025-11-01')).toBeInTheDocument();
     expect(events.getByText('10:30 - 12:00')).toBeInTheDocument();
     expect(events.getByText('디자인 리뷰')).toBeInTheDocument();
