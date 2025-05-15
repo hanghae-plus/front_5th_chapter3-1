@@ -4,3 +4,4 @@ export * from './useEventOperations';
 export * from './useNotifications';
 export * from './useSearch';
 export * from './useDialog';
+export * from './useWeekEvents';
