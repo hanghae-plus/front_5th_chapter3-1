@@ -1,7 +1,8 @@
 import { useToast } from '@chakra-ui/react';
+import axios from 'axios';
 import { useEffect, useState } from 'react';
 
-import { Event, EventForm } from '../types';
+import { Event, EventForm } from '../../../types';
 
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -9,14 +10,10 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   const fetchEvents = async () => {
     try {
-      const response = await fetch('/api/events');
-      if (!response.ok) {
-        throw new Error('Failed to fetch events');
-      }
-      const { events } = await response.json();
+      const response = await axios.get('/api/events');
+      const { events } = response.data;
       setEvents(events);
     } catch (error) {
-      console.error('Error fetching events:', error);
       toast({
         title: '이벤트 로딩 실패',
         status: 'error',
@@ -28,23 +25,10 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
-      let response;
       if (editing) {
-        response = await fetch(`/api/events/${(eventData as Event).id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(eventData),
-        });
+        await axios.put(`/api/events/${(eventData as Event).id}`, eventData);
       } else {
-        response = await fetch('/api/events', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(eventData),
-        });
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to save event');
+        await axios.post('/api/events', eventData);
       }
 
       await fetchEvents();
@@ -68,11 +52,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   const deleteEvent = async (id: string) => {
     try {
-      const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete event');
-      }
+      await axios.delete(`/api/events/${id}`);
 
       await fetchEvents();
       toast({

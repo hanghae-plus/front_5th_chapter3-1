@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "server": "node server.js",
     "server:watch": "node --watch server.js",
     "start": "vite",
@@ -12,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "format:all": "pnpm format && pnpm lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -21,12 +23,12 @@
     "@emotion/styled": "^11.11.5",
     "express": "^4.19.2",
     "framer-motion": "^11.3.2",
-    "msw": "^2.3.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.5",
+    "@testing-library/jest-dom": "^6.6.2",
     "@testing-library/react": "^15.0.7",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.3",
@@ -36,20 +38,22 @@
     "@vitejs/plugin-react-swc": "^3.5.0",
     "@vitest/coverage-v8": "^2.0.3",
     "@vitest/ui": "^1.6.0",
+    "axios": "^1.9.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-cypress": "^2.13.3",
-    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.12",
     "eslint-plugin-vitest": "^0.2.6",
-    "vite-plugin-eslint": "^1.8.1",
     "jsdom": "^25.0.1",
+    "msw": "^2.5.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
+    "vite-plugin-eslint": "^1.8.1",
     "vitest": "^2.0.2"
   }
 }

@@ -1,0 +1,76 @@
+import { useEventForm } from './useEventForm';
+
+export const useEventFormStateAndActions = () => {
+  const {
+    title,
+    setTitle,
+    date,
+    setDate,
+    startTime,
+    endTime,
+    description,
+    setDescription,
+    location,
+    setLocation,
+    category,
+    setCategory,
+    isRepeating,
+    setIsRepeating,
+    repeatType,
+    setRepeatType,
+    repeatInterval,
+    setRepeatInterval,
+    repeatEndDate,
+    setRepeatEndDate,
+    notificationTime,
+    setNotificationTime,
+    startTimeError,
+    endTimeError,
+    editingEvent,
+    setEditingEvent,
+    handleStartTimeChange,
+    handleEndTimeChange,
+    resetForm,
+    editEvent,
+  } = useEventForm();
+
+  return {
+    formState: {
+      title,
+      date,
+      startTime,
+      endTime,
+      description,
+      location,
+      category,
+      isRepeating,
+      repeatType,
+      repeatInterval,
+      repeatEndDate,
+      notificationTime,
+      startTimeError,
+      endTimeError,
+      editingEvent,
+    },
+    formActions: {
+      setTitle,
+      setDate,
+      setDescription,
+      setLocation,
+      setCategory,
+      setIsRepeating,
+      setRepeatType,
+      setRepeatInterval,
+      setRepeatEndDate,
+      setNotificationTime,
+      setEditingEvent,
+      handleStartTimeChange,
+      handleEndTimeChange,
+      resetForm,
+      editEvent,
+    },
+  };
+};
+
+export type EventFormState = ReturnType<typeof useEventFormStateAndActions>['formState'];
+export type EventFormActions = ReturnType<typeof useEventFormStateAndActions>['formActions'];
