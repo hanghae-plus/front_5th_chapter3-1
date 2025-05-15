@@ -28,7 +28,7 @@ describe('useEventOperations 이벤트 crud 기능 테스트', () => {
     server.use(...handlers);
   });
 
-  it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  it('저장된 이벤트를 가져와 events 상태를 초기화해야 한다', async () => {
     const { result } = renderHook(() => useEventOperations(false));
 
     await waitFor(() => {
@@ -36,7 +36,7 @@ describe('useEventOperations 이벤트 crud 기능 테스트', () => {
     });
   });
 
-  it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  it('새 이벤트 저장 요청 후, events 배열에 해당 이벤트가 포함되어야 한다', async () => {
     const { result } = renderHook(() => useEventOperations(false));
 
     await act(async () => {
@@ -48,7 +48,7 @@ describe('useEventOperations 이벤트 crud 기능 테스트', () => {
     });
   });
 
-  it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
+  it('삭제 요청 후, 지정한 ID의 이벤트가 events 배열에서 제거되어야 한다', async () => {
     const { handlers } = setupMockHandlerDeletion(events as Event[]);
     server.use(...handlers);
 
