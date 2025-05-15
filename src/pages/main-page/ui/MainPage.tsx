@@ -1,10 +1,4 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  EditIcon,
-  DeleteIcon,
-} from '@chakra-ui/icons';
+import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import {
   useToast,
   VStack,
