@@ -87,6 +87,7 @@ export default function EventList({
                 />
                 <IconButton
                   aria-label="Delete event"
+                  data-testid="delete-event-button"
                   icon={<DeleteIcon />}
                   onClick={() => deleteEvent(event.id)}
                 />

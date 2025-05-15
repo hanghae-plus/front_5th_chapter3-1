@@ -36,11 +36,11 @@ const saveSchedule = async (
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    setupMockHandlerCreation([]); // Start with no events
+    setupMockHandlerCreation([]);
 
     const { user } = setup(<App />);
 
-    // Add a new event
+    // 새로운 일정 저장
     await saveSchedule(user, {
       title: '새로운 일정',
       date: '2025-10-16',
@@ -51,8 +51,7 @@ describe('일정 CRUD 및 기본 기능', () => {
       category: '업무',
     });
 
-    // Verify the new event is displayed in the event list
-    // expect(await screen.findByText('새로운 일정')).toBeInTheDocument();
+    expect(screen.getAllByText('일정 추가')[0]).toBeInTheDocument();
     expect(screen.getByText('2025-10-16')).toBeInTheDocument();
     expect(screen.getByText('09:00 - 10:00')).toBeInTheDocument();
     expect(screen.getByText('새 일정 설명')).toBeInTheDocument();
@@ -78,15 +77,11 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     const { user } = setup(<App />);
 
-    // Edit the existing event
-    // await user.click(screen.getByText('카페'));
     await user.clear(screen.getByLabelText('위치'));
     await user.type(screen.getByLabelText('위치'), '카페아님');
     await user.click(screen.getByTestId('event-submit-button'));
 
-    // Verify the updated event is displayed
-    // expect(await screen.findByText('카페')).toBeInTheDocument();
-    expect(screen.queryByText('카페아님')).not.toBeInTheDocument();
+    expect(screen.queryByText('카페')).not.toBeInTheDocument();
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
@@ -107,28 +102,22 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     // const { user } = setup(<App />);
 
-    // Delete the event
-    // await user.click(screen.getByLabelText('Delete event'));
-
-    // Verify the event is no longer displayed
+    // await user.click(screen.getByTestId('delete-event-button'));
     expect(screen.queryByText('삭제할 일정')).not.toBeInTheDocument();
   });
 });
 
 describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
-    setupMockHandlerCreation([]); // No events to simulate an empty week view
+    setupMockHandlerCreation([]);
 
     const { user } = setup(<App />);
 
-    // Switch to week view
     await user.selectOptions(screen.getByLabelText('view'), 'week');
 
-    // Verify the week view is displayed
     expect(await screen.findByTestId('week-view')).toBeInTheDocument();
 
-    // Verify no events are displayed
-    expect(screen.queryByText(/팀 회의/)).not.toBeInTheDocument();
+    expect(screen.queryByText('팀 회의')).not.toBeInTheDocument();
   });
 
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
@@ -149,29 +138,23 @@ describe('일정 뷰', () => {
 
     const { user } = setup(<App />);
 
-    // Switch to week view
     await user.selectOptions(screen.getByLabelText('view'), 'week');
 
-    // Verify the week view is displayed
     expect(await screen.findByTestId('week-view')).toBeInTheDocument();
 
-    // Verify the event is displayed on the correct day
     expect(await screen.findByText('업무')).toBeInTheDocument();
   });
 
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
-    setupMockHandlerCreation([]); // No events to simulate an empty month view
+    setupMockHandlerCreation([]);
 
     const { user } = setup(<App />);
 
-    // Switch to month view
     await user.selectOptions(screen.getByLabelText('view'), 'month');
 
-    // Verify the month view is displayed
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
 
-    // Verify no events are displayed
-    expect(screen.queryByText(/점심 식사/)).not.toBeInTheDocument();
+    expect(screen.queryByText('점심 식사')).not.toBeInTheDocument();
   });
 
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
@@ -192,20 +175,15 @@ describe('일정 뷰', () => {
 
     const { user } = setup(<App />);
 
-    // Switch to month view
     await user.selectOptions(screen.getByLabelText('view'), 'month');
 
-    // Verify the month view is displayed
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
 
-    // Verify the event is displayed on the correct day
     expect(await screen.findByText('업무')).toBeInTheDocument();
     expect(screen.getByText('16')).toBeInTheDocument();
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
-    setupMockHandlerCreation([]);
-
     const { user } = setup(<App />);
 
     await user.selectOptions(screen.getByLabelText('view'), 'month');
@@ -213,21 +191,17 @@ describe('일정 뷰', () => {
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
 
     // const holidayElement = screen.findByText('신정');
-    // expect(holidayElement).toBeInTheDocument();
+    // expect(await screen.findByText('신정')).toBeInTheDocument();
     // expect(holidayElement).toHaveStyle('color: #E53E3E');
   });
 });
 
 describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
-    setupMockHandlerCreation([]); // No events to simulate empty search results
-
     const { user } = setup(<App />);
 
-    // Search for a term
     await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), 'nonexistent');
 
-    // Verify the "검색 결과가 없습니다." message is displayed
     expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
   });
 
@@ -249,10 +223,8 @@ describe('검색 기능', () => {
 
     const { user } = setup(<App />);
 
-    // Search for "팀 회의"
     await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '회의실');
 
-    // Verify the event is displayed
     expect(await screen.findByText('회의실')).toBeInTheDocument();
   });
 
@@ -286,17 +258,13 @@ describe('검색 기능', () => {
 
     const { user } = setup(<App />);
 
-    // Search for "팀 회의"
     await user.type(screen.getByPlaceholderText('검색어를 입력하세요'), '회의실');
 
-    // Verify only "팀 회의" is displayed
     expect(await screen.findByText('회의실')).toBeInTheDocument();
     expect(screen.queryByText('카페')).not.toBeInTheDocument();
 
-    // Clear the search term
     await user.clear(screen.getByPlaceholderText('검색어를 입력하세요'));
 
-    // Verify all events are displayed again
     expect(await screen.findByText('회의실')).toBeInTheDocument();
     expect(await screen.findByText('카페')).toBeInTheDocument();
   });

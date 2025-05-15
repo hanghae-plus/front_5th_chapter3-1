@@ -68,7 +68,14 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
     await result.current.saveEvent({
       id: '1',
       title: '업데이트된 회의',
+      date: '2025-10-20',
+      startTime: '10:00',
       endTime: '11:00',
+      description: '업데이트된 설명',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 15,
     });
   });
 
@@ -122,6 +129,14 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
     await result.current.saveEvent({
       id: '999',
       title: '존재하지 않는 이벤트',
+      date: '2025-10-20',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 15,
     });
   });
 

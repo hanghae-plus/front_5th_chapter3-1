@@ -90,5 +90,5 @@ it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생
     vi.advanceTimersByTime(1000); // 다시 1초 경과
   });
 
-  expect(result.current.notifications).toHaveLength(1); // 중복 알림 없음
+  expect(result.current.notifications).toHaveLength(1); // 중복알림없음
 });
