@@ -2,98 +2,66 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
+import { events } from '../../__mocks__/response/realEvents.json';
 
-let intervalCallback: () => void;
-vi.mock('@chakra-ui/react', () => ({
-  useInterval: (callback: () => void) => {
-    intervalCallback = callback;
-  },
-}));
+const mockEvents = events as Event[];
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2025-05-20 09:59'));
+});
+
+afterEach(() => {
+  vi.clearAllTimers();
+});
 
 it('초기 상태에서는 알림이 없어야 한다', () => {
-  const { result } = renderHook(() => useNotifications([]));
+  const { result } = renderHook(() => useNotifications(mockEvents));
 
   expect(result.current.notifications).toEqual([]);
 });
 
 it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
-  const now = Date.now();
-  const startTime = now + 600000;
-  const mockEvent: Event = {
-    id: '1',
-    title: '회의',
-    date: formatDate(new Date()),
-    startTime: parseHM(startTime),
-    endTime: parseHM(startTime + 3600000),
-    description: '팀 미팅',
-    location: '회의실 A',
-    category: '업무',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 10,
-  };
+  const { result } = renderHook(() => useNotifications(mockEvents));
 
-  const { result } = renderHook(() => useNotifications([mockEvent]));
-
-  expect(result.current.notifications).toEqual([]);
+  expect(result.current.notifications.length).toBe(0);
 
   act(() => {
-    intervalCallback();
+    // 1초만 시간이 흐르도록 하여 알림 생성
+    vi.advanceTimersByTime(1000);
   });
 
   expect(result.current.notifications.length).toBe(1);
+  expect(result.current.notifications[0].message).toEqual('1분 후 팀 회의 일정이 시작됩니다.');
 });
 
 it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
-  const { result } = renderHook(() => useNotifications([]));
+  const { result } = renderHook(() => useNotifications(mockEvents));
 
   act(() => {
-    result.current.setNotifications([
-      { id: '1', message: '알림 1' },
-      { id: '2', message: '알림 2' },
-      { id: '3', message: '알림 3' },
-    ]);
-  });
-
-  act(() => {
-    result.current.removeNotification(1);
-  });
-
-  expect(result.current.notifications).toEqual([
-    { id: '1', message: '알림 1' },
-    { id: '3', message: '알림 3' },
-  ]);
-  expect(result.current.notifications.length).toBe(2);
-});
-
-it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
-  const now = Date.now();
-  const startTime = now + 600000;
-  const mockEvent: Event = {
-    id: '1',
-    title: '회의 시작',
-    date: formatDate(new Date()),
-    startTime: parseHM(startTime),
-    endTime: parseHM(startTime + 3600000),
-    description: '회의가 시작됩니다',
-    location: '회의실 A',
-    category: '업무',
-    repeat: { type: 'none', interval: 0 },
-    notificationTime: 10,
-  };
-
-  const { result } = renderHook(() => useNotifications([mockEvent]));
-
-  act(() => {
-    intervalCallback();
+    vi.advanceTimersByTime(1000);
   });
 
   expect(result.current.notifications.length).toBe(1);
 
-  // 다시 호출해도 알림이 중복해서 추가되면 안 됨
   act(() => {
-    intervalCallback();
+    result.current.removeNotification(0);
+  });
+
+  expect(result.current.notifications.length).toBe(0);
+});
+
+it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
+  const { result } = renderHook(() => useNotifications(mockEvents));
+
+  act(() => {
+    vi.advanceTimersByTime(1000);
+  });
+
+  expect(result.current.notifications.length).toBe(1);
+
+  act(() => {
+    vi.advanceTimersByTime(2000);
   });
 
   expect(result.current.notifications.length).toBe(1);

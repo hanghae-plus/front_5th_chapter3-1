@@ -9,7 +9,10 @@
       "description": "기존 팀 미팅",
       "location": "회의실 B",
       "category": "업무",
-      "repeat": { "type": "none", "interval": 0 },
+      "repeat": {
+        "type": "none",
+        "interval": 0
+      },
       "notificationTime": 10
     }
   ]
