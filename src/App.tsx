@@ -1,17 +1,6 @@
 import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
   Box,
-  Button,
-  CloseButton,
   Flex,
   FormControl,
   FormLabel,
@@ -26,12 +15,14 @@ import { useRef, useState } from 'react';
 
 import ScheduleForm from './components/schedule-form/ScheduleForm.tsx';
 import NotificationStack from './components/notification/NotificationStack.tsx';
+
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import CalendarView from './shares/ui/date-picker/CalendarView.tsx';
+import AlertDialog from './components/AlertDialog.tsx';
 import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 
@@ -89,7 +80,6 @@ function App() {
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const toast = useToast();
 
@@ -267,59 +257,24 @@ function App() {
       </Flex>
 
       <AlertDialog
-        isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              일정 겹침 경고
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              다음 일정과 겹칩니다:
-              {overlappingEvents.map((event) => (
-                <Text key={event.id}>
-                  {event.title} ({event.date} {event.startTime}-{event.endTime})
-                </Text>
-              ))}
-              계속 진행하시겠습니까?
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
-                취소
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setIsOverlapDialogOpen(false);
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
-                }}
-                ml={3}
-              >
-                계속 진행
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+        isOverlapDialogOpen={isOverlapDialogOpen}
+        setIsOverlapDialogOpen={setIsOverlapDialogOpen}
+        overlappingEvents={overlappingEvents}
+        editingEvent={editingEvent}
+        title={title}
+        date={date}
+        startTime={startTime}
+        endTime={endTime}
+        description={description}
+        location={location}
+        category={category}
+        isRepeating={isRepeating}
+        repeatType={repeatType}
+        repeatInterval={repeatInterval}
+        repeatEndDate={repeatEndDate}
+        notificationTime={notificationTime}
+        saveEvent={saveEvent}
+      />
 
       {notifications.length > 0 && (
         <NotificationStack notifications={notifications} setNotifications={setNotifications} />
