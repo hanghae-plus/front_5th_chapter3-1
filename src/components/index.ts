@@ -6,3 +6,4 @@ export * from './EventItemCard';
 export * from './EventList';
 export * from './NotificationList';
 export * from './OverlapAlertDialog';
+export * from './EventForm';
