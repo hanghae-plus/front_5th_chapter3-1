@@ -1,8 +1,10 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
 import App from '../App';
+import { Event } from '../types';
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 
 beforeEach(() => {
   vi.setSystemTime(new Date('2025-10-13'));
@@ -194,11 +196,97 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const user = userEvent.setup();
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '없음');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의1',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '팀 회의2',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(events);
+
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('팀 회의1')).toBeInTheDocument();
+      expect(within(eventList).getByText('팀 회의2')).toBeInTheDocument();
+    });
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '없음');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+
+    await user.clear(searchInput);
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 충돌', () => {
