@@ -131,36 +131,207 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     await user.click(deleteButton);
     waitFor(async () => {
-      expect(await within(eventList).findByText(eventTitle)).toBeUndefined();
+      expect(await within(eventList).findByText(eventTitle)).not.toBeInTheDocument();
     });
   });
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    // 월별 뷰에서는 일정이 있지만 주별 뷰에서는 일정이 없는 경우
+    vi.setSystemTime(new Date('2025-10-22'));
+    setupMockHandlerUpdating();
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const { user } = setup(<App />);
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const eventList = await screen.findByTestId('event-list');
+    expect(screen.queryAllByText('기존 회의').length).toBeGreaterThan(0);
+    expect(within(eventList).queryAllByText('기존 회의').length).toBeGreaterThan(0);
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    act(() => {
+      user.selectOptions(screen.getByLabelText('view'), 'week');
+    });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    waitFor(() => {
+      expect(screen.queryAllByText('기존 회의').length).toBe(0);
+      expect(within(eventList).queryAllByText('기존 회의').length).toBe(0);
+    });
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    // 월별 뷰, 주별 뷰 모두 일정이 있는 경우
+    vi.setSystemTime(new Date('2025-10-15'));
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(screen.queryAllByText('기존 회의').length).toBeGreaterThan(0);
+    expect(within(eventList).queryAllByText('기존 회의').length).toBeGreaterThan(0);
+
+    act(() => {
+      user.selectOptions(screen.getByLabelText('view'), 'week');
+    });
+
+    waitFor(() => {
+      expect(screen.queryByText('15')).toBeInTheDocument();
+      expect(screen.queryAllByText('기존 회의').length).toBeGreaterThan(0);
+      expect(within(eventList).queryAllByText('기존 회의').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    vi.setSystemTime(new Date('2025-05-15'));
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    act(() => {
+      user.selectOptions(screen.getByLabelText('view'), 'month'); // 굳이 안해도 되나?
+    });
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(screen.queryAllByText('기존 회의').length).toBe(0);
+    expect(within(eventList).queryAllByText('기존 회의').length).toBe(0);
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    act(() => {
+      user.selectOptions(screen.getByLabelText('view'), 'month');
+    });
+
+    const eventList = await screen.findByTestId('event-list');
+
+    waitFor(() => {
+      expect(screen.queryAllByText('기존 회의').length).toBeGreaterThan(0);
+      expect(within(eventList).queryAllByText('기존 회의').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2025-01-01'));
+    setupMockHandlerCreation();
+    const { user } = setup(<App />);
+
+    act(() => {
+      user.selectOptions(screen.getByLabelText('view'), 'month');
+    });
+
+    waitFor(() => {
+      expect(screen.getByText('신정')).toBeInTheDocument();
+    });
+    vi.useRealTimers();
+  });
 });
 
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '생존 신고');
+    await user.keyboard('{Enter}');
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 미팅 2'을 검색하면 해당 키워드를 가진 일정만 리스트에 노출된다", async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 미팅 2');
+    await user.keyboard('{Enter}');
+    expect(searchInput).toHaveValue('팀 미팅 2');
+
+    const eventList = screen.getByTestId('event-list');
+    expect(await within(eventList).findByDisplayValue('팀 미팅 2')).toBeInTheDocument();
+    expect(within(eventList).queryByText('회의실 B')).not.toBeInTheDocument();
+    expect(within(eventList).queryByText('회의실 C')).toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 미팅 2');
+    await user.keyboard('{Enter}');
+
+    await user.clear(searchInput);
+    await user.keyboard('{Enter}');
+    expect(searchInput).toHaveValue('');
+
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).queryByText('회의실 B')).toBeInTheDocument();
+    expect(within(eventList).queryByText('회의실 C')).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerCreation();
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    const newEvent = {
+      title: '은행 가기',
+      date: '2025-10-15',
+      startTime: '10:30',
+      endTime: '11:30',
+      description: '카드, 신분증 챙기기',
+      location: '신한은행',
+      category: '개인',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+    await saveSchedule(user, newEvent);
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    const eventList = await screen.findByTestId('event-list');
+    const eventTitle = '기존 회의';
+
+    // 수정 버튼 쿼링
+    const eventElement = await within(eventList).findByText(eventTitle);
+    const eventContainer = eventElement.closest('.chakra-stack.css-1y3f6ad') as HTMLElement;
+    const editButton = await within(eventContainer!).findByRole('button', {
+      name: 'Edit event',
+    });
+
+    // 수정 버튼 클릭 후 타이틀 상태 확인
+    act(() => {
+      user.click(editButton);
+    });
+    const updateTitle = await screen.findAllByText('일정 수정');
+    expect(updateTitle[0]).toBeInTheDocument();
+
+    const endTimeInput = screen.getByLabelText('종료 시간');
+
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, '12:30');
+
+    act(() => {
+      user.click(screen.getByTestId('event-submit-button'));
+    });
+
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.setSystemTime('2025-10-15T08:50:00');
+  setupMockHandlerUpdating();
+  setup(<App />);
+
+  expect(await screen.findByText('10분 전')).toBeInTheDocument();
+});
