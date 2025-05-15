@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { fetchHolidays } from '../apis/fetchHolidays';
+import { fetchHolidays } from '../../apis/fetchHolidays';
 
+/**
+ * 캘린더 출력 hook
+ * @returns
+ */
 export const useCalendarView = () => {
   const [view, setView] = useState<'week' | 'month'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
