@@ -77,11 +77,7 @@ describe('useEventOperations', () => {
 
       const { result } = renderHook(() => useEventOperations(true));
       await waitFor(() => result.current.saveEvent(newEvent));
-      console.log(result.current.events[0]);
-      console.log(newEvent);
-      await waitFor(() => expect(result.current.events[0]).toEqual(newEvent));
-
-      // expect(result.current.events[0]).toEqual(newEvent);
+      await waitFor(() => expect(result.current.events[0]).toEqual(newEvent)); //해결
     });
   });
 
