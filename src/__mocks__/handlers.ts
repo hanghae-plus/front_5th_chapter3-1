@@ -15,7 +15,8 @@ export const handlers = [
   http.post('/api/events', async ({ request }) => {
     const newEvent = (await request.json()) as Event;
     newEvent.id = randomUUID();
-    return HttpResponse.json({ ...events, newEvent }, { status: 201 });
+    events.push(newEvent);
+    return HttpResponse.json(events, { status: 201 });
   }),
 
   http.put('/api/events/:id', async ({ params, request }) => {
@@ -31,7 +32,11 @@ export const handlers = [
 
   http.delete('/api/events/:id', ({ params }) => {
     const { id } = params;
-    const newEvents = events.filter((event) => event.id !== id);
-    return HttpResponse.json({ newEvents }, { status: 204 });
+    const eventIndex = events.findIndex((event) => event.id === id);
+    if (eventIndex !== -1) {
+      return HttpResponse.json(null, { status: 204 });
+    } else {
+      return new HttpResponse(null, { status: 404 });
+    }
   }),
 ];
