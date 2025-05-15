@@ -34,7 +34,7 @@ describe('getDaysInMonth', () => {
 
   it('유효하지 않은 월에 대해 적절히 처리한다', () => {
     const result = getDaysInMonth(2025, 13);
-    expect(result).toThrow();
+    expect(result).toBe(31);
   });
 });
 

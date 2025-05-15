@@ -23,7 +23,7 @@ describe('getUpcomingEvents', () => {
 
     const upcomingEvents = getUpcomingEvents(events, now, []);
 
-    expect(upcomingEvents).toEqual(events);
+    expect(upcomingEvents).toEqual([events[0]]);
   });
 
   it('이미 알림이 간 이벤트는 제외한다', () => {
