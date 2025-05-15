@@ -6,7 +6,7 @@ describe('fetchHolidays', () => {
     const holidays = fetchHolidays(date);
 
     expect(holidays).toEqual({
-      '2025-03-01': '삼일절'
+      '2025-03-01': '삼일절',
     });
   });
 
@@ -26,7 +26,7 @@ describe('fetchHolidays', () => {
       '2025-10-06': '추석',
       '2025-10-07': '추석',
       '2025-10-03': '개천절',
-      '2025-10-09': '한글날'
-    })
+      '2025-10-09': '한글날',
+    });
   });
 });

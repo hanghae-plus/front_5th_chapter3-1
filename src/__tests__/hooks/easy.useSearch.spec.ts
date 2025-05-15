@@ -30,7 +30,7 @@ describe('useSearch', () => {
 
     expect(result.current.filteredEvents).toEqual(events);
   });
-  
+
   it('검색어에 맞는 이벤트만 필터링해야 한다', () => {
     const targetEvent: Event = {
       id: '1',
@@ -71,7 +71,7 @@ describe('useSearch', () => {
 
     expect(result.current.filteredEvents).toEqual([targetEvent]);
   });
-  
+
   // 여러 조건 중 하나 일치 => 여러 조건을 분리함 (제목, 설명, 위치)
   it('검색어가 제목과 일치하면 해당 이벤트를 반환해야 한다', () => {
     const targetEvent: Event = {
@@ -150,7 +150,7 @@ describe('useSearch', () => {
 
     expect(result.current.filteredEvents).toEqual([targetEvent]);
   });
-  
+
   it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다', () => {
     const targetEvent: Event = {
       id: '1',
@@ -191,7 +191,7 @@ describe('useSearch', () => {
 
     expect(result.current.filteredEvents).toEqual([targetEvent]);
   });
-  
+
   it("검색어를 '회의'에서 '점심'으로 변경하면 필터링된 결과가 즉시 업데이트되어야 한다", () => {
     const meetingEvent: Event = {
       id: '1',
@@ -239,4 +239,4 @@ describe('useSearch', () => {
     });
     expect(result.current.filteredEvents).toEqual([events[1]]);
   });
-})
+});

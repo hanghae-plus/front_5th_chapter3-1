@@ -38,7 +38,7 @@ describe('getDaysInMonth', () => {
 
     const daysIn2025Fabruary = getDaysInMonth(2024, 12 + 2);
     expect(daysIn2025Fabruary).toBe(28);
-  })
+  });
 
   it('월이 1보다 작으면 저번 연도로 돌아가며 월을 12를 더한 만큼 유효한 월로 변환한다', () => {
     const daysIn2024December = getDaysInMonth(2025, 0);
@@ -46,7 +46,7 @@ describe('getDaysInMonth', () => {
 
     const daysIn2024February = getDaysInMonth(2025, 2 - 12);
     expect(daysIn2024February).toBe(29);
-  })
+  });
 });
 
 describe('getWeekDates', () => {
@@ -349,7 +349,7 @@ describe('fillZero', () => {
    * 테스트하려는 의도보다 케이스 하나씩을 명시하는 것 같아
    * it의 name 파라미터를 의도로 수정함
    */
-  it("value의 자릿수가 size보다 작으면 앞에 0을 붙인다", () => {
+  it('value의 자릿수가 size보다 작으면 앞에 0을 붙인다', () => {
     // 5를 2자리로 변환하면 '05'를 반환한다
     const onceFilledFive = fillZero(5, 2);
     expect(onceFilledFive).toBe('05');
@@ -367,25 +367,25 @@ describe('fillZero', () => {
     expect(fourTimesFilledOne).toBe('00001');
   });
 
-  it("value의 자릿수가 size보다 크면 원래 값을 그대로 반환한다", () => {
+  it('value의 자릿수가 size보다 크면 원래 값을 그대로 반환한다', () => {
     const filledZero = fillZero(12345, 3);
 
     expect(filledZero).toBe('12345');
-  })
-  
-  it("value의 자릿수와 size가 같으면 원래 값을 그대로 반환한다", () => {
+  });
+
+  it('value의 자릿수와 size가 같으면 원래 값을 그대로 반환한다', () => {
     const twiceFilledTen = fillZero(10, 2);
     const threeTimesFilledHundred = fillZero(100, 3);
 
     expect(twiceFilledTen).toBe('10');
     expect(threeTimesFilledHundred).toBe('100');
-  })
+  });
 
   it("소수점이 포함된 숫자는 '.'을 포함한 전체 자릿수를 기준으로 변환한다", () => {
     const filledZero = fillZero(3.14, 5);
 
     expect(filledZero).toBe('03.14');
-  })
+  });
 
   it('size 파라미터를 생략하면 기본값 2를 사용한다', () => {
     const filledZero = fillZero(1);
