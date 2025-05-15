@@ -1,0 +1,1 @@
+export { ViewScheduleTemplate } from './ViewScheduleTemplate';
