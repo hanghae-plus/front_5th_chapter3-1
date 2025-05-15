@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest';
 
+import { events } from '../../__mocks__/response/realEvents.json';
 import { useNotifications } from '../../hooks/useNotifications';
 import { Event } from '../../types';
-import { events } from '../../__mocks__/response/realEvents.json';
 
 const mockEvents = events as Event[];
 
