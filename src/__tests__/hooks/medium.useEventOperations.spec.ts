@@ -42,7 +42,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.createAll());
 
-      const { result } = renderHook(() => useEventOperations(false));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);
@@ -67,7 +67,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.createAll());
 
-      const { result } = renderHook(() => useEventOperations(false));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);
@@ -121,7 +121,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.createAll());
 
-      const { result } = renderHook(() => useEventOperations(true));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);
@@ -171,7 +171,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.createAll());
 
-      const { result } = renderHook(() => useEventOperations(false));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);
@@ -215,7 +215,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.scenarios.loadingFailure());
 
-      const { result } = renderHook(() => useEventOperations(false));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(mockToast).toHaveBeenCalledWith(
@@ -236,7 +236,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.scenarios.savingFailure());
 
-      const { result } = renderHook(() => useEventOperations(true));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);
@@ -284,7 +284,7 @@ describe.shuffle('useEventOperations', () => {
       const handlersBuilder = new HandlersBuilder(events);
       server.use(...handlersBuilder.scenarios.deletionFailure());
 
-      const { result } = renderHook(() => useEventOperations(false));
+      const { result } = renderHook(() => useEventOperations());
 
       await waitFor(() => {
         expect(result.current.events).toHaveLength(events.length);

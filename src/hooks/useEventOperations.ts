@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { Event, EventForm } from '../types';
 
-export const useEventOperations = (editing: boolean, onSave?: () => void) => {
+export const useEventOperations = (onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
   const toast = useToast();
 
@@ -29,7 +29,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
       let response;
-      if (editing) {
+      const isUpdating = 'id' in eventData && eventData.id;
+
+      if (isUpdating) {
         response = await fetch(`/api/events/${(eventData as Event).id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -50,7 +52,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       await fetchEvents();
       onSave?.();
       toast({
-        title: editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',
+        title: isUpdating ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',
         status: 'success',
         duration: 3000,
         isClosable: true,

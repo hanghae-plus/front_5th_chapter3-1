@@ -6,6 +6,7 @@ import { vi } from 'vitest';
 import { HandlersBuilder } from '../__mocks__/handlersUtils';
 import { createTodayEvent, getDateString } from '../__mocks__/helpers';
 import App from '../App';
+import { EventProvider } from '../context/event-context';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
@@ -36,7 +37,9 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     render(
       <ChakraProvider>
-        <App />
+        <EventProvider initialDate={new Date()} initialView="month">
+          <App />
+        </EventProvider>
       </ChakraProvider>
     );
 
@@ -162,7 +165,9 @@ describe('일정 뷰', () => {
 
     render(
       <ChakraProvider>
-        <App />
+        <EventProvider initialDate={new Date()} initialView="month">
+          <App />
+        </EventProvider>
       </ChakraProvider>
     );
 
@@ -406,7 +411,9 @@ describe('검색 기능', () => {
 
     render(
       <ChakraProvider>
-        <App />
+        <EventProvider initialDate={new Date()} initialView="month">
+          <App />
+        </EventProvider>
       </ChakraProvider>
     );
 
@@ -517,7 +524,9 @@ describe('일정 충돌', () => {
 
     render(
       <ChakraProvider>
-        <App />
+        <EventProvider initialDate={new Date()} initialView="month">
+          <App />
+        </EventProvider>
       </ChakraProvider>
     );
 
@@ -690,7 +699,9 @@ describe('알림 기능', () => {
 
     render(
       <ChakraProvider>
-        <App />
+        <EventProvider initialDate={new Date()} initialView="month">
+          <App />
+        </EventProvider>
       </ChakraProvider>
     );
 
