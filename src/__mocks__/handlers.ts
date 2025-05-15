@@ -7,7 +7,7 @@ import { events } from './response/events.json' assert { type: 'json' };
 // ! 각 응답에 대한 MSW 핸들러를 작성해주세요. GET 요청은 이미 작성되어 있는 events json을 활용해주세요.
 export const handlers = [
   http.get('/api/events', () => {
-    return HttpResponse.json(events);
+    return HttpResponse.json({ events });
   }),
 
   http.post('/api/events', async ({ request }) => {
@@ -25,12 +25,12 @@ export const handlers = [
     const index = events.findIndex((e) => e.id === id);
 
     if (index === -1) {
-      return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+      return new HttpResponse(null, { status: 404 });
     }
 
     events[index] = { ...events[index], ...event };
 
-    return HttpResponse.json(events[index], { status: 200 });
+    return HttpResponse.json(events[index]);
   }),
 
   http.delete('/api/events/:id', ({ params }) => {
@@ -38,11 +38,11 @@ export const handlers = [
     const index = events.findIndex((e) => e.id === id);
 
     if (index === -1) {
-      return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+      return new HttpResponse(null, { status: 404 });
     }
 
     events.splice(index, 1);
 
-    return HttpResponse.json({ message: 'Event deleted' }, { status: 200 });
+    return new HttpResponse(null, { status: 204 });
   }),
 ];
