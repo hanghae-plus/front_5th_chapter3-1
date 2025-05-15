@@ -1,3 +1,4 @@
+import React from 'react';
 import { renderHook, act } from '@testing-library/react';
 import { useEventForm } from '@/hooks/useEventForm';
 import { Event, RepeatType } from '@/types';
