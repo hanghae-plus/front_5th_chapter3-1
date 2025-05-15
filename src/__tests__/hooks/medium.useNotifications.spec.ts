@@ -1,15 +1,8 @@
-// import { act, renderHook } from '@testing-library/react';
-
 import { act, renderHook } from '@testing-library/react';
 
 import { events } from '../../__mocks__/response/events.json';
 import { useNotifications } from '../../hooks/useNotifications';
 import { Event } from '../../types';
-
-// import { useNotifications } from '../../hooks/useNotifications.ts';
-// import { Event } from '../../types.ts';
-// import { formatDate } from '../../utils/dateUtils.ts';
-// import { parseHM } from '../utils.ts';
 
 beforeEach(() => {
   vi.useFakeTimers();

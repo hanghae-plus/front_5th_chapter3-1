@@ -59,6 +59,18 @@
       "category": "개인",
       "repeat": { "type": "none", "interval": 0 },
       "notificationTime": 1
+    },
+    {
+      "id": "830c53e4-cbd9-48a2-991c-c41e9e853ab1",
+      "title": "테스트 일정",
+      "date": "2025-05-15",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "description": "통합 테스트 설명",
+      "location": "회의실 B",
+      "category": "",
+      "repeat": { "type": "none", "interval": 1 },
+      "notificationTime": 10
     }
   ]
 }
