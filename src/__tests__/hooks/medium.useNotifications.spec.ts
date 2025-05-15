@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { events } from '../../__mocks__/response/realEvents.json';
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { events } from '../../__mocks__/response/realEvents.json';
 
 const mockEvents = events as Event[];
 
@@ -32,7 +32,7 @@ it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다
   });
 
   expect(result.current.notifications.length).toBe(1);
-  expect(result.current.notifications[0].message).toEqual('1분 후 팀 회의 일정이 시작됩니다.');
+  expect(result.current.notifications[0].message).toBe('1분 후 팀 회의 일정이 시작됩니다.');
 });
 
 it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
