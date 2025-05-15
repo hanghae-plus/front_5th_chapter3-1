@@ -1,6 +1,6 @@
 import { ChangeEvent, useState } from 'react';
 
-import { Event, RepeatType } from '@/types';
+import { Event } from '@/types';
 import { getTimeErrorMessage } from '@/utils';
 import { EventFormData } from '@/components/EventForm';
 
