@@ -6,6 +6,7 @@ import { FormCheckbox } from '@/components/atoms/form/checkbox';
 import { FormSelect } from '@/components/atoms/form/select';
 import { FormTimeInput } from '@/components/atoms/form/time-input';
 import { RepeatForm } from '@/components/molecules/schedule/repeat-form';
+import { NOTIFICATION_OPTIONS } from '@/constants/notification';
 import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '@/types';
 import { getTimeErrorMessage } from '@/utils/timeValidation';
 
@@ -31,13 +32,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
   isEditEvent,
 }) => {
   const CATEGORIES = ['업무', '개인', '가족', '기타'];
-  const NOTIFICATION_OPTIONS = [
-    { value: 1, label: '1분 전' },
-    { value: 10, label: '10분 전' },
-    { value: 60, label: '1시간 전' },
-    { value: 120, label: '2시간 전' },
-    { value: 1440, label: '1일 전' },
-  ];
+
   return (
     <Fragment>
       <LabelInput

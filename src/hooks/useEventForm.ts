@@ -1,28 +1,16 @@
 import { ChangeEvent, useState } from 'react';
 
 import { Event, EventForm, RepeatInfo } from '../types';
+import { convertEventToForm } from '../utils/eventFormUtils';
 import { getTimeErrorMessage } from '../utils/timeValidation';
+
+import { DEFAULT_EVENT_FORM } from '@/constants/form';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 
 export const useEventForm = (initialEvent?: Event) => {
-  const [eventForm, setEventForm] = useState<EventForm>(
-    () =>
-      initialEvent || {
-        title: '',
-        date: '',
-        startTime: '',
-        endTime: '',
-        description: '',
-        location: '',
-        category: '',
-        repeat: {
-          type: 'none',
-          interval: 1,
-          endDate: '',
-        },
-        notificationTime: 10,
-      }
+  const [eventForm, setEventForm] = useState<EventForm>(() =>
+    initialEvent ? convertEventToForm(initialEvent) : DEFAULT_EVENT_FORM
   );
   const [isRepeating, setIsRepeating] = useState(initialEvent?.repeat.type !== 'none');
 
@@ -62,40 +50,12 @@ export const useEventForm = (initialEvent?: Event) => {
   };
 
   const resetForm = () => {
-    setEventForm({
-      title: '',
-      date: '',
-      startTime: '',
-      endTime: '',
-      description: '',
-      location: '',
-      category: '',
-      repeat: {
-        type: 'none',
-        interval: 1,
-        endDate: '',
-      },
-      notificationTime: 10,
-    });
+    setEventForm(DEFAULT_EVENT_FORM);
   };
 
   const editEvent = (event: Event) => {
     setEditingEvent(event);
-    setEventForm({
-      title: event.title || '',
-      date: event.date || '',
-      startTime: event.startTime || '',
-      endTime: event.endTime || '',
-      description: event.description || '',
-      location: event.location || '',
-      category: event.category || '',
-      repeat: {
-        type: event.repeat?.type || 'none',
-        interval: event.repeat?.interval || 1,
-        endDate: event.repeat?.endDate || '',
-      },
-      notificationTime: event.notificationTime || 10,
-    });
+    setEventForm(convertEventToForm(event));
   };
 
   return {

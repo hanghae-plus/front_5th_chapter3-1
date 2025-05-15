@@ -1,58 +1,13 @@
 import { http, HttpResponse } from 'msw';
 
 import { Event } from '../types';
+import { createEventStore } from './eventStoreUtils';
 
 // ! Hard
 // ! 이벤트는 생성, 수정 되면 fetch를 다시 해 상태를 업데이트 합니다. 이를 위한 제어가 필요할 것 같은데요. 어떻게 작성해야 테스트가 병렬로 돌아도 안정적이게 동작할까요?
 // ! 아래 이름을 사용하지 않아도 되니, 독립적이게 테스트를 구동할 수 있는 방법을 찾아보세요. 그리고 이 로직을 PR에 설명해주세요.
 // * 각 테스트에서 독립적인 이벤트 저장소를 사용하기 위한 클로저 패턴 적용
 // * 클로저를 사용하여 각 테스트 케이스마다 독립적인 이벤트 배열을 생성
-
-// * 공통 이벤트 스토어
-const createEventStore = (initEvents: Event[] = []) => {
-  const events = [...initEvents];
-
-  return {
-    getEvents: () => events,
-    addEvent: (event: Event) => {
-      events.push(event);
-      return event;
-    },
-    resetEvents: () => {
-      events.length = 0;
-    },
-    // * 공통 이벤트 조회 핸들러
-    getHandler: http.get('/api/events', () => {
-      return HttpResponse.json({ events });
-    }),
-    // * id로 이벤트 조회 핸들러
-    getSingleHandler: http.get('/api/events/:id', ({ params }) => {
-      const { id } = params;
-      const eventId = typeof id === 'string' ? id : id[0];
-      const event = events.find((event) => event.id === eventId);
-
-      if (!event) {
-        return new HttpResponse(null, { status: 404 });
-      }
-
-      return HttpResponse.json({ event });
-    }),
-    // * ID 파라미터 처리 유틸리티 함수ㄴ
-    getEventId: (id: string | readonly string[]) => {
-      return typeof id === 'string' ? id : id[0];
-    },
-    // * 이벤트 찾기 유틸리티 함수
-    findEventIndex: (eventId: string) => {
-      return events.findIndex((event) => event.id === eventId);
-    },
-    // * 이벤트 필터링 유틸리티 함수
-    filterEvents: (eventId: string) => {
-      const filteredEvents = events.filter((event) => event.id !== eventId);
-      events.length = 0;
-      events.push(...filteredEvents);
-    },
-  };
-};
 
 export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
   const store = createEventStore(initEvents);
@@ -73,8 +28,6 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
   return {
     handler,
     getHandler: store.getHandler,
-    getEvents: store.getEvents,
-    resetEvents: store.resetEvents,
   };
 };
 
@@ -102,10 +55,6 @@ export const setupMockHandlerUpdating = (initEvents: Event[] = []) => {
   return {
     handler,
     getHandler: store.getHandler,
-    getSingleHandler: store.getSingleHandler,
-    getEvents: store.getEvents,
-    addEvent: store.addEvent,
-    resetEvents: store.resetEvents,
   };
 };
 
@@ -131,8 +80,5 @@ export const setupMockHandlerDeletion = (initEvents: Event[] = []) => {
   return {
     handler,
     getHandler: store.getHandler,
-    getEvents: store.getEvents,
-    addEvent: store.addEvent,
-    resetEvents: store.resetEvents,
   };
 };

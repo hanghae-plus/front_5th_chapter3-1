@@ -1,5 +1,4 @@
 import { Box, Flex, useToast } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
 
 import { AlertContainer } from '@/components/organisms/alert-container';
 import { AlertModal } from '@/components/organisms/alert-modal';
@@ -8,7 +7,8 @@ import { ViewScheduleTemplate } from '@/components/templates/view-schedule';
 import { useEventForm } from '@/hooks/useEventForm.ts';
 import { useEventOperations } from '@/hooks/useEventOperations.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
-import { Event, EventForm } from '@/types';
+import { useOverlapModal } from '@/hooks/useOverlapModal';
+import { convertFormToEventData } from '@/utils/eventFormUtils';
 import { findOverlappingEvents } from '@/utils/eventOverlap';
 
 export function MainPage() {
@@ -28,10 +28,8 @@ export function MainPage() {
     setEditingEvent(null)
   );
   const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
-
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const { isOverlapModalOpen, overlappingEvents, openModal, closeModal, isOverlapping } =
+    useOverlapModal();
 
   const toast = useToast();
 
@@ -56,27 +54,10 @@ export function MainPage() {
       return;
     }
 
-    const eventData: Event | EventForm = {
-      id: editingEvent ? editingEvent.id : undefined,
-      title: eventForm.title,
-      date: eventForm.date,
-      startTime: eventForm.startTime,
-      endTime: eventForm.endTime,
-      description: eventForm.description,
-      location: eventForm.location,
-      category: eventForm.category,
-      repeat: {
-        type: isRepeating ? eventForm.repeat.type : 'none',
-        interval: eventForm.repeat.interval,
-        endDate: eventForm.repeat.endDate || undefined,
-      },
-      notificationTime: eventForm.notificationTime,
-    };
+    const eventData = convertFormToEventData(eventForm, isRepeating, editingEvent);
 
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+    if (isOverlapping(eventData, events)) {
+      openModal(findOverlappingEvents(eventData, events));
     } else {
       await saveEvent(eventData);
       resetForm();
@@ -84,23 +65,8 @@ export function MainPage() {
   };
 
   const handleSaveOverlapEvent = () => {
-    setIsOverlapDialogOpen(false);
-    saveEvent({
-      id: editingEvent ? editingEvent.id : undefined,
-      title: eventForm.title,
-      date: eventForm.date,
-      startTime: eventForm.startTime,
-      endTime: eventForm.endTime,
-      description: eventForm.description,
-      location: eventForm.location,
-      category: eventForm.category,
-      repeat: {
-        type: isRepeating ? eventForm.repeat.type : 'none',
-        interval: eventForm.repeat.interval,
-        endDate: eventForm.repeat.endDate || undefined,
-      },
-      notificationTime: eventForm.notificationTime,
-    });
+    closeModal();
+    saveEvent(convertFormToEventData(eventForm, isRepeating, editingEvent));
   };
 
   return (
@@ -126,11 +92,10 @@ export function MainPage() {
       </Flex>
 
       <AlertModal
-        isOpen={isOverlapDialogOpen}
-        onCloseModal={setIsOverlapDialogOpen}
+        isOpen={isOverlapModalOpen}
+        onCloseModal={closeModal}
         overlappingEvents={overlappingEvents}
         onSaveOverlapEvent={handleSaveOverlapEvent}
-        ref={cancelRef}
       />
       {notifications.length > 0 && (
         <AlertContainer notifications={notifications} removeNotification={removeNotification} />

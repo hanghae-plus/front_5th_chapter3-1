@@ -48,6 +48,13 @@ const formData = {
   location: '스터디 장소',
   category: '개인',
 };
+const renderComponent = () => {
+  return render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+};
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -67,11 +74,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     server.use(handler, getHandler);
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     await user.type(screen.getByLabelText('제목'), formData.title);
     await user.type(screen.getByLabelText('날짜'), formData.date);
@@ -97,11 +100,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     };
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const eventItem = await screen.findByTestId(`event-item-${mockEvents[0].id}`);
     const editButton = within(eventItem).getByLabelText('Edit event');
@@ -132,11 +131,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     server.use(handler, getHandler);
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const eventItem = await screen.findByTestId(`event-item-${mockEvents[0].id}`);
     const deleteButton = within(eventItem).getByLabelText('Delete event');
@@ -159,11 +154,7 @@ describe('일정 뷰', () => {
     const user = userEvent.setup();
     vi.setSystemTime(new Date('2025-10-25'));
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     // * 월별 뷰에 일정이 정확히 표시되는지 확인한다"에서 확인함으로 확인 필요 X
     // const monthEventList = await screen.findByTestId('event-list');
@@ -183,11 +174,7 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const viewSelector = screen.getByLabelText('view');
     await user.selectOptions(viewSelector, 'week');
@@ -200,11 +187,7 @@ describe('일정 뷰', () => {
     vi.setSystemTime(new Date('2025-12-25'));
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const viewSelector = screen.getByLabelText('view');
     await user.selectOptions(viewSelector, 'month');
@@ -217,11 +200,7 @@ describe('일정 뷰', () => {
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const viewSelector = screen.getByLabelText('view');
     await user.selectOptions(viewSelector, 'month');
@@ -233,11 +212,7 @@ describe('일정 뷰', () => {
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
     vi.setSystemTime(new Date('2025-01-01'));
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const calendar = screen.getByTestId('month-view');
     expect(calendar).toBeInTheDocument();
@@ -255,11 +230,7 @@ describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, 'non-existent-event');
@@ -271,11 +242,7 @@ describe('검색 기능', () => {
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, '팀 회의');
@@ -287,11 +254,7 @@ describe('검색 기능', () => {
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, mockEvents[0].title);
@@ -319,11 +282,7 @@ describe('일정 충돌', () => {
       endTime: mockEvents[0].endTime,
     };
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     await user.type(screen.getByLabelText('제목'), duplicateDateFormData.title);
     await user.type(screen.getByLabelText('날짜'), duplicateDateFormData.date);
@@ -348,11 +307,7 @@ describe('일정 충돌', () => {
     const { handler, getHandler } = setupMockHandlerUpdating(mockEvents);
     server.use(handler, getHandler);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderComponent();
 
     const eventItem = await screen.findByTestId(`event-item-${mockEvents[0].id}`);
     const editButton = within(eventItem).getByLabelText('Edit event');
