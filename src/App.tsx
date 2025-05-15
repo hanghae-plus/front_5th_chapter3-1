@@ -32,7 +32,7 @@ import {
 
 import { Event, EventForm, RepeatType } from '@/types';
 import { findOverlappingEvents, getTimeErrorMessage } from '@/utils';
-import { Calendar, EventItemCard, EventSearchForm, NotificationList } from '@/components';
+import { Calendar, EventList, NotificationList } from '@/components';
 import { categories, notificationOptions } from '@/lib';
 
 function App() {
@@ -265,23 +265,14 @@ function App() {
           <Calendar />
         </VStack>
 
-        <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-          <EventSearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-
-          {filteredEvents.length === 0 ? (
-            <Text>검색 결과가 없습니다.</Text>
-          ) : (
-            filteredEvents.map((event) => (
-              <EventItemCard
-                key={event.id}
-                event={event}
-                notifiedEvents={notifiedEvents}
-                onEdit={editEvent}
-                onDelete={deleteEvent}
-              />
-            ))
-          )}
-        </VStack>
+        <EventList
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filteredEvents={filteredEvents}
+          notifiedEvents={notifiedEvents}
+          onEdit={editEvent}
+          onDelete={deleteEvent}
+        />
       </Flex>
 
       <AlertDialog
