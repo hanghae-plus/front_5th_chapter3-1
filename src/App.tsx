@@ -427,6 +427,7 @@ function App() {
               onClick={() => navigate('prev')}
             />
             <Select
+              data-testid="view-select"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
@@ -506,6 +507,7 @@ function App() {
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
+                      data-testid={`delete-event-button-${event.id}`}
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
