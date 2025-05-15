@@ -18,7 +18,7 @@ import { categories, notificationOptions } from '../../../consts';
 import { Event, RepeatType } from '../../../types';
 import { getTimeErrorMessage } from '../../../utils/timeValidation';
 
-interface EventEditProps {
+export interface EventEditProps {
   // 폼 데이터
   title: string;
   setTitle: (title: string) => void;
