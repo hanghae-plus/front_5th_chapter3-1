@@ -2,19 +2,19 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
-import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
-
-beforeEach(() => {
-  vi.setSystemTime(new Date('2025-10-13'));
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
 
 describe('일정 CRUD 및 기본 기능', () => {
+  beforeEach(() => {
+    vi.setSystemTime(new Date('2025-10-13'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
@@ -99,6 +99,14 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
+  beforeEach(() => {
+    vi.setSystemTime(new Date('2025-10-13'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     vi.setSystemTime(new Date('2025-05-13'));
 
@@ -196,6 +204,14 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
+  beforeEach(() => {
+    vi.setSystemTime(new Date('2025-10-13'));
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const user = userEvent.setup();
 
@@ -283,16 +299,122 @@ describe('검색 기능', () => {
 
     await user.clear(searchInput);
 
+    const eventListAfterClear = screen.getByTestId('event-list');
+
     await waitFor(() => {
-      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+      expect(within(eventListAfterClear).getByText('기존 회의')).toBeInTheDocument();
     });
   });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  beforeEach(() => {
+    vi.setSystemTime(new Date('2025-10-13'));
+  });
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categorySelect = screen.getByLabelText('카테고리');
+    const addButton = screen.getByRole('button', { name: '일정 추가' });
+
+    await user.type(titleInput, '새로운 회의');
+    await user.type(dateInput, '2025-10-15');
+    await user.type(startTimeInput, '09:00');
+    await user.type(endTimeInput, '10:00');
+    await user.type(descriptionInput, '새로운 팀 미팅');
+    await user.type(locationInput, '회의실 A');
+    await user.selectOptions(categorySelect, '업무');
+    await user.click(addButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+    });
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const events: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의1',
+        date: '2025-10-14',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '팀 회의2',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '팀 회의',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(events);
+
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = screen.getByTestId('event-list');
+    const editButtons = await within(eventList).findAllByRole('button', { name: 'Edit event' });
+
+    await user.click(editButtons[0]);
+
+    const dateInput = screen.getByLabelText('날짜');
+    await user.clear(dateInput);
+    await user.type(dateInput, '2025-10-15');
+
+    const saveButton = screen.getByRole('button', { name: '일정 수정' });
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+    });
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+describe('알림 기능', () => {
+  it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+    vi.setSystemTime(new Date('2025-10-15T08:49:00'));
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    vi.setSystemTime(new Date('2025-10-15T08:50:00'));
+
+    expect(await screen.findByText('10분 후 기존 회의 일정이 시작됩니다.')).toBeInTheDocument();
+  });
+});
