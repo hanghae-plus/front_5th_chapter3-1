@@ -2,38 +2,37 @@
 import { useState } from 'react';
 
 import { Event, EventForm } from '../types';
+import {
+  createClosedDialogState,
+  createInitialDialogState,
+  createOpenDialogState,
+} from '../utils/dialogState';
 
 interface UseOverlappingEventDialogProps {
   onConfirmSave: (event: Event | EventForm) => Promise<void>;
 }
 
 export const useOverlappingEventDialog = ({ onConfirmSave }: UseOverlappingEventDialogProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const [pendingEvent, setPendingEvent] = useState<Event | EventForm | null>(null);
+  const [dialogState, setDialogState] = useState(createInitialDialogState());
 
   const openDialog = (events: Event[], eventToSave: Event | EventForm) => {
-    setOverlappingEvents(events);
-    setPendingEvent(eventToSave);
-    setIsOpen(true);
+    setDialogState(createOpenDialogState(events, eventToSave));
   };
 
   const closeDialog = () => {
-    setIsOpen(false);
-    setOverlappingEvents([]);
-    setPendingEvent(null);
+    setDialogState(createClosedDialogState());
   };
 
   const confirm = async () => {
-    if (pendingEvent) {
-      await onConfirmSave(pendingEvent);
+    if (dialogState.pendingEvent) {
+      await onConfirmSave(dialogState.pendingEvent);
       closeDialog();
     }
   };
 
   return {
-    isOpen,
-    overlappingEvents,
+    isOpen: dialogState.isOpen,
+    overlappingEvents: dialogState.overlappingEvents,
     openDialog,
     closeDialog,
     confirm,
