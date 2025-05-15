@@ -1,4 +1,4 @@
-import { Box, Flex, useToast } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { CalendarView } from './components/CalendarView';
@@ -9,10 +9,10 @@ import { OverlapDialog } from './components/OverlapDialog';
 import { useCalendarView } from './hooks/useCalendarView';
 import { useEventForm } from './hooks/useEventForm';
 import { useEventOperations } from './hooks/useEventOperations';
+import { useEventSubmission } from './hooks/useEventSubmission';
 import { useNotifications } from './hooks/useNotifications';
 import { useSearch } from './hooks/useSearch';
-import { Event, EventForm as EventFormType } from './types';
-import { findOverlappingEvents } from './utils/eventOverlap';
+import { Event } from './types';
 
 function App() {
   const {
@@ -59,31 +59,16 @@ function App() {
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
 
-  const toast = useToast();
+  const { addOrUpdateEvent, handleOverlapConfirm } = useEventSubmission({
+    events,
+    saveEvent,
+    resetForm,
+    setIsOverlapDialogOpen,
+    setOverlappingEvents,
+  });
 
-  const addOrUpdateEvent = async () => {
-    if (!title || !date || !startTime || !endTime) {
-      toast({
-        title: '필수 정보를 모두 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (startTimeError || endTimeError) {
-      toast({
-        title: '시간 설정을 확인해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    const eventData: Event | EventFormType = {
-      id: editingEvent ? editingEvent.id : undefined,
+  const handleSubmit = () => {
+    addOrUpdateEvent({
       title,
       date,
       startTime,
@@ -91,28 +76,19 @@ function App() {
       description,
       location,
       category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
+      isRepeating,
+      repeatType,
+      repeatInterval,
+      repeatEndDate,
       notificationTime,
-    };
-
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
-    } else {
-      await saveEvent(eventData);
-      resetForm();
-    }
+      startTimeError,
+      endTimeError,
+      editingEvent,
+    });
   };
 
-  const handleOverlapConfirm = () => {
-    setIsOverlapDialogOpen(false);
-    saveEvent({
-      id: editingEvent ? editingEvent.id : undefined,
+  const handleConfirm = () => {
+    handleOverlapConfirm({
       title,
       date,
       startTime,
@@ -120,12 +96,14 @@ function App() {
       description,
       location,
       category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
+      isRepeating,
+      repeatType,
+      repeatInterval,
+      repeatEndDate,
       notificationTime,
+      startTimeError,
+      endTimeError,
+      editingEvent,
     });
   };
 
@@ -161,7 +139,7 @@ function App() {
           handleStartTimeChange={handleStartTimeChange}
           handleEndTimeChange={handleEndTimeChange}
           getTimeErrorMessage={() => {}}
-          onSubmit={addOrUpdateEvent}
+          onSubmit={handleSubmit}
         />
 
         <CalendarView
@@ -188,7 +166,7 @@ function App() {
         isOpen={isOverlapDialogOpen}
         onClose={() => setIsOverlapDialogOpen(false)}
         overlappingEvents={overlappingEvents}
-        onConfirm={handleOverlapConfirm}
+        onConfirm={handleConfirm}
       />
 
       <NotificationList
