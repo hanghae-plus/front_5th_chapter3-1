@@ -1,19 +1,7 @@
-import { BellIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  Heading,
-  HStack,
-  Table,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tr,
-  VStack,
-} from '@chakra-ui/react';
+import { Heading, Table, Tbody, Td, Text, Tr, VStack } from '@chakra-ui/react';
 
-import { weekDays } from '../../consts/calender';
+import { ViewHeader } from './ViewHeader';
+import { ViewItem } from './ViewItem';
 import { Event } from '../../types';
 import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../../utils/dateUtils';
 
@@ -36,15 +24,7 @@ export const MonthView = ({
     <VStack data-testid="month-view" align="stretch" w="full" spacing={4}>
       <Heading size="md">{formatMonth(currentDate)}</Heading>
       <Table variant="simple" w="full">
-        <Thead>
-          <Tr>
-            {weekDays.map((day) => (
-              <Th key={day} width="14.28%">
-                {day}
-              </Th>
-            ))}
-          </Tr>
-        </Thead>
+        <ViewHeader />
         <Tbody>
           {weeks.map((week, weekIndex) => (
             <Tr key={weekIndex}>
@@ -71,25 +51,7 @@ export const MonthView = ({
                         )}
                         {getEventsForDay(filteredEvents, day).map((event) => {
                           const isNotified = notifiedEvents.includes(event.id);
-                          return (
-                            <Box
-                              key={event.id}
-                              p={1}
-                              my={1}
-                              bg={isNotified ? 'red.100' : 'gray.100'}
-                              borderRadius="md"
-                              fontWeight={isNotified ? 'bold' : 'normal'}
-                              color={isNotified ? 'red.500' : 'inherit'}
-                              data-testid={`event-view-item`}
-                            >
-                              <HStack spacing={1}>
-                                {isNotified && <BellIcon />}
-                                <Text fontSize="sm" noOfLines={1}>
-                                  {event.title}
-                                </Text>
-                              </HStack>
-                            </Box>
-                          );
+                          return <ViewItem key={event.id} event={event} isNotified={isNotified} />;
                         })}
                       </>
                     )}
