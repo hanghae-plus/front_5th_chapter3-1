@@ -68,38 +68,27 @@ const notificationOptions = [
 ];
 
 function App() {
+  const form = useEventForm();
   const {
     title,
-    setTitle,
     date,
-    setDate,
     startTime,
     endTime,
     description,
-    setDescription,
     location,
-    setLocation,
     category,
-    setCategory,
     isRepeating,
-    setIsRepeating,
     repeatType,
-    setRepeatType,
     repeatInterval,
-    setRepeatInterval,
     repeatEndDate,
-    setRepeatEndDate,
     notificationTime,
-    setNotificationTime,
     startTimeError,
     endTimeError,
     editingEvent,
     setEditingEvent,
-    handleStartTimeChange,
-    handleEndTimeChange,
     resetForm,
     editEvent,
-  } = useEventForm();
+  } = form;
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
@@ -292,36 +281,10 @@ function App() {
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
         <AddEventWidget
-          editingEvent={editingEvent}
-          title={title}
-          setTitle={setTitle}
-          date={date}
-          setDate={setDate}
-          startTime={startTime}
-          endTime={endTime}
-          description={description}
-          setDescription={setDescription}
-          location={location}
-          setLocation={setLocation}
-          category={category}
-          setCategory={setCategory}
-          isRepeating={isRepeating}
-          setIsRepeating={setIsRepeating}
-          repeatType={'none'}
-          setRepeatType={setRepeatType}
-          repeatInterval={0}
-          setRepeatInterval={setRepeatInterval}
-          repeatEndDate={''}
-          setRepeatEndDate={setRepeatEndDate}
-          notificationTime={0}
-          setNotificationTime={setNotificationTime}
-          startTimeError={null}
-          endTimeError={null}
-          addOrUpdateEvent={addOrUpdateEvent}
           categories={categories}
           notificationOptions={notificationOptions}
-          handleStartTimeChange={handleStartTimeChange}
-          handleEndTimeChange={handleEndTimeChange}
+          addOrUpdateEvent={addOrUpdateEvent}
+          {...form}
         />
 
         <VStack flex={1} spacing={5} align="stretch">

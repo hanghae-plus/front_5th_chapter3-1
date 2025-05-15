@@ -10,76 +10,53 @@ import {
   Heading,
   VStack,
 } from '@chakra-ui/react';
-import { ChangeEvent } from 'react';
 
-import { Event, RepeatType } from '../../types';
+import { useEventForm } from '../../hooks/useEventForm';
+import { RepeatType } from '../../types';
 import { getTimeErrorMessage } from '../../utils/timeValidation';
 
-interface AddEventWidgetProps {
-  editingEvent: Event | null;
-  title: string;
-  setTitle: (title: string) => void;
-  date: string;
-  setDate: (date: string) => void;
-  startTime: string;
-  endTime: string;
-  description: string;
-  setDescription: (description: string) => void;
-  location: string;
-  setLocation: (location: string) => void;
-  category: string;
-  setCategory: (category: string) => void;
-  isRepeating: boolean;
-  setIsRepeating: (isRepeating: boolean) => void;
-  repeatType: RepeatType;
-  setRepeatType: (repeatType: RepeatType) => void;
-  repeatInterval: number;
-  setRepeatInterval: (repeatInterval: number) => void;
-  repeatEndDate: string;
-  setRepeatEndDate: (repeatEndDate: string) => void;
-  notificationTime: number;
-  setNotificationTime: (notificationTime: number) => void;
-  startTimeError: string | null;
-  endTimeError: string | null;
-  handleStartTimeChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleEndTimeChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  addOrUpdateEvent: () => void;
+interface AddEventWidgetProps extends ReturnType<typeof useEventForm> {
   categories: string[];
   notificationOptions: { label: string; value: number }[];
+  addOrUpdateEvent: () => void;
 }
 
 const AddEventWidget = ({
-  editingEvent,
-  title,
-  setTitle,
-  date,
-  setDate,
-  startTime,
-  endTime,
-  description,
-  setDescription,
-  location,
-  setLocation,
-  category,
-  setCategory,
-  isRepeating,
-  setIsRepeating,
-  repeatType,
-  setRepeatType,
-  repeatInterval,
-  setRepeatInterval,
-  repeatEndDate,
-  setRepeatEndDate,
-  notificationTime,
-  setNotificationTime,
-  startTimeError,
-  endTimeError,
-  handleStartTimeChange,
-  handleEndTimeChange,
-  addOrUpdateEvent,
   categories,
   notificationOptions,
+  addOrUpdateEvent,
+  ...form
 }: AddEventWidgetProps) => {
+  const {
+    editingEvent,
+    title,
+    setTitle,
+    date,
+    setDate,
+    startTime,
+    endTime,
+    description,
+    setDescription,
+    location,
+    setLocation,
+    category,
+    setCategory,
+    isRepeating,
+    setIsRepeating,
+    repeatType,
+    setRepeatType,
+    repeatInterval,
+    setRepeatInterval,
+    repeatEndDate,
+    setRepeatEndDate,
+    notificationTime,
+    setNotificationTime,
+    startTimeError,
+    endTimeError,
+    handleStartTimeChange,
+    handleEndTimeChange,
+  } = form;
+
   return (
     <VStack w="400px" spacing={5} align="stretch">
       <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
