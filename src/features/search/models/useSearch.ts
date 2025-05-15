@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
-import { Event } from '../types';
-import { getFilteredEvents } from '../utils/eventUtils';
+import { Event } from '../../../entities/event/model/types';
+import { getFilteredEvents } from '../../../shared/utils/eventUtils';
 
 export const useSearch = (events: Event[], currentDate: Date, view: 'week' | 'month') => {
   const [searchTerm, setSearchTerm] = useState('');
