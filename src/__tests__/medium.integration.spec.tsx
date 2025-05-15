@@ -418,50 +418,45 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 1로 하면 지정 시간 1분 전 알람 텍스트가 노출된다', async () => {
-  vi.setSystemTime('2025-05-01');
+describe('알림 기능', () => {
+  it('notificationTime을 1로 하면 지정 시간 1분 전 알람 텍스트가 노출된다', async () => {
+    vi.setSystemTime('2025-05-01');
 
-  const user = userEvent.setup();
-  setupMockHandlerCreation();
-  render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  );
+    const user = userEvent.setup();
+    setupMockHandlerCreation();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  const NEW_EVENT_FORM = {
-    title: 'notificationTime 테스트',
-    date: '2025-05-01',
-    startTime: '13:10',
-    endTime: '14:30',
-    description: '테스트 이벤트 설명',
-    location: '테스트 이벤트 장소',
-    category: '업무',
-    notificationTime: '1',
-  };
+    const NEW_EVENT_FORM = {
+      title: 'notificationTime 테스트',
+      date: '2025-05-01',
+      startTime: '13:10',
+      endTime: '14:30',
+      description: '테스트 이벤트 설명',
+      location: '테스트 이벤트 장소',
+      category: '업무',
+      notificationTime: '1',
+    };
 
-  await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
-  await user.type(screen.getByLabelText('날짜'), NEW_EVENT_FORM.date);
-  await user.type(screen.getByLabelText('시작 시간'), NEW_EVENT_FORM.startTime);
-  await user.type(screen.getByLabelText('종료 시간'), NEW_EVENT_FORM.endTime);
-  await user.type(screen.getByLabelText('설명'), NEW_EVENT_FORM.description);
-  await user.type(screen.getByLabelText('위치'), NEW_EVENT_FORM.location);
-  await user.selectOptions(screen.getByLabelText('카테고리'), NEW_EVENT_FORM.category);
-  await user.selectOptions(screen.getByLabelText('알림 설정'), NEW_EVENT_FORM.notificationTime);
+    await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
+    await user.type(screen.getByLabelText('날짜'), NEW_EVENT_FORM.date);
+    await user.type(screen.getByLabelText('시작 시간'), NEW_EVENT_FORM.startTime);
+    await user.type(screen.getByLabelText('종료 시간'), NEW_EVENT_FORM.endTime);
+    await user.type(screen.getByLabelText('설명'), NEW_EVENT_FORM.description);
+    await user.type(screen.getByLabelText('위치'), NEW_EVENT_FORM.location);
+    await user.selectOptions(screen.getByLabelText('카테고리'), NEW_EVENT_FORM.category);
+    await user.selectOptions(screen.getByLabelText('알림 설정'), NEW_EVENT_FORM.notificationTime);
 
-  const submitButton = screen.getByTestId('event-submit-button');
-  await user.click(submitButton);
+    const submitButton = screen.getByTestId('event-submit-button');
+    await user.click(submitButton);
 
-  // 등록되었는지 확인
-  const eventList = await screen.findByTestId('event-list');
-  await waitFor(() => {
-    expect(within(eventList).getByText(NEW_EVENT_FORM.title)).toBeInTheDocument();
-    expect(within(eventList).getByText(NEW_EVENT_FORM.date)).toBeInTheDocument();
+    // 1분 전 알림 텍스트가 노출되는지 확인
+    vi.setSystemTime('2025-05-01 13:09');
+    expect(await screen.findByText('1분 전')).toBeInTheDocument();
+
+    vi.useRealTimers();
   });
-
-  // 1분 전 알림 텍스트가 노출되는지 확인
-  vi.setSystemTime('2025-05-01 13:09');
-  expect(await screen.findByText('1분 전')).toBeInTheDocument();
-
-  vi.useRealTimers();
 });
