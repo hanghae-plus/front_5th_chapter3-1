@@ -90,7 +90,7 @@ export const MonthView: React.FC<MonthViewProps> = ({
                               color={isNotified ? 'red.500' : 'inherit'}
                             >
                               <HStack spacing={1}>
-                                {isNotified && <BellIcon />}
+                                {isNotified && <BellIcon aria-label="bell icon" />}
                                 <Text fontSize="sm" noOfLines={1}>
                                   {event.title}
                                 </Text>

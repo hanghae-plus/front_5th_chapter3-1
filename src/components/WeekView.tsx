@@ -66,9 +66,10 @@ export const WeekView: React.FC<WeekViewProps> = ({
                         borderRadius="md"
                         fontWeight={isNotified ? 'bold' : 'normal'}
                         color={isNotified ? 'red.500' : 'inherit'}
+                        data-notified={isNotified.toString()}
                       >
                         <HStack spacing={1}>
-                          {isNotified && <BellIcon />}
+                          {isNotified && <BellIcon aria-label="bell icon" />}
                           <Text fontSize="sm" noOfLines={1}>
                             {event.title}
                           </Text>
