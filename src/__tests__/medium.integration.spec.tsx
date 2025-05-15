@@ -412,4 +412,37 @@ describe('일정 충돌', () => {
   });
 });
 
-// it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.setSystemTime('2025-05-15');
+  setupMockHandlerCreation([]);
+
+  const { user } = setupAndRenderApp();
+
+  // 이벤트 생성
+  await user.type(screen.getByLabelText('제목'), '회의');
+  await user.type(screen.getByLabelText('날짜'), '2025-05-15');
+  await user.type(screen.getByLabelText('시작 시간'), '10:00');
+  await user.type(screen.getByLabelText('종료 시간'), '11:00');
+  await user.type(screen.getByLabelText('위치'), '회의실 A');
+  await user.type(screen.getByLabelText('설명'), '회의 내용');
+  await user.selectOptions(screen.getByLabelText('카테고리'), '업무');
+  // notificationTime 필드 10 입력
+  await user.selectOptions(screen.getByLabelText('알림 설정'), '10');
+
+  // 이벤트 등록 (제출)
+  await user.click(screen.getByTestId('event-submit-button'));
+  await waitFor(() => {
+    const eventList = within(screen.getByTestId('event-list'));
+    expect(eventList.getByText('회의')).toBeInTheDocument();
+  });
+
+  // 이벤트 시작 시간 10분 전인 09:50:00으로 시스템 시간 변경
+  vi.setSystemTime(new Date('2025-05-15T09:50:00'));
+  // notification 관련 로직 실행을 위한 1초 이동
+  vi.advanceTimersByTime(1000);
+
+  // 알림 텍스트 검증
+  await waitFor(() => {
+    expect(screen.getByText(/알림: 10분 전/)).toBeInTheDocument();
+  });
+});
