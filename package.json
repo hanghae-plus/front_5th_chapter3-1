@@ -14,7 +14,7 @@
     "test:coverage": "vitest run --coverage",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-        "format:all": "pnpm format && pnpm lint"
+    "format:all": "pnpm format && pnpm lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
