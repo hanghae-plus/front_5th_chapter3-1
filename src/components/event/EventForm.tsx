@@ -12,9 +12,17 @@ import {
 } from '@chakra-ui/react';
 
 import { useEventFormContext } from '../../context/EventContext';
+import { useAddOrUpdateEvent } from '../../hooks/useAddOrUpdateEvent';
 import { RepeatType } from '../../types';
 import { getTimeErrorMessage } from '../../utils/timeValidation';
 
+const notificationOptions = [
+  { value: 1, label: '1분 전' },
+  { value: 10, label: '10분 전' },
+  { value: 60, label: '1시간 전' },
+  { value: 120, label: '2시간 전' },
+  { value: 1440, label: '1일 전' },
+];
 const categories = ['업무', '개인', '가족', '기타'];
 
 export const EventForm = () => {
@@ -47,6 +55,8 @@ export const EventForm = () => {
     handleStartTimeChange,
     handleEndTimeChange,
   } = useEventFormContext();
+
+  const { addOrUpdateEvent } = useAddOrUpdateEvent();
 
   return (
     <VStack w="400px" spacing={5} align="stretch">
