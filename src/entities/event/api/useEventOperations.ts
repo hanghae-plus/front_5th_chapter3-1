@@ -1,7 +1,7 @@
 import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-import { Event, EventForm } from '../types';
+import { Event, EventForm } from '../../../types';
 
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -14,9 +14,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
         throw new Error('Failed to fetch events');
       }
       const { events } = await response.json();
+      
       setEvents(events);
     } catch (error) {
-      console.error('Error fetching events:', error);
       toast({
         title: '이벤트 로딩 실패',
         status: 'error',

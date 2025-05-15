@@ -1,16 +1,39 @@
 import { Button } from '@chakra-ui/react';
 
 import { useDialogStore } from '../../../based/store/DialogStore';
+import { EventFormState } from '../model/useEventFormStateAndActions';
+import { Event, EventForm } from '../../../types';
 
-export const EventAddButton = () => {
-  const { isOverlapDialogOpen, setIsOverlapDialogOpen } = useDialogStore();
+export const EventAddButton = ({
+  formState,
+  onSave,
+}: {
+  formState: EventFormState;
+  onSave: (event: Event | EventForm) => void;
+}) => {
+  const {
+    title,
+    date,
+    startTime,
+    endTime,
+    description,
+    location,
+    category,
+    isRepeating,
+    repeatType,
+    repeatInterval,
+    repeatEndDate,
+    notificationTime,
+    editingEvent,
+  } = formState;
 
+  const { setIsOverlapDialogOpen } = useDialogStore();
   return (
     <Button
       colorScheme="red"
       onClick={() => {
         setIsOverlapDialogOpen(false);
-        saveEvent({
+        onSave({
           id: editingEvent ? editingEvent.id : undefined,
           title,
           date,

@@ -58,7 +58,6 @@ export const EventAddForm = ({
     handleStartTimeChange,
     handleEndTimeChange,
   } = formActions;
-
   return (
     <VStack w="400px" spacing={5} align="stretch">
       <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>

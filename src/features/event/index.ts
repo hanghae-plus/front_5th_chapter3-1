@@ -7,3 +7,4 @@ export * from './model/useEventOperationsStateAndActions';
 export * from './model/useOverlapStateAndActions';
 export * from './model/useEventSubmission';
 export * from './model/useCalendarViewStateAndActions';
+export * from './ui/EventSearchInput';

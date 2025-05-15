@@ -30,6 +30,7 @@ module.exports = {
     'import/order': [
       'error',
       {
+        endOfLine: 'auto',
         groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
         alphabetize: {
           order: 'asc',

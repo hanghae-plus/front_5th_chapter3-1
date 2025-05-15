@@ -1,6 +1,12 @@
 import { AlertIcon, AlertTitle, Box, CloseButton, VStack, Alert } from '@chakra-ui/react';
-
-export const Notifications = () => {
+import { Dispatch, SetStateAction } from 'react';
+export const Notifications = ({
+  notifications,
+  setNotifications,
+}: {
+  notifications: { id: string; message: string }[];
+  setNotifications: Dispatch<SetStateAction<{ id: string; message: string }[]>>;
+}) => {
   return (
     <>
       {notifications.length > 0 && (
