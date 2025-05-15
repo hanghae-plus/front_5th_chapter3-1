@@ -22,33 +22,17 @@ export const handlers = [
 
   http.post('/api/events', async ({ request }) => {
     const event = (await request.json()) as Event;
-    const newEvent = { ...event, id: String(events.length + 1) };
-    console.log('====================================');
-    console.log(newEvent);
-    console.log('====================================');
-    setupMockHandlerAppend(newEvent);
-    return HttpResponse.json(newEvent);
+    return HttpResponse.json(setupMockHandlerAppend(event));
   }),
 
   http.put('/api/events/:id', async ({ request, params }) => {
     const id = params.id as string;
     const update = (await request.json()) as Event;
-
-    const updatedEvent = events.map(
-      (event): Event =>
-        Number(event.id) === Number(id) ? ({ ...event, ...update } as Event) : (event as Event)
-    );
-    console.log('====================================');
-    console.log(updatedEvent);
-    console.log('====================================');
-    setupMockHandlerUpdateById(updatedEvent);
-    return HttpResponse.json(event);
+    return HttpResponse.json(setupMockHandlerUpdateById({ ...update, id }));
   }),
 
   http.delete('/api/events/:id', ({ params }) => {
     const id = params.id as string;
-    const filteredEvents = events.filter((event) => Number(event.id) !== Number(id));
-    setupMockHandlerDeletion(id);
-    return HttpResponse.json(filteredEvents);
+    return HttpResponse.json(setupMockHandlerDeletion(id));
   }),
 ];
