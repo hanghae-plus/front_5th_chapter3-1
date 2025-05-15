@@ -186,6 +186,9 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
 });
 
 it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
+  const originalConsoleError = console.error;
+  console.error = vi.fn();
+
   server.use(http.get('/api/events', () => HttpResponse.error()));
 
   const { result } = renderHook(() => useEventOperations(false));
@@ -200,6 +203,8 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
   });
 
   expect(result.current.events).toEqual([]);
+
+  console.error = originalConsoleError;
 });
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
@@ -231,6 +236,9 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
 });
 
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
+  const originalConsoleError = console.error;
+  console.error = vi.fn();
+
   server.use(http.delete('/api/events/:id', () => HttpResponse.error()));
   const { result } = renderHook(() => useEventOperations(false));
 
@@ -248,4 +256,6 @@ it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되�
   });
 
   expect(result.current.events).toEqual(events);
+
+  console.error = originalConsoleError;
 });
