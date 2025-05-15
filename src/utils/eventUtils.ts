@@ -48,3 +48,21 @@ export function getFilteredEvents(
 
   return searchedEvents;
 }
+
+export const getRepeatText = (event: Event) => {
+  if (event.repeat.type === 'none') return null;
+
+  const intervalText = `${event.repeat.interval}${
+    event.repeat.type === 'daily'
+      ? '일'
+      : event.repeat.type === 'weekly'
+        ? '주'
+        : event.repeat.type === 'monthly'
+          ? '월'
+          : '년'
+  }마다`;
+
+  const endDateText = event.repeat.endDate ? ` (종료: ${event.repeat.endDate})` : '';
+
+  return `반복: ${intervalText}${endDateText}`;
+};
