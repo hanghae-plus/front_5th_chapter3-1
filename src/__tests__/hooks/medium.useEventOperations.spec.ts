@@ -104,7 +104,7 @@ describe('useEventOperations', () => {
       });
 
       await waitFor(() => {
-        expect(result.current.events).toHaveLength(1);
+        expect(result.current.events).toHaveLength(2);
         expect(result.current.events[0]).toEqual(updatedEvent);
       });
     });

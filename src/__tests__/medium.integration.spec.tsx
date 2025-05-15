@@ -87,7 +87,7 @@ describe('일정 CRUD 및 기본 기능', () => {
       expect(eventList.getByText('기존 회의')).toBeInTheDocument();
     });
 
-    await user.click(await screen.findByLabelText('Edit event'));
+    await user.click((await screen.findAllByLabelText('Edit event'))[0]);
 
     await user.clear(screen.getByLabelText('제목'));
     await user.type(screen.getByLabelText('제목'), '수정된 회의');
@@ -97,8 +97,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     await user.click(screen.getByTestId('event-submit-button'));
 
     const eventList = within(screen.getByTestId('event-list'));
-    expect(eventList.getByText('수정된 회의')).toBeInTheDocument();
-    expect(eventList.getByText('회의 내용 변경')).toBeInTheDocument();
+    expect(eventList.getAllByText('수정된 회의')[0]).toBeInTheDocument();
+    expect(eventList.getAllByText('회의 내용 변경')[0]).toBeInTheDocument();
   });
 
   it('일정을 삭제하면 더 이상 조회되지 않는다', async () => {
@@ -338,10 +338,78 @@ describe('검색 기능', () => {
   });
 });
 
-// describe('일정 충돌', () => {
-//   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+describe('일정 충돌', () => {
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '회의',
+        date: '2025-10-15',
+        startTime: '10:00',
+        endTime: '11:00',
+        location: '회의실 A',
+        description: '회의 내용',
+        category: '업무',
+        notificationTime: 0,
+        repeat: {
+          type: 'none',
+          interval: 0,
+        },
+      },
+    ]);
+    const { user } = setupAndRenderApp();
 
-//   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
-// });
+    await user.type(screen.getByLabelText('제목'), '또다른 회의');
+    await user.type(screen.getByLabelText('날짜'), '2025-10-15');
+    await user.type(screen.getByLabelText('시작 시간'), '10:00');
+    await user.type(screen.getByLabelText('종료 시간'), '11:00');
+    await user.type(screen.getByLabelText('위치'), '회의실 A');
+    await user.type(screen.getByLabelText('설명'), '회의 내용');
+    await user.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await user.click(screen.getByTestId('event-submit-button'));
+    // screen.debug();
+
+    // 일정 겹침 경고 표시 확인
+    await waitFor(() => {
+      const alertDialogTitle = screen.getByText('일정 겹침 경고');
+      expect(alertDialogTitle).toBeInTheDocument();
+    });
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    // 2025-10-15 날에 09:00-10:00, 10:00-11:00 일정이 존재하도록 설정
+    setupMockHandlerUpdating();
+    vi.setSystemTime(new Date('2025-10-15'));
+    const { user } = setupAndRenderApp();
+
+    // 이벤트 리스트에서 일정 확인
+    await waitFor(() => {
+      const eventList = within(screen.getByTestId('event-list'));
+      expect(eventList.getByText('기존 회의')).toBeInTheDocument();
+      expect(eventList.getByText('기존 회의2')).toBeInTheDocument();
+    });
+
+    // 수정 버튼을 모두 찾고 두 번쨰인 "기존 회의2"에 해당하는 버튼을 선택
+    const editButtons = await screen.findAllByLabelText('Edit event');
+    await user.click(editButtons[1]);
+
+    // 시작, 종료 시간을 "09:00", "10:00"으로 변경하여 충돌 발생시키기
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    await user.clear(startTimeInput);
+    await user.type(startTimeInput, '09:00');
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, '10:00');
+
+    // 수정된 일정 제출 버튼 클릭
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 일정 겹침 경고 표시 확인
+    await waitFor(() => {
+      const alertDialogTitle = screen.getByText('일정 겹침 경고');
+      expect(alertDialogTitle).toBeInTheDocument();
+    });
+  });
+});
 
 // it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
