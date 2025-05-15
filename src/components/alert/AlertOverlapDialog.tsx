@@ -8,25 +8,32 @@ import {
   Button,
   Text,
 } from '@chakra-ui/react';
-import { RefObject } from 'react';
 
-import { Event } from '../../types';
+import { useEventFormContext } from '../../context/EventContext';
+import { useEventOperationContext } from '../../context/EventOperationContext';
+import { useOverlapDialogContext } from '../../context/OverlapDialogContext';
 
-interface AlertOverlapDialogProps {
-  isOverlapDialogOpen: boolean;
-  overlappingEvents: Event[];
-  cancelRef: RefObject<HTMLButtonElement>;
-  closeOverlapDialog: () => void;
-  saveEvent: () => Promise<void>;
-}
+export const AlertOverlapDialog = () => {
+  const { isOverlapDialogOpen, overlappingEvents, cancelRef, closeOverlapDialog } =
+    useOverlapDialogContext();
 
-export const AlertOverlapDialog = ({
-  isOverlapDialogOpen,
-  overlappingEvents,
-  cancelRef,
-  closeOverlapDialog,
-  saveEvent,
-}: AlertOverlapDialogProps) => {
+  const { saveEvent } = useEventOperationContext();
+  const {
+    editingEvent,
+    title,
+    date,
+    startTime,
+    endTime,
+    description,
+    location,
+    category,
+    isRepeating,
+    repeatType,
+    repeatInterval,
+    repeatEndDate,
+    notificationTime,
+  } = useEventFormContext();
+
   return (
     <AlertDialog
       isOpen={isOverlapDialogOpen}
@@ -57,7 +64,22 @@ export const AlertOverlapDialog = ({
               colorScheme="red"
               onClick={() => {
                 closeOverlapDialog();
-                saveEvent();
+                saveEvent({
+                  id: editingEvent ? editingEvent.id : undefined,
+                  title,
+                  date,
+                  startTime,
+                  endTime,
+                  description,
+                  location,
+                  category,
+                  repeat: {
+                    type: isRepeating ? repeatType : 'none',
+                    interval: repeatInterval,
+                    endDate: repeatEndDate || undefined,
+                  },
+                  notificationTime,
+                });
               }}
               ml={3}
             >

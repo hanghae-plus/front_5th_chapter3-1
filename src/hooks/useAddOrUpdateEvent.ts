@@ -2,6 +2,7 @@ import { useToast } from '@chakra-ui/react';
 
 import { useEventFormContext } from '../context/EventContext';
 import { useEventOperationContext } from '../context/EventOperationContext';
+import { useOverlapDialogContext } from '../context/OverlapDialogContext';
 import { EventForm, Event } from '../types';
 import { findOverlappingEvents } from '../utils/eventOverlap';
 
@@ -26,6 +27,7 @@ export const useAddOrUpdateEvent = () => {
   } = useEventFormContext();
 
   const { events, saveEvent } = useEventOperationContext();
+  const { openOverlapDialog } = useOverlapDialogContext();
 
   const toast = useToast();
   const addOrUpdateEvent = async () => {

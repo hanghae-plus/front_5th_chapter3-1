@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Calander, AlertOverlapDialog } from './components';
+import { EventForm } from './components/event/EventForm.tsx';
 import { useEventFormContext } from './context/EventContext';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -24,7 +25,7 @@ import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { Event, RepeatType } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
 
@@ -76,6 +77,7 @@ function App() {
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
         {/* 일정 보기 월 or 주 */}
+        <EventForm />
         <Calander
           filteredEvents={filteredEvents}
           notifiedEvents={notifiedEvents}
@@ -167,30 +169,7 @@ function App() {
       </Flex>
 
       {/* 일정 겹침 토스트 */}
-      <AlertOverlapDialog
-        isOverlapDialogOpen={isOverlapDialogOpen}
-        overlappingEvents={overlappingEvents}
-        cancelRef={cancelRef}
-        closeOverlapDialog={closeOverlapDialog}
-        saveEvent={() =>
-          saveEvent({
-            id: editingEvent ? editingEvent.id : undefined,
-            title,
-            date,
-            startTime,
-            endTime,
-            description,
-            location,
-            category,
-            repeat: {
-              type: isRepeating ? repeatType : 'none',
-              interval: repeatInterval,
-              endDate: repeatEndDate || undefined,
-            },
-            notificationTime,
-          })
-        }
-      />
+      <AlertOverlapDialog />
 
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
