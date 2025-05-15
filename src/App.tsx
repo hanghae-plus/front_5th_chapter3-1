@@ -46,9 +46,9 @@ import {
   getWeekDates,
   getWeeksAtMonth,
 } from './utils/dateUtils';
+import { createEventData } from './utils/eventDataUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-import { createEventData } from './utils/eventDataUtils';
 
 function App() {
   const {

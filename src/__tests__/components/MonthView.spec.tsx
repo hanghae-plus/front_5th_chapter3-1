@@ -1,9 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
+
 import { MonthView } from '../../components/MonthView'; // 경로 수정
-import { Event } from '../../types';
 import { WEEK_DAYS } from '../../constants'; // 실제_WEEK_DAYS를 WEEK_DAYS로 변경 (일반적인 사용 가정)
+import { Event } from '../../types';
 
 const renderWithChakraProvider = (ui: React.ReactElement) => {
   return render(<ChakraProvider>{ui}</ChakraProvider>);

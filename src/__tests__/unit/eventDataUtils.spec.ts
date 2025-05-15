@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { createEventData, CreateEventDataParams } from '../../../src/utils/eventDataUtils';
+
 import { Event, RepeatType } from '../../../src/types';
+import { createEventData, CreateEventDataParams } from '../../../src/utils/eventDataUtils';
 
 describe('createEventData', () => {
   const baseParams: Omit<CreateEventDataParams, 'editingEvent'> = {

@@ -1,9 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
+import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
+
 import { WeekView } from '../../components/WeekView';
-import { Event } from '../../types';
 import { WEEK_DAYS } from '../../constants';
+import { Event } from '../../types';
 
 const renderWithChakraProvider = (ui: React.ReactElement) => {
   return render(<ChakraProvider>{ui}</ChakraProvider>);
