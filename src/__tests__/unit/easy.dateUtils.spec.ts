@@ -167,7 +167,7 @@ describe('getEventsForDay', () => {
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
-    const result = getEventsForDay(mockEvents, 15);
+    const result = getEventsForDay(mockEvents, 13);
     expect(result).toEqual([]);
   });
 
