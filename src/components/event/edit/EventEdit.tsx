@@ -13,9 +13,10 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
-import { categories, notificationOptions } from '../../consts';
-import { Event, RepeatType } from '../../types';
-import { getTimeErrorMessage } from '../../utils/timeValidation';
+import { EventRepeatForm } from './EventRepeatForm';
+import { categories, notificationOptions } from '../../../consts';
+import { Event, RepeatType } from '../../../types';
+import { getTimeErrorMessage } from '../../../utils/timeValidation';
 
 interface EventEditProps {
   // 폼 데이터
@@ -172,39 +173,14 @@ export const EventEdit = ({
       </FormControl>
 
       {isRepeating && (
-        <VStack width="100%">
-          <FormControl>
-            <FormLabel>반복 유형</FormLabel>
-            <Select
-              value={repeatType}
-              onChange={(e) => setRepeatType(e.target.value as RepeatType)}
-            >
-              <option value="daily">매일</option>
-              <option value="weekly">매주</option>
-              <option value="monthly">매월</option>
-              <option value="yearly">매년</option>
-            </Select>
-          </FormControl>
-          <HStack width="100%">
-            <FormControl>
-              <FormLabel>반복 간격</FormLabel>
-              <Input
-                type="number"
-                value={repeatInterval}
-                onChange={(e) => setRepeatInterval(Number(e.target.value))}
-                min={1}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel>반복 종료일</FormLabel>
-              <Input
-                type="date"
-                value={repeatEndDate}
-                onChange={(e) => setRepeatEndDate(e.target.value)}
-              />
-            </FormControl>
-          </HStack>
-        </VStack>
+        <EventRepeatForm
+          repeatType={repeatType}
+          setRepeatType={setRepeatType}
+          repeatInterval={repeatInterval}
+          setRepeatInterval={setRepeatInterval}
+          repeatEndDate={repeatEndDate}
+          setRepeatEndDate={setRepeatEndDate}
+        />
       )}
 
       <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
