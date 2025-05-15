@@ -1,6 +1,6 @@
 import { Th, Thead, Tr } from '@chakra-ui/react';
 
-import { weekDays } from '../../consts';
+import { weekDays } from '../../../consts';
 
 export const ViewHeader = () => {
   return (

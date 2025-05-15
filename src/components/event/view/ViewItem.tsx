@@ -1,7 +1,7 @@
 import { BellIcon } from '@chakra-ui/icons';
 import { Box, Text, HStack } from '@chakra-ui/react';
 
-import { Event } from '../../types';
+import { Event } from '../../../types';
 
 interface ViewItemProps {
   event: Event;

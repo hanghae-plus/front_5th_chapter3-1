@@ -2,8 +2,13 @@ import { Heading, Table, Tbody, Td, Text, Tr, VStack } from '@chakra-ui/react';
 
 import { ViewHeader } from './ViewHeader';
 import { ViewItem } from './ViewItem';
-import { Event } from '../../types';
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../../utils/dateUtils';
+import { Event } from '../../../types';
+import {
+  formatDate,
+  formatMonth,
+  getEventsForDay,
+  getWeeksAtMonth,
+} from '../../../utils/dateUtils';
 
 interface MonthViewProps {
   currentDate: Date;

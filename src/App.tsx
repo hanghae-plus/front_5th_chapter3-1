@@ -1,20 +1,12 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
+import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Box,
   Flex,
   FormControl,
   FormLabel,
-  Heading,
   HStack,
   IconButton,
   Input,
-  Select,
   Text,
   useToast,
   VStack,
@@ -22,9 +14,9 @@ import {
 import { useState } from 'react';
 
 import { AlertOverlapEvent } from './components/alert/AlertOverlapEvent.tsx';
-import { EventEdit } from './components/event/EventEdit.tsx';
+import { EventEdit, EventView } from './components/event';
 import { NotificationList } from './components/notification';
-import { MonthView, WeekView } from './components/view';
+import { notificationOptions } from './consts/calender.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -32,14 +24,6 @@ import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
@@ -170,46 +154,15 @@ function App() {
           addOrUpdateEvent={addOrUpdateEvent}
         />
 
-        <VStack flex={1} spacing={5} align="stretch">
-          <Heading>일정 보기</Heading>
-
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
-
-          {view === 'week' && (
-            <WeekView
-              currentDate={currentDate}
-              filteredEvents={filteredEvents}
-              notifiedEvents={notifiedEvents}
-            />
-          )}
-          {view === 'month' && (
-            <MonthView
-              currentDate={currentDate}
-              filteredEvents={filteredEvents}
-              notifiedEvents={notifiedEvents}
-              holidays={holidays}
-            />
-          )}
-        </VStack>
+        <EventView
+          view={view}
+          setView={setView}
+          currentDate={currentDate}
+          filteredEvents={filteredEvents}
+          notifiedEvents={notifiedEvents}
+          holidays={holidays}
+          navigate={navigate}
+        />
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
           <FormControl>
