@@ -1,8 +1,8 @@
 import { useInterval } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { createNotificationMessage, getUpcomingEvents } from '../shared/lib/notificationUtils';
-import { Event } from '../types';
+import { Event } from '../../types';
+import { createNotificationMessage, getUpcomingEvents } from '../lib/notificationUtils';
 
 /**
  * 알림 추가

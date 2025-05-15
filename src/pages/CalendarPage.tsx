@@ -19,11 +19,11 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
-import { useCalendarView } from '../hooks/useCalendarView.ts';
-import { useEventForm } from '../hooks/useEventForm.ts';
-import { useEventOperations } from '../hooks/useEventOperations.ts';
-import { useNotifications } from '../hooks/useNotifications.ts';
-import { useSearch } from '../hooks/useSearch.ts';
+import { useCalendarView } from '../shared/hooks/useCalendarView.ts';
+import { useEventForm } from '../shared/hooks/useEventForm.ts';
+import { useEventOperations } from '../shared/hooks/useEventOperations.ts';
+import { useNotifications } from '../shared/hooks/useNotifications.ts';
+import { useSearch } from '../shared/hooks/useSearch.ts';
 import { findOverlappingEvents } from '../shared/lib/eventOverlap.ts';
 import { Event, EventForm } from '../types.ts';
 

@@ -1,7 +1,7 @@
 import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-import { Event, EventForm } from '../types';
+import { Event, EventForm } from '../../types';
 
 /**
  * event Operation hook

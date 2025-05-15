@@ -13,7 +13,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/shared/lib/dateUtils';
+import { useEventsByDate } from '@/shared/hooks/useEventsByDate';
+import { useMonthWeeks } from '@/shared/hooks/useMonthWeeks';
+import { formatDate, formatMonth } from '@/shared/lib/dateUtils';
 import { Event } from '@/types';
 
 type Props = {
@@ -26,7 +28,8 @@ type Props = {
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
 const MonthView = ({ currentDate, holidays, filteredEvents, notifiedEvents }: Props) => {
-  const weeks = getWeeksAtMonth(currentDate);
+  const weeks = useMonthWeeks(currentDate);
+  const eventsByDate = useEventsByDate(filteredEvents);
 
   return (
     <VStack data-testid="month-view" align="stretch" w="full" spacing={4}>
@@ -45,6 +48,7 @@ const MonthView = ({ currentDate, holidays, filteredEvents, notifiedEvents }: Pr
               {week.map((day, dayIndex) => {
                 const dateString = day ? formatDate(currentDate, day) : '';
                 const holiday = holidays[dateString];
+                const events = eventsByDate[dateString] ?? [];
 
                 return (
                   <Td key={dayIndex} verticalAlign="top">
@@ -56,7 +60,7 @@ const MonthView = ({ currentDate, holidays, filteredEvents, notifiedEvents }: Pr
                             {holiday}
                           </Text>
                         )}
-                        {getEventsForDay(filteredEvents, day).map((event) => {
+                        {events.map((event) => {
                           const isNotified = notifiedEvents.includes(event.id);
                           return (
                             <Box

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { fetchHolidays } from '../apis/fetchHolidays';
+import { fetchHolidays } from '../../apis/fetchHolidays';
 
 /**
- *
+ * 캘린더 출력 hook
  * @returns
  */
 export const useCalendarView = () => {

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 
-import { getFilteredEvents } from '../shared/lib/eventUtils';
-import { Event } from '../types';
+import { Event } from '../../types';
+import { getFilteredEvents } from '../lib/eventUtils';
 
 /**
  * 검색어 관련 event

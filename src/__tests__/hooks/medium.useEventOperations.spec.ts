@@ -3,8 +3,8 @@ import { http, HttpResponse } from 'msw';
 
 import { setupMockHandlerCreation } from '../../__mocks__/handlersUtils.ts';
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
+import { useEventOperations } from '../../shared/hooks/useEventOperations.ts';
 import { Event } from '../../types.ts';
 
 const toastFn = vi.fn();

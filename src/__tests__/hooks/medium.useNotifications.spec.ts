@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-import { useNotifications } from '../../hooks/useNotifications.ts';
+import { useNotifications } from '../../shared/hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
 
 const INITIAL_EVENTS = events as Event[];

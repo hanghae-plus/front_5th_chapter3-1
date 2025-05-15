@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { setupServer } from 'msw/node';
 
 import { handlers } from '../../__mocks__/handlers.ts';
-import { useCalendarView } from '../../hooks/useCalendarView.ts';
+import { useCalendarView } from '../../shared/hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
 /* msw */

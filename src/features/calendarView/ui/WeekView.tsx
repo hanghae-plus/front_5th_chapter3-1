@@ -13,7 +13,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { getWeekDates } from '@/shared/lib/dateUtils';
+import { useWeekDates } from '@/shared/hooks/useWeekDates';
 import { Event } from '@/types';
 
 type Props = {
@@ -25,7 +25,7 @@ type Props = {
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
 const WeekView = ({ currentDate, filteredEvents, notifiedEvents }: Props) => {
-  const weekDates = getWeekDates(currentDate);
+  const weekDates = useWeekDates(currentDate);
 
   return (
     <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>

@@ -1,8 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-// import { http, HttpResponse } from 'msw';
-// import { ReactElement } from 'react';
 
 import {
   setupMockHandlerCreation,
