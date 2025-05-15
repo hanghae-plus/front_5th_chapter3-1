@@ -54,6 +54,6 @@ describe('createNotificationMessage', () => {
 
     const message = createNotificationMessage(event);
 
-    expect(message).toEqual('30분 후 event 1 일정이 시작됩니다.');
+    expect(message).toBe('30분 후 event 1 일정이 시작됩니다.');
   });
 });
