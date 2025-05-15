@@ -54,20 +54,9 @@ import {
   getWeekDates,
   getWeeksAtMonth,
 } from './utils/dateUtils';
+import { CATEGORIES, WEEK_DAYS, NOTIFICATION_OPTIONS } from './constants/index.ts';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
@@ -173,7 +162,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {weekDays.map((day) => (
+              {WEEK_DAYS.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -226,7 +215,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {weekDays.map((day) => (
+              {WEEK_DAYS.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -347,7 +336,7 @@ function App() {
             <FormLabel>카테고리</FormLabel>
             <Select value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="">카테고리 선택</option>
-              {categories.map((cat) => (
+              {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
@@ -368,7 +357,7 @@ function App() {
               value={notificationTime}
               onChange={(e) => setNotificationTime(Number(e.target.value))}
             >
-              {notificationOptions.map((option) => (
+              {NOTIFICATION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -492,7 +481,7 @@ function App() {
                     <Text>
                       알림:{' '}
                       {
-                        notificationOptions.find(
+                        NOTIFICATION_OPTIONS.find(
                           (option) => option.value === event.notificationTime
                         )?.label
                       }
