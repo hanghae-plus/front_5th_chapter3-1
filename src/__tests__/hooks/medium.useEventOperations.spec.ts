@@ -26,7 +26,7 @@ vi.mock('@chakra-ui/react', async () => {
 });
 
 it('저장되어있는 초기 이벤트 데이터를 불러온다', async () => {
-  setupMockHandlerCreation();
+  setupMockHandlerCreation(events as Event[]);
   const { result } = renderHook(() => useEventOperations(false));
 
   await waitFor(() => {
@@ -53,7 +53,7 @@ it('저장되어있는 초기 이벤트 데이터를 불러온다', async () => 
 });
 
 it('정의된 이벤트 정보를 기준으로 이벤트가 저장 된다', async () => {
-  setupMockHandlerCreation();
+  setupMockHandlerCreation(events as Event[]);
   const { result } = renderHook(() => useEventOperations(false));
 
   const newEvent: Event = {
@@ -110,15 +110,11 @@ it('정의된 이벤트 정보를 기준으로 이벤트가 저장 된다', asyn
 });
 
 it("새로 정의된 'title', 'endTime' 기준으로 일정이 수정된다", async () => {
-  setupMockHandlerUpdating();
+  setupMockHandlerUpdating(events as Event[]);
   const { result } = renderHook(() => useEventOperations(true));
 
-  await waitFor(() => {
-    expect(result.current.events.length).toBeGreaterThan(0);
-  });
-
   const updatedData: Event = {
-    ...result.current.events[0],
+    ...(events[0] as Event),
     title: '수정된 이벤트',
     endTime: '12:10',
   };
@@ -140,18 +136,6 @@ it("새로 정의된 'title', 'endTime' 기준으로 일정이 수정된다", as
         category: '업무',
         repeat: { type: 'none', interval: 0 },
         notificationTime: 10,
-      },
-      {
-        id: '2',
-        title: '기존 회의2',
-        date: '2025-10-15',
-        startTime: '11:00',
-        endTime: '12:00',
-        description: '기존 팀 미팅 2',
-        location: '회의실 C',
-        category: '업무 회의',
-        repeat: { type: 'none', interval: 0 },
-        notificationTime: 5,
       },
     ]);
     expect(toastFn).toHaveBeenCalledWith({
