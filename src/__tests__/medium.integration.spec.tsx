@@ -1,5 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import { vi } from 'vitest';
 
 import App from '../App';
@@ -28,6 +29,8 @@ afterAll(() => {
   vi.useRealTimers();
 });
 
+let user: UserEvent;
+
 const renderApp = () => {
   return render(
     <ChakraProvider>
@@ -52,6 +55,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
   beforeEach(() => {
     server.use(...handlers);
+    user = userEvent.setup();
 
     renderApp();
   });
@@ -65,15 +69,15 @@ describe('일정 CRUD 및 기본 기능', () => {
     const descriptionInput = screen.getByLabelText('설명');
     const locationInput = screen.getByLabelText('위치');
 
-    fireEvent.change(titleInput, { target: { value: 'Test Event' } });
-    fireEvent.change(dateInput, { target: { value: '2025-05-30' } });
-    fireEvent.change(startTimeInput, { target: { value: '21:00' } });
-    fireEvent.change(endTimeInput, { target: { value: '22:00' } });
-    fireEvent.change(descriptionInput, { target: { value: '테스트 설명' } });
-    fireEvent.change(locationInput, { target: { value: '테스트 위치' } });
+    await user.type(titleInput, 'Test Event');
+    await user.type(dateInput, '2025-05-30');
+    await user.type(startTimeInput, '21:00');
+    await user.type(endTimeInput, '22:00');
+    await user.type(descriptionInput, '테스트 설명');
+    await user.type(locationInput, '테스트 위치');
 
     const addButton = screen.getByTestId('event-submit-button');
-    fireEvent.click(addButton);
+    await user.click(addButton);
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -97,16 +101,19 @@ describe('일정 CRUD 및 기본 기능', () => {
     // 2) within 으로 scope 를 좁히고 edit button 클릭
     const { getByRole } = within(eventBox);
     const editButton = getByRole('button', { name: 'Edit event' });
-    fireEvent.click(editButton);
+    await user.click(editButton);
 
     const titleInput = screen.getByLabelText('제목');
     const descriptionInput = screen.getByLabelText('설명');
 
-    fireEvent.change(titleInput, { target: { value: 'Test Event' } });
-    fireEvent.change(descriptionInput, { target: { value: 'Test Description' } });
+    await userEvent.clear(titleInput);
+    await user.type(titleInput, 'Test Event');
 
-    const submitButton = screen.getByTestId('event-submit-button');
-    fireEvent.click(submitButton);
+    await userEvent.clear(descriptionInput);
+    await user.type(descriptionInput, 'Test Description');
+
+    const submitButton = await screen.findByTestId('event-submit-button');
+    await user.click(submitButton);
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -130,7 +137,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     const { getByRole } = within(eventBox);
 
     const deleteButton = getByRole('button', { name: 'Delete event' });
-    fireEvent.click(deleteButton);
+    await user.click(deleteButton);
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -141,6 +148,10 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 view', () => {
+  beforeEach(() => {
+    user = userEvent.setup();
+  });
+
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
     server.use(...handlers);
@@ -148,7 +159,7 @@ describe('일정 view', () => {
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-    fireEvent.change(viewSelect, { target: { value: 'week' } });
+    await user.selectOptions(viewSelect, 'week');
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -171,7 +182,7 @@ describe('일정 view', () => {
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-    fireEvent.change(viewSelect, { target: { value: 'week' } });
+    await user.selectOptions(viewSelect, 'week');
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -192,7 +203,7 @@ describe('일정 view', () => {
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-    fireEvent.change(viewSelect, { target: { value: 'month' } });
+    await user.selectOptions(viewSelect, 'month');
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -212,7 +223,7 @@ describe('일정 view', () => {
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-    fireEvent.change(viewSelect, { target: { value: 'month' } });
+    await user.selectOptions(viewSelect, 'month');
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -235,7 +246,7 @@ describe('일정 view', () => {
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
-    fireEvent.change(viewSelect, { target: { value: 'month' } });
+    await user.selectOptions(viewSelect, 'month');
 
     await waitFor(() => {
       expect(screen.getByText('신정')).toBeInTheDocument();
@@ -249,13 +260,14 @@ describe('검색 기능', () => {
   const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
   beforeEach(() => {
     server.use(...handlers);
+    user = userEvent.setup();
 
     renderApp();
   });
 
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
-    fireEvent.change(searchInput, { target: { value: '트랄라' } });
+    await user.type(searchInput, '트랄라');
 
     await waitFor(() => {
       expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
@@ -265,7 +277,7 @@ describe('검색 기능', () => {
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
 
-    fireEvent.change(searchInput, { target: { value: mockTestDataList[2].title } });
+    await user.type(searchInput, mockTestDataList[2].title);
 
     const searchedEvent = await screen.findByTestId('event-list');
 
@@ -278,9 +290,9 @@ describe('검색 기능', () => {
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
-    fireEvent.change(searchInput, { target: { value: mockTestDataList[2].title } });
+    await user.type(searchInput, mockTestDataList[2].title);
 
-    fireEvent.change(searchInput, { target: { value: '' } });
+    await user.clear(searchInput);
 
     const searchedEvent = await screen.findByTestId('event-list');
 
@@ -296,6 +308,7 @@ describe('일정 충돌', () => {
   beforeEach(async () => {
     // ← async 추가
     server.use(...handlers);
+    user = userEvent.setup();
 
     renderApp();
 
@@ -314,15 +327,15 @@ describe('일정 충돌', () => {
     const descriptionInput = screen.getByLabelText('설명');
     const locationInput = screen.getByLabelText('위치');
 
-    fireEvent.change(titleInput, { target: { value: 'Test Event' } });
-    fireEvent.change(dateInput, { target: { value: '2025-05-01' } });
-    fireEvent.change(startTimeInput, { target: { value: '09:00' } });
-    fireEvent.change(endTimeInput, { target: { value: '11:00' } });
-    fireEvent.change(descriptionInput, { target: { value: '테스트 설명' } });
-    fireEvent.change(locationInput, { target: { value: '테스트 위치' } });
+    await user.type(titleInput, 'Test Event');
+    await user.type(dateInput, '2025-05-01');
+    await user.type(startTimeInput, '09:00');
+    await user.type(endTimeInput, '11:00');
+    await user.type(descriptionInput, '테스트 설명');
+    await user.type(locationInput, '테스트 위치');
 
     const addButton = screen.getByTestId('event-submit-button');
-    fireEvent.click(addButton);
+    await user.click(addButton);
 
     const dialog = await screen.findByTestId('overlap-dialog');
 
@@ -342,16 +355,19 @@ describe('일정 충돌', () => {
     // 2) within 으로 scope 를 좁히고 edit button 클릭
     const { getByRole } = within(eventBox);
     const editButton = getByRole('button', { name: 'Edit event' });
-    fireEvent.click(editButton);
+    await user.click(editButton);
 
     const startTimeInput = screen.getByLabelText('시작 시간');
     const endTimeInput = screen.getByLabelText('종료 시간');
 
-    fireEvent.change(startTimeInput, { target: { value: '13:00' } });
-    fireEvent.change(endTimeInput, { target: { value: '14:00' } });
+    await userEvent.clear(startTimeInput);
+    await user.type(startTimeInput, '13:00');
 
-    const submitButton = screen.getByTestId('event-submit-button');
-    fireEvent.click(submitButton);
+    await userEvent.clear(endTimeInput);
+    await user.type(endTimeInput, '14:00');
+
+    const submitButton = await screen.findByTestId('event-submit-button');
+    await user.click(submitButton);
 
     const dialog = await screen.findByTestId('overlap-dialog');
 
