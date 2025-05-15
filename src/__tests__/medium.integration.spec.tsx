@@ -1,11 +1,9 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
@@ -457,15 +455,16 @@ describe('일정 충돌', () => {
     // 2. eventList에서 모든 일정 카드(Box)를 찾고, "기존 회의 B"가 포함된 카드에서만 수정 버튼 클릭
     const eventList = await screen.findByTestId('event-list');
     const allBoxes = eventList.querySelectorAll('div[role="group"], div'); // Box가 div일 확률이 높음
-    let editButton = null;
-    for (const box of allBoxes) {
-      if (box.textContent && box.textContent.includes('기존 회의 B')) {
-        editButton = within(box).getByRole('button', { name: /edit/i });
+    let editButton: HTMLElement | null = null;
+    for (const box of Array.from(allBoxes)) {
+      const htmlBox = box as HTMLElement;
+      if (htmlBox.textContent && htmlBox.textContent.includes('기존 회의 B')) {
+        editButton = within(htmlBox).getByRole('button', { name: /edit/i });
         break;
       }
     }
     expect(editButton).not.toBeNull();
-    await userEvent.click(editButton);
+    await userEvent.click(editButton!);
 
     // 3. 시작시간을 14:30으로 변경(겹치게)
     await userEvent.clear(screen.getByLabelText('시작 시간'));
