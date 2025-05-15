@@ -5,7 +5,6 @@ import { CustomAlert } from '../../molecules/custom-alert';
 
 interface AlertContainerProps {
   notifications: NotificationProps[];
-  // eslint-disable-next-line no-unused-vars
   removeNotification: (index: number) => void;
 }
 
