@@ -19,6 +19,7 @@ import { formatWeek, getWeekDates } from '../../../shared/lib/dateUtils';
 interface Props {
   currentDate: Date;
   filteredEvents: Event[];
+  // eslint-disable-next-line no-unused-vars
   isNotified: (event: Event) => boolean;
 }
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];

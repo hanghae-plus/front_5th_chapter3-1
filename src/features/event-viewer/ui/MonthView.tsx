@@ -20,11 +20,12 @@ import {
   getWeeksAtMonth,
   getEventsForDay,
 } from '../../../shared/lib/dateUtils';
-import { useMonthCalendarMatrix } from '../model/useMonthCalendarMatrix';
+// import { useMonthCalendarMatrix } from '../model/useMonthCalendarMatrix';
 
 interface Props {
   currentDate: Date;
   filteredEvents: Event[];
+  // eslint-disable-next-line no-unused-vars
   isNotified: (event: Event) => boolean;
   holidays: { [key: string]: string };
 }

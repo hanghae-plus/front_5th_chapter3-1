@@ -2,6 +2,7 @@ import { FormControl, FormLabel, Input } from '@chakra-ui/react';
 
 type Props = {
   searchTerm: string;
+  // eslint-disable-next-line no-unused-vars
   onChange: (value: string) => void;
 };
 

@@ -1,5 +1,4 @@
 import { act, renderHook } from '@testing-library/react';
-import { a } from 'framer-motion/client';
 
 import { Event } from '../../entities/event/model/types.ts';
 import { useSearch } from '../../features/search/model/useSearch.ts';

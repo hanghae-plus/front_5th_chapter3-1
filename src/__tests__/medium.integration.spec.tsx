@@ -1,9 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, act, waitFor } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
-import { af } from 'vitest/dist/chunks/reporters.C4ZHgdxQ.js';
+import { userEvent } from '@testing-library/user-event';
 
 import {
   setupMockHandlerCreation,

@@ -3,7 +3,7 @@ import { ReactElement, JSXElementConstructor, ReactNode, ReactPortal } from 'rea
 
 interface Props {
   notifications: any;
-  onClose: (index: number) => void;
+  onClose: () => void;
 }
 
 export function NotificationToast({ notifications, onClose }: Props) {

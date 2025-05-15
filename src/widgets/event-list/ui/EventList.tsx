@@ -7,9 +7,12 @@ import { SearchInput } from '../../../features/search/ui/SearchInput';
 interface Props {
   searchTerm: string;
   filteredEvents: Event[];
+  // eslint-disable-next-line no-unused-vars
   onSearchChange: (value: string) => void;
   notifiedEvents: string[];
+  // eslint-disable-next-line no-unused-vars
   onEdit: (event: Event) => void;
+  // eslint-disable-next-line no-unused-vars
   onDelete: (eventId: string) => void;
 }
 

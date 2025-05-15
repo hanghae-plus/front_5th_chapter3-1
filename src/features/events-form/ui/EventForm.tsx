@@ -42,17 +42,29 @@ interface Props {
   editingEvent: Event | null;
   isRepeating: boolean;
   addOrUpdateEvent(): Promise<void>;
+  // eslint-disable-next-line no-unused-vars
   setTitle(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   setDate(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   setDescription(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   setLocation(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   setCategory(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   setIsRepeating(value: React.SetStateAction<boolean>): void;
+  // eslint-disable-next-line no-unused-vars
   setNotificationTime(value: React.SetStateAction<number>): void;
+  // eslint-disable-next-line no-unused-vars
   setRepeatType(value: React.SetStateAction<RepeatType>): void;
+  // eslint-disable-next-line no-unused-vars
   setRepeatInterval(value: React.SetStateAction<number>): void;
+  // eslint-disable-next-line no-unused-vars
   setRepeatEndDate(value: React.SetStateAction<string>): void;
+  // eslint-disable-next-line no-unused-vars
   handleStartTimeChange(e: React.ChangeEvent<HTMLInputElement>): void;
+  // eslint-disable-next-line no-unused-vars
   handleEndTimeChange(e: React.ChangeEvent<HTMLInputElement>): void;
 }
 

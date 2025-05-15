@@ -1,7 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
 import { Event } from '../entities/event/model/types';
-import { server } from '../setupTests';
 
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   const mockEvents: Event[] = [...initEvents];
