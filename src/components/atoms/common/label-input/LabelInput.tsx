@@ -1,11 +1,11 @@
 import { FormControl, FormLabel, Input, InputProps } from '@chakra-ui/react';
 
-interface FormInputProps extends InputProps {
+interface LabelInputProps extends InputProps {
   title: string;
   value: string | number;
 }
 
-export const FormInput = ({ title, value, onChange, ...props }: FormInputProps) => {
+export const LabelInput = ({ title, value, onChange, ...props }: LabelInputProps) => {
   return (
     <FormControl>
       <FormLabel>{title}</FormLabel>

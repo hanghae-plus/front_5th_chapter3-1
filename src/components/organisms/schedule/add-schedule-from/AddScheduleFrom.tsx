@@ -1,8 +1,8 @@
 import { Button, HStack } from '@chakra-ui/react';
 import React, { Fragment } from 'react';
 
+import { LabelInput } from '@/components/atoms/common/label-input';
 import { FormCheckbox } from '@/components/atoms/form/checkbox';
-import { FormInput } from '@/components/atoms/form/input';
 import { FormSelect } from '@/components/atoms/form/select';
 import { FormTimeInput } from '@/components/atoms/form/time-input';
 import { RepeatForm } from '@/components/molecules/schedule/repeat-form';
@@ -30,8 +30,8 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
   setIsRepeating,
   isEditEvent,
 }) => {
-  const categories = ['업무', '개인', '가족', '기타'];
-  const notificationOptions = [
+  const CATEGORIES = ['업무', '개인', '가족', '기타'];
+  const NOTIFICATION_OPTIONS = [
     { value: 1, label: '1분 전' },
     { value: 10, label: '10분 전' },
     { value: 60, label: '1시간 전' },
@@ -40,14 +40,14 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
   ];
   return (
     <Fragment>
-      <FormInput
+      <LabelInput
         title="제목"
         value={eventForm.title}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           handleOnChangeEvent('title', e.target.value)
         }
       />
-      <FormInput
+      <LabelInput
         title="날짜"
         value={eventForm.date}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -80,7 +80,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
         />
       </HStack>
 
-      <FormInput
+      <LabelInput
         title="설명"
         value={eventForm.description}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -88,7 +88,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
         }
       />
 
-      <FormInput
+      <LabelInput
         title="위치"
         value={eventForm.location}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -102,7 +102,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
         onChange={(e) => handleOnChangeEvent('category', e.target.value)}
       >
         <option value="">카테고리 선택</option>
-        {categories.map((cat) => (
+        {CATEGORIES.map((cat) => (
           <option key={cat} value={cat}>
             {cat}
           </option>
@@ -128,7 +128,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
         value={eventForm.notificationTime}
         onChange={(e) => handleOnChangeEvent('notificationTime', Number(e.target.value))}
       >
-        {notificationOptions.map((option) => (
+        {NOTIFICATION_OPTIONS.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>

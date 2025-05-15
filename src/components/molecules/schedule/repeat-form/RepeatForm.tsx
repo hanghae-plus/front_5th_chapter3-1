@@ -1,7 +1,7 @@
 import { HStack, VStack } from '@chakra-ui/react';
 import React from 'react';
 
-import { FormInput } from '@/components/atoms/form/input';
+import { LabelInput } from '@/components/atoms/common/label-input';
 import { FormSelect } from '@/components/atoms/form/select';
 import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '@/types';
 
@@ -31,7 +31,7 @@ export const RepeatForm = ({ eventForm, handleOnChangeEvent }: RepeatFormProps) 
       </FormSelect>
 
       <HStack width="100%">
-        <FormInput
+        <LabelInput
           title="반복 간격"
           type="number"
           value={eventForm.repeat.interval}
@@ -45,7 +45,7 @@ export const RepeatForm = ({ eventForm, handleOnChangeEvent }: RepeatFormProps) 
           min={1}
         />
 
-        <FormInput
+        <LabelInput
           title="반복 종료일"
           type="date"
           value={eventForm.repeat.endDate || ''}

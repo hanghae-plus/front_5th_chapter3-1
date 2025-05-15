@@ -5,11 +5,9 @@ import { AlertContainer } from '@/components/organisms/alert-container';
 import { AlertModal } from '@/components/organisms/alert-modal';
 import { AddScheduleTemplate } from '@/components/templates/add-schedule/AddScheduleTemplate.tsx';
 import { ViewScheduleTemplate } from '@/components/templates/view-schedule';
-import { useCalendarView } from '@/hooks/useCalendarView.ts';
 import { useEventForm } from '@/hooks/useEventForm.ts';
 import { useEventOperations } from '@/hooks/useEventOperations.ts';
 import { useNotifications } from '@/hooks/useNotifications.ts';
-import { useSearch } from '@/hooks/useSearch.ts';
 import { Event, EventForm } from '@/types';
 import { findOverlappingEvents } from '@/utils/eventOverlap';
 
@@ -30,8 +28,6 @@ export function MainPage() {
     setEditingEvent(null)
   );
   const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
-  const { view, setView, currentDate, holidays, navigate } = useCalendarView();
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
@@ -122,17 +118,10 @@ export function MainPage() {
         />
 
         <ViewScheduleTemplate
-          view={view}
-          setView={setView}
-          currentDate={currentDate}
-          holidays={holidays}
-          searchTerm={searchTerm}
-          navigate={navigate}
-          filteredEvents={filteredEvents}
+          events={events}
           notifiedEvents={notifiedEvents}
           editEvent={editEvent}
           deleteEvent={deleteEvent}
-          setSearchTerm={setSearchTerm}
         />
       </Flex>
 
