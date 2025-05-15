@@ -1,6 +1,5 @@
-import { ChevronLeftIcon, ChevronRightIcon, BellIcon } from '@chakra-ui/icons';
+import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import {
-  Box,
   Heading,
   HStack,
   IconButton,
@@ -15,6 +14,7 @@ import {
   Select,
 } from '@chakra-ui/react';
 
+import { useEventRenderer } from '../hooks/useEventRenderer';
 import { Event } from '../types';
 import {
   formatDate,
@@ -36,6 +36,8 @@ interface WeekViewProps {
 
 const WeekView = ({ currentDate, filteredEvents, notifiedEvents, weekDays }: WeekViewProps) => {
   const weekDates = getWeekDates(currentDate);
+  const { renderEvent } = useEventRenderer({ events: filteredEvents, notifiedEvents });
+
   return (
     <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>
       <Heading size="md">{formatWeek(currentDate)}</Heading>
@@ -56,27 +58,7 @@ const WeekView = ({ currentDate, filteredEvents, notifiedEvents, weekDays }: Wee
                 <Text fontWeight="bold">{date.getDate()}</Text>
                 {filteredEvents
                   .filter((event) => new Date(event.date).toDateString() === date.toDateString())
-                  .map((event) => {
-                    const isNotified = notifiedEvents.includes(event.id);
-                    return (
-                      <Box
-                        key={event.id}
-                        p={1}
-                        my={1}
-                        bg={isNotified ? 'red.100' : 'gray.100'}
-                        borderRadius="md"
-                        fontWeight={isNotified ? 'bold' : 'normal'}
-                        color={isNotified ? 'red.500' : 'inherit'}
-                      >
-                        <HStack spacing={1}>
-                          {isNotified && <BellIcon />}
-                          <Text fontSize="sm" noOfLines={1}>
-                            {event.title}
-                          </Text>
-                        </HStack>
-                      </Box>
-                    );
-                  })}
+                  .map(renderEvent)}
               </Td>
             ))}
           </Tr>
@@ -102,6 +84,7 @@ const MonthView = ({
   holidays,
 }: MonthViewProps) => {
   const weeks = getWeeksAtMonth(currentDate);
+  const { renderEvent } = useEventRenderer({ events: filteredEvents, notifiedEvents });
 
   return (
     <VStack data-testid="month-view" align="stretch" w="full" spacing={4}>
@@ -139,27 +122,7 @@ const MonthView = ({
                             {holiday}
                           </Text>
                         )}
-                        {getEventsForDay(filteredEvents, day).map((event) => {
-                          const isNotified = notifiedEvents.includes(event.id);
-                          return (
-                            <Box
-                              key={event.id}
-                              p={1}
-                              my={1}
-                              bg={isNotified ? 'red.100' : 'gray.100'}
-                              borderRadius="md"
-                              fontWeight={isNotified ? 'bold' : 'normal'}
-                              color={isNotified ? 'red.500' : 'inherit'}
-                            >
-                              <HStack spacing={1}>
-                                {isNotified && <BellIcon />}
-                                <Text fontSize="sm" noOfLines={1}>
-                                  {event.title}
-                                </Text>
-                              </HStack>
-                            </Box>
-                          );
-                        })}
+                        {getEventsForDay(filteredEvents, day).map(renderEvent)}
                       </>
                     )}
                   </Td>
