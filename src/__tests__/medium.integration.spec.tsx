@@ -3,7 +3,7 @@ import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
-import App from '../App';
+import { App } from '../app';
 import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {

@@ -2,65 +2,63 @@ import {
   BellIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  DeleteIcon,
   EditIcon,
+  DeleteIcon,
 } from '@chakra-ui/icons';
 import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Checkbox,
-  CloseButton,
-  Flex,
-  FormControl,
-  FormLabel,
+  useToast,
+  VStack,
   Heading,
-  HStack,
-  IconButton,
-  Input,
-  Select,
   Table,
+  Thead,
+  Tr,
+  Th,
   Tbody,
   Td,
   Text,
-  Th,
-  Thead,
+  Box,
+  HStack,
+  Flex,
+  FormControl,
+  FormLabel,
+  Input,
   Tooltip,
-  Tr,
-  useToast,
-  VStack,
+  Select,
+  Checkbox,
+  Button,
+  IconButton,
+  AlertDialog,
+  ModalOverlay as AlertDialogOverlay,
+  AlertDialogContent,
+  ModalHeader as AlertDialogHeader,
+  ModalBody as AlertDialogBody,
+  ModalFooter as AlertDialogFooter,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  CloseButton,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { useState, useRef } from 'react';
 
-import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useEventForm } from './hooks/useEventForm.ts';
-import { useEventOperations } from './hooks/useEventOperations.ts';
-import { useNotifications } from './hooks/useNotifications.ts';
-import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { useCalendarView } from '../../hooks/useCalendarView';
+import { useEventForm } from '../../hooks/useEventForm';
+import { useEventOperations } from '../../hooks/useEventOperations';
+import { useNotifications } from '../../hooks/useNotifications';
+import { useSearch } from '../../hooks/useSearch';
+import { Event, EventForm, RepeatType } from '../../types';
 import {
-  formatDate,
-  formatMonth,
-  formatWeek,
-  getEventsForDay,
   getWeekDates,
+  formatWeek,
   getWeeksAtMonth,
-} from './utils/dateUtils';
-import { findOverlappingEvents } from './utils/eventOverlap';
-import { getTimeErrorMessage } from './utils/timeValidation';
+  formatMonth,
+  formatDate,
+  getEventsForDay,
+} from '../../utils/dateUtils';
+import { findOverlappingEvents } from '../../utils/eventOverlap';
+import { getTimeErrorMessage } from '../../utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
-
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
 const notificationOptions = [
   { value: 1, label: '1분 전' },
   { value: 10, label: '10분 전' },
@@ -68,7 +66,6 @@ const notificationOptions = [
   { value: 120, label: '2시간 전' },
   { value: 1440, label: '1일 전' },
 ];
-
 function App() {
   const {
     title,
@@ -590,5 +587,4 @@ function App() {
     </Box>
   );
 }
-
 export default App;
