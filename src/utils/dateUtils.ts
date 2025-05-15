@@ -4,6 +4,10 @@ import { Event } from '../types.ts';
  * 주어진 년도와 월의 일수를 반환합니다.
  */
 export function getDaysInMonth(year: number, month: number): number {
+  if (month < 1 || month > 12) {
+    return 0;
+  }
+
   return new Date(year, month, 0).getDate();
 }
 
@@ -23,6 +27,9 @@ export function getWeekDates(date: Date): Date[] {
   return weekDates;
 }
 
+/**
+ * 주어진 날짜가 속한 월의 모든 주를 반환합니다.
+ */
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -51,10 +58,21 @@ export function getWeeksAtMonth(currentDate: Date) {
   return weeks;
 }
 
+/**
+ * 주어진 날짜에 해당하는 이벤트를 반환합니다.
+ */
 export function getEventsForDay(events: Event[], date: number): Event[] {
+  if (date < 1 || date > 31) {
+    return [];
+  }
+
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜의 주 정보를 "YYYY년 M월 W주" 형식으로 반환합니다.
+ * 목요일을 기준으로 주를 계산합니다.
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
@@ -88,13 +106,23 @@ export function formatMonth(date: Date): string {
  * 주어진 날짜가 특정 범위 내에 있는지 확인합니다.
  */
 export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boolean {
+  if (rangeStart > rangeEnd) {
+    return false;
+  }
+
   return date >= rangeStart && date <= rangeEnd;
 }
 
+/**
+ * 주어진 숫자를 지정된 크기의 문자열로 변환하고, 필요한 경우 앞에 0을 추가합니다.
+ */
 export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
 
+/**
+ * 주어진 날짜를 YYYY-MM-DD 형식으로 포맷팅합니다.
+ */
 export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),
