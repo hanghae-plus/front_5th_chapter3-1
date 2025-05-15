@@ -13,9 +13,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { weekDays } from '../../../libs/constants';
-import { Event } from '../../../types';
-import { formatWeek, getWeekDates } from '../../../utils/dateUtils';
+import { weekDays } from '../../libs/constants';
+import { Event } from '../../types';
+import { formatWeek, getWeekDates } from '../../utils/dateUtils';
 
 interface CalendarViewProps {
   currentDate: Date;
@@ -27,6 +27,7 @@ const CalendarWeekView = (props: CalendarViewProps) => {
   const { currentDate, filteredEvents, notifiedEvents } = props;
 
   const weekDates = getWeekDates(currentDate);
+
   return (
     <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>
       <Heading size="md">{formatWeek(currentDate)}</Heading>
@@ -42,6 +43,7 @@ const CalendarWeekView = (props: CalendarViewProps) => {
         </Thead>
         <Tbody>
           <Tr>
+            {/* 별도 컴포넌트로 분리하는 게 좋긴 함...근데 시간 관계상 패스 */}
             {weekDates.map((date) => (
               <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
                 <Text fontWeight="bold">{date.getDate()}</Text>

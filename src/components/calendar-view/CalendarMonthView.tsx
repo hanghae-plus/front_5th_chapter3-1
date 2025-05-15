@@ -13,13 +13,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { weekDays } from '../../../libs/constants';
-import {
-  formatDate,
-  formatMonth,
-  getEventsForDay,
-  getWeeksAtMonth,
-} from '../../../utils/dateUtils';
+import { weekDays } from '../../libs/constants';
+import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../../utils/dateUtils';
 
 interface CalendarViewProps {
   currentDate: Date;
@@ -47,6 +42,7 @@ const CalendarMonthView = (props: CalendarViewProps) => {
           </Tr>
         </Thead>
         <Tbody>
+          {/* 반복문을 컴포넌트로 분리하는 게 좋으나, 시간 관계상 패스 */}
           {weeks.map((week, weekIndex) => (
             <Tr key={weekIndex}>
               {week.map((day, dayIndex) => {

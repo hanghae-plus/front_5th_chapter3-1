@@ -1,21 +1,16 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Heading, HStack, IconButton, Select, VStack } from '@chakra-ui/react';
 
-import CalendarMonthView from './CalendarMonthView.tsx';
-import CalendarWeekView from './CalendarWeekView.tsx';
+import CalendarMonthView from './CalendarMonthView';
+import CalendarWeekView from './CalendarWeekView';
+import { useCalendarContext } from '../../contexts/CalendarContext';
+import { useNotificationsContext } from '../../contexts/NotificationsContext';
+import { useSearchContext } from '../../contexts/SearchContext';
 
-interface CalendarViewProps {
-  view: 'week' | 'month';
-  setView: (view: 'week' | 'month') => void;
-  navigate: (direction: 'prev' | 'next') => void;
-  currentDate: Date;
-  filteredEvents: Event[];
-  notifiedEvents: string[];
-  holidays: Record<string, string>;
-}
-
-const CalendarView = (props: CalendarViewProps) => {
-  const { view, setView, navigate, currentDate, filteredEvents, notifiedEvents, holidays } = props;
+const CalendarView = () => {
+  const { view, setView, navigate, currentDate, holidays } = useCalendarContext();
+  const { filteredEvents } = useSearchContext();
+  const { notifiedEvents } = useNotificationsContext();
 
   return (
     <VStack flex={1} spacing={5} align="stretch">
