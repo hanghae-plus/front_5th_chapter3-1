@@ -1,6 +1,7 @@
-import { Event } from '../types';
-import { server } from '../setupTests';
 import { http, HttpResponse } from 'msw';
+
+import { server } from '../setupTests';
+import { Event } from '../types';
 
 // 테코에서 동작하는애를 만듬 데이터 조작
 // 가짜 데이터 조작
@@ -28,9 +29,6 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
 
       // 이벤트 배열에 추가
       events = [...events, eventWithId];
-      console.log('handlersUtils - events', events);
-      console.log('eventWithId', eventWithId);
-
       return HttpResponse.json(eventWithId, { status: 201 });
     })
   );
@@ -44,18 +42,15 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
 export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
   // 현재 저장된 이벤트들을 추적하기 위한 클로저 변수
   let events = [...initEvents];
-  console.log('events', events);
 
   server.use(
     // GET 요청 처리 - 이벤트 목록 조회
     http.get('/api/events', () => {
-      console.log('handlersUtils - GET 요청 실행');
       return HttpResponse.json({ events });
     }),
 
     // PUT 요청 처리 - 이벤트 수정
     http.put('/api/events/:id', async ({ params, request }) => {
-      console.log('handlersUtils - PUT 요청 실행');
       const { id } = params;
       const updatedEvent = await request.json();
 
@@ -63,7 +58,6 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
       const eventIndex = events.findIndex((event) => event.id === id);
 
       if (eventIndex === -1) {
-        console.log('이벤트 업데이트 실패');
         return new HttpResponse(null, { status: 404 });
       }
       // 이벤트 업데이트
@@ -72,8 +66,6 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
         { ...(updatedEvent as Event), id: id as string }, // ID는 유지하고 string 타입으로 명시
         ...events.slice(eventIndex + 1),
       ];
-
-      console.log('업데트트 된 events', events);
 
       return HttpResponse.json(events[eventIndex], { status: 200 });
     })
@@ -88,7 +80,6 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
 export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
   // 현재 저장된 이벤트들을 추적하기 위한 클로저 변수
   let events = [...initEvents];
-  console.log('events', events);
 
   server.use(
     // GET 요청 처리 - 이벤트 목록 조회
@@ -98,7 +89,6 @@ export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
 
     // DELETE 요청 처리 - 이벤트 삭제
     http.delete('/api/events/:id', ({ params }) => {
-      console.log('handlersUtils - delete 요청 실행');
       const { id } = params;
 
       // 삭제할 이벤트가 존재하는지 확인
@@ -111,7 +101,6 @@ export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
 
       // 이벤트 삭제
       events = events.filter((event) => event.id !== id);
-      console.log('삭제된 events', events);
       // 성공적인 삭제를 나타내는 204 상태 코드 반환
       return new HttpResponse(null, { status: 204 });
     })

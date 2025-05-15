@@ -1,17 +1,17 @@
+// import { http, HttpResponse } from 'msw';
+// import { ReactElement } from 'react';
+// import { server } from '../setupTests';
+
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, act, waitFor } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { userEvent } from '@testing-library/user-event';
 
-import App from '../App';
 import {
   setupMockHandlerCreation,
   setupMockHandlerUpdating,
   setupMockHandlerDeletion,
 } from '../__mocks__/handlersUtils';
-
-import { server } from '../setupTests';
+import App from '../App';
 import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
@@ -742,8 +742,6 @@ describe('일정 충돌', () => {
 });
 
 describe('알림 기능', () => {
-  const user = userEvent.setup();
-
   it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
     // 1. 테스트용 이벤트 데이터 설정
     const events: Event[] = [
