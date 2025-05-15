@@ -6,7 +6,7 @@ import path from 'path';
 import express from 'express';
 
 const app = express();
-const port = 3000;
+const port = 5173;
 const __dirname = path.resolve();
 
 app.use(express.json());
