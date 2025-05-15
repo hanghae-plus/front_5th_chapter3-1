@@ -38,7 +38,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { CATEGORY, NOTIFICATION_OPTIONS, WEEKDAYS } from './constants/index.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useDialogManage } from './hooks/useDialogManage.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -57,6 +56,18 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+
+const categories = ['업무', '개인', '가족', '기타'];
+
+const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
+
+const notificationOptions = [
+  { value: 1, label: '1분 전' },
+  { value: 10, label: '10분 전' },
+  { value: 60, label: '1시간 전' },
+  { value: 120, label: '2시간 전' },
+  { value: 1440, label: '1일 전' },
+];
 
 function App() {
   const {
@@ -154,7 +165,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {WEEKDAYS.map((day) => (
+              {weekDays.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -207,7 +218,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {WEEKDAYS.map((day) => (
+              {weekDays.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -329,7 +340,7 @@ function App() {
             <FormLabel>카테고리</FormLabel>
             <Select value={category} onChange={(e) => setCategory(e.target.value)}>
               <option value="">카테고리 선택</option>
-              {CATEGORY.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
@@ -350,7 +361,7 @@ function App() {
               value={notificationTime}
               onChange={(e) => setNotificationTime(Number(e.target.value))}
             >
-              {NOTIFICATION_OPTIONS.map((option) => (
+              {notificationOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -476,7 +487,7 @@ function App() {
                     <Text>
                       알림:{' '}
                       {
-                        NOTIFICATION_OPTIONS.find(
+                        notificationOptions.find(
                           (option) => option.value === event.notificationTime
                         )?.label
                       }
