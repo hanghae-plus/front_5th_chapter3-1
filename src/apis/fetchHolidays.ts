@@ -21,6 +21,7 @@ type HolidayKeys = keyof HolidayRecord;
 export function fetchHolidays(date: Date) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
+  // 주어진 월의 공휴일만 반환한다
   const holidays = Object.keys(HOLIDAY_RECORD) as HolidayKeys[];
   return holidays
     .filter((date) => date.includes(`${y}-${m}`))
