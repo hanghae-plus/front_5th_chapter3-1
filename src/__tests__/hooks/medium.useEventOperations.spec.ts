@@ -14,13 +14,13 @@ import { Event } from '../../types.ts';
 import { MOCK_EVENTS } from '../mock.ts';
 
 // ? Medium: 아래 toastFn과 mock과 이 fn은 무엇을 해줄까요?
-const toastFn = vi.fn();
+const toastFn = vi.fn(); // mock 함수 생성
 
 vi.mock('@chakra-ui/react', async () => {
   const actual = await vi.importActual('@chakra-ui/react');
   return {
     ...actual,
-    useToast: () => toastFn,
+    useToast: () => toastFn, // mock 함수를 적용 => useToast 호출 여부를 toastFn로 확인 가능
   };
 });
 
