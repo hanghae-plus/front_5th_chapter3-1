@@ -26,3 +26,5 @@ export interface Notification {
   id: string;
   message: string;
 }
+
+export type CalendarView = 'week' | 'month';

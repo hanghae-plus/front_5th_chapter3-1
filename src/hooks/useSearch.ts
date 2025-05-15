@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 
-import { Event } from '@/types';
+import type { CalendarView, Event } from '@/types';
 import { getFilteredEvents } from '@/utils';
 
-export const useSearch = (events: Event[], currentDate: Date, view: 'week' | 'month') => {
+export const useSearch = (events: Event[], currentDate: Date, view: CalendarView) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredEvents = useMemo(() => {

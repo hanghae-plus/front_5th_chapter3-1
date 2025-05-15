@@ -1,9 +1,9 @@
 import { useEventForm, useEventOperations, useNotifications } from '@/hooks';
-import type { Notification } from '@/types';
+import type { Notification as NotificationType } from '@/types';
 import { Alert, AlertIcon, AlertTitle, Box, CloseButton } from '@chakra-ui/react';
 
 interface NotificationProps {
-  notification: Notification;
+  notification: NotificationType;
 }
 
 export function Notification({ notification }: NotificationProps) {

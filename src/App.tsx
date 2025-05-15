@@ -44,7 +44,7 @@ import {
   useSearch,
 } from '@/hooks';
 
-import { Event, EventForm, RepeatType } from '@/types';
+import { CalendarView, Event, EventForm, RepeatType } from '@/types';
 import {
   formatDate,
   formatMonth,
@@ -423,7 +423,7 @@ function App() {
             <Select
               aria-label="view"
               value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
+              onChange={(e) => setView(e.target.value as CalendarView)}
             >
               <option value="week">Week</option>
               <option value="month">Month</option>
