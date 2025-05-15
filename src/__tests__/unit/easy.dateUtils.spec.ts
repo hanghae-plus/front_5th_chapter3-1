@@ -1,4 +1,4 @@
-import { getTestEvents } from '../../__mocks__/fixtures';
+import { dateTestEvents } from '../../__mocks__/fixtures';
 import { Event } from '../../types';
 import {
   fillZero,
@@ -150,22 +150,22 @@ describe('getWeeksAtMonth', () => {
 
 describe('getEventsForDay', () => {
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
-    const events = getEventsForDay(getTestEvents, 1);
-    expect(events).toEqual([getTestEvents[0]]);
+    const events = getEventsForDay(dateTestEvents, 1);
+    expect(events).toEqual([dateTestEvents[0]]);
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
-    const events = getEventsForDay(getTestEvents, 2);
+    const events = getEventsForDay(dateTestEvents, 2);
     expect(events).toEqual([]);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
-    const events = getEventsForDay(getTestEvents, 0);
+    const events = getEventsForDay(dateTestEvents, 0);
     expect(events).toEqual([]);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
-    const events = getEventsForDay(getTestEvents, 32);
+    const events = getEventsForDay(dateTestEvents, 32);
     expect(events).toEqual([]);
   });
 });
