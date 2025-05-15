@@ -6,8 +6,11 @@ import { findOverlappingEvents } from '../utils/eventOverlap';
 interface UseAddOrUpdateEventProps {
   eventForm: EventForm;
   events: Event[];
+  // eslint-disable-next-line no-unused-vars
   setOverlappingEvents: (events: Event[]) => void;
+  // eslint-disable-next-line no-unused-vars
   setIsOverlapDialogOpen: (isOpen: boolean) => void;
+  // eslint-disable-next-line no-unused-vars
   saveEvent: (event: Event) => Promise<void>;
   startTimeError: string | null;
   endTimeError: string | null;

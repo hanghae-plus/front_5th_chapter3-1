@@ -28,24 +28,28 @@ const notificationOptions = [
 interface EventEditSectionProps {
   eventForm: EventForm;
   setEventForm: {
+    // eslint-disable-next-line no-unused-vars
     setTitle: (title: string) => void;
-    setDate: (date: string) => void;
-    setDescription: (description: string) => void;
-    setLocation: (location: string) => void;
-    setCategory: (category: string) => void;
-    setIsRepeating: (isRepeating: boolean) => void;
-    setRepeatType: (repeatType: RepeatType) => void;
-    setRepeatInterval: (repeatInterval: number) => void;
-    setRepeatEndDate: (repeatEndDate: string) => void;
+    // eslint-disable-next-line no-unused-vars
+    setDate: (date: string) => void; // eslint-disable-next-line no-unused-vars
+    setDescription: (description: string) => void; // eslint-disable-next-line no-unused-vars
+    setLocation: (location: string) => void; // eslint-disable-next-line no-unused-vars
+    setCategory: (category: string) => void; // eslint-disable-next-line no-unused-vars
+    setIsRepeating: (isRepeating: boolean) => void; // eslint-disable-next-line no-unused-vars
+    setRepeatType: (repeatType: RepeatType) => void; // eslint-disable-next-line no-unused-vars
+    setRepeatInterval: (repeatInterval: number) => void; // eslint-disable-next-line no-unused-vars
+    setRepeatEndDate: (repeatEndDate: string) => void; // eslint-disable-next-line no-unused-vars
     setNotificationTime: (notificationTime: number) => void;
   };
-  events: Event[];
+  events: Event[]; // eslint-disable-next-line no-unused-vars
   saveEvent: (event: Event) => Promise<void>;
   startTimeError: string | null;
   endTimeError: string | null;
   editingEvent: Event | null;
   isRepeating: boolean;
+  // eslint-disable-next-line no-unused-vars
   handleStartTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // eslint-disable-next-line no-unused-vars
   handleEndTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   resetForm: () => void;
 }

@@ -31,8 +31,10 @@ interface CalendarSectionProps {
   currentDate: Date;
   filteredEvents: Event[];
   notifiedEvents: string[];
+  // eslint-disable-next-line no-unused-vars
   navigate: (direction: 'prev' | 'next') => void;
   view: 'week' | 'month';
+  // eslint-disable-next-line no-unused-vars
   setView: (view: 'week' | 'month') => void;
   holidays: { [key: string]: string };
 }

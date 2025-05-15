@@ -14,8 +14,10 @@ import { Event, EventForm } from '../../types';
 
 interface WarningAlertProps {
   isOverlapDialogOpen: boolean;
+  // eslint-disable-next-line no-unused-vars
   setIsOverlapDialogOpen: (isOverlapDialogOpen: boolean) => void;
   overlappingEvents: Event[];
+  // eslint-disable-next-line no-unused-vars
   saveEvent: (event: Event) => void;
   editingEvent: Event | null;
   eventForm: EventForm;
