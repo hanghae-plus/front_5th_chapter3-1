@@ -8,6 +8,10 @@ beforeEach(() => {
   vi.setSystemTime(new Date('2025-10-13'));
 });
 
+afterEach(() => {
+  vi.useRealTimers();
+});
+
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
@@ -93,15 +97,100 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    vi.setSystemTime(new Date('2025-05-13'));
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const user = userEvent.setup();
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions(viewSelect, 'Week');
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions(viewSelect, 'Week');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('2025-10-15')).toBeInTheDocument();
+    });
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    vi.setSystemTime(new Date('2025-05-13'));
+
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions(viewSelect, 'Month');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+    });
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByRole('combobox', { name: 'view' });
+    await user.selectOptions(viewSelect, 'Month');
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('기존 회의')).toBeInTheDocument();
+      expect(within(eventList).getByText('2025-10-15')).toBeInTheDocument();
+    });
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2025-01-01'));
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const dayCell = screen.getByText('1').parentElement;
+    expect(within(dayCell!).getByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
