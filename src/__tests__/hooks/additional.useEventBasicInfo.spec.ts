@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+
 import { useEventBasicInfo } from '../../hooks/useEventBasicInfo';
 import { Event } from '../../types';
 
