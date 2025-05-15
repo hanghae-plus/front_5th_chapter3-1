@@ -14,7 +14,7 @@ import { Event } from '../types';
 
 interface OverlapDialogProps {
   isOverlapDialogOpen: boolean;
-  setIsOverlapDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  closeOverlapDialog: () => void;
   handleContinueWithOverlap: () => void;
   overlappingEvents: Event[];
   cancelRef: RefObject<HTMLButtonElement>;
@@ -22,7 +22,7 @@ interface OverlapDialogProps {
 
 export default function OverlapDialog({
   isOverlapDialogOpen,
-  setIsOverlapDialogOpen,
+  closeOverlapDialog,
   handleContinueWithOverlap,
   overlappingEvents,
   cancelRef,
@@ -31,7 +31,7 @@ export default function OverlapDialog({
     <AlertDialog
       isOpen={isOverlapDialogOpen}
       leastDestructiveRef={cancelRef}
-      onClose={() => setIsOverlapDialogOpen(false)}
+      onClose={closeOverlapDialog}
     >
       <AlertDialogOverlay>
         <AlertDialogContent>
