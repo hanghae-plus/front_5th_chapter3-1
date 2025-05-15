@@ -8,7 +8,6 @@ import {
   setupMockHandlerDeletion,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
 import { Event } from '../types';
 
 const MOCK_EVENTS: Event[] = [
@@ -120,7 +119,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
+    setupMockHandlerUpdating(MOCK_EVENTS);
     const user = userEvent.setup();
     render(
       <ChakraProvider>
@@ -155,7 +154,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
     const user = userEvent.setup();
-    server.use(...setupMockHandlerDeletion(MOCK_EVENTS));
+    setupMockHandlerDeletion(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -383,7 +382,7 @@ describe('일정 충돌', () => {
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
     const user = userEvent.setup();
-    server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
+    setupMockHandlerUpdating(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />

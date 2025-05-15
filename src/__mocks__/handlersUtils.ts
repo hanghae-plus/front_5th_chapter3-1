@@ -27,7 +27,7 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
 export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
   const mockEvents = [...initEvents];
 
-  return [
+  server.use(
     http.get('/api/events', () => {
       return HttpResponse.json({ events: mockEvents }, { status: 200 });
     }),
@@ -40,14 +40,14 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
       }
       mockEvents[eventIndex] = updatedEvent;
       return HttpResponse.json({ success: true }, { status: 200 });
-    }),
-  ];
+    })
+  );
 };
 
 export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
   const mockEvents = [...initEvents];
 
-  return [
+  server.use(
     http.get('/api/events', () => {
       return HttpResponse.json({ events: mockEvents }, { status: 200 });
     }),
@@ -60,6 +60,6 @@ export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
       }
       mockEvents.splice(eventIndex, 1);
       return HttpResponse.json({ success: true }, { status: 200 });
-    }),
-  ];
+    })
+  );
 };

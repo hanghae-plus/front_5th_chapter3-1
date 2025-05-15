@@ -136,7 +136,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
 });
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
-  server.use(...setupMockHandlerUpdating(events as Event[]));
+  setupMockHandlerUpdating(events as Event[]);
   const { result } = renderHook(() => useEventOperations(true));
 
   const originalEvent = events[0] as Event;
@@ -165,7 +165,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
 });
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
-  server.use(...setupMockHandlerDeletion(events as Event[]));
+  setupMockHandlerDeletion(events as Event[]);
   const { result } = renderHook(() => useEventOperations(false));
 
   act(() => {
@@ -203,7 +203,7 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
 });
 
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
-  server.use(...setupMockHandlerUpdating(events as Event[]));
+  setupMockHandlerUpdating(events as Event[]);
   const { result } = renderHook(() => useEventOperations(true));
 
   const event = events[0] as Event;
