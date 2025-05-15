@@ -136,13 +136,11 @@ describe('getFilteredEvents', () => {
 
   it('검색어가 없을 때 모든 이벤트를 반환한다', () => {
     const filteredEvents = getFilteredEvents(mockEvents, '', mockDate2, 'month');
-    console.log(filteredEvents);
     expect(filteredEvents.length).toBe(6);
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
     const filteredEvents = getFilteredEvents(mockEvents, 'sametitle', mockDate2, 'month');
-    console.log(filteredEvents);
     expect(filteredEvents.length).toBe(2);
   });
 

@@ -7,6 +7,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
   const toast = useToast();
 
+  /**
+   * @description events를 fetch하고 setEvents로 이벤트를 설정합니다.
+   */
   const fetchEvents = async () => {
     try {
       const response = await fetch('/api/events');
@@ -26,6 +29,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     }
   };
 
+  /**
+   * @description
+   */
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
       let response;
@@ -48,6 +54,10 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       }
 
       await fetchEvents();
+
+      //타입: onSave?: () => void
+      //형태: const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+      //호출: () => setEditingEvent(null);
       onSave?.();
       toast({
         title: editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',

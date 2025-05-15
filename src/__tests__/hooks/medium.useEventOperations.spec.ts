@@ -10,9 +10,13 @@ import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 
-it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {});
+it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  //events의 초기값을 확인한다.
+});
 
-it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {});
+it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  //saveEvent검증, eventData로 이벤트를 넘기면 put이나 post가 동작하는지 확인
+});
 
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
 
