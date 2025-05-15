@@ -1,18 +1,6 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
+import { BellIcon } from '@chakra-ui/icons';
 import {
   Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
@@ -24,7 +12,6 @@ import {
   FormLabel,
   Heading,
   HStack,
-  IconButton,
   Input,
   Select,
   Table,
@@ -40,12 +27,18 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
+import { EventItem } from './components/EventItem.tsx';
+import { RepeatSettingFrom } from './components/RepeatSettingFrom.tsx';
+import { ScheduleCalendar } from './components/ScheduleCalendar.tsx';
+import { SearchInput } from './components/SearchInput.tsx';
+import { WarningAlert } from './components/WarningAlert.tsx';
+import { categories, notificationOptions, weekDays } from './constant/index.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { Event, EventForm } from './types';
 import {
   formatDate,
   formatMonth,
@@ -56,18 +49,6 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
@@ -377,39 +358,14 @@ function App() {
           </FormControl>
 
           {isRepeating && (
-            <VStack width="100%">
-              <FormControl>
-                <FormLabel>반복 유형</FormLabel>
-                <Select
-                  value={repeatType}
-                  onChange={(e) => setRepeatType(e.target.value as RepeatType)}
-                >
-                  <option value="daily">매일</option>
-                  <option value="weekly">매주</option>
-                  <option value="monthly">매월</option>
-                  <option value="yearly">매년</option>
-                </Select>
-              </FormControl>
-              <HStack width="100%">
-                <FormControl>
-                  <FormLabel>반복 간격</FormLabel>
-                  <Input
-                    type="number"
-                    value={repeatInterval}
-                    onChange={(e) => setRepeatInterval(Number(e.target.value))}
-                    min={1}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>반복 종료일</FormLabel>
-                  <Input
-                    type="date"
-                    value={repeatEndDate}
-                    onChange={(e) => setRepeatEndDate(e.target.value)}
-                  />
-                </FormControl>
-              </HStack>
-            </VStack>
+            <RepeatSettingFrom
+              repeatType={repeatType}
+              setRepeatType={setRepeatType}
+              repeatInterval={repeatInterval}
+              setRepeatInterval={setRepeatInterval}
+              repeatEndDate={repeatEndDate}
+              setRepeatEndDate={setRepeatEndDate}
+            />
           )}
 
           <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
@@ -417,160 +373,60 @@ function App() {
           </Button>
         </VStack>
 
-        <VStack flex={1} spacing={5} align="stretch">
-          <Heading>일정 보기</Heading>
-
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
-
-          {view === 'week' && renderWeekView()}
-          {view === 'month' && renderMonthView()}
-        </VStack>
+        <ScheduleCalendar
+          view={view}
+          setView={setView}
+          navigate={navigate}
+          renderWeekView={renderWeekView}
+          renderMonthView={renderMonthView}
+        />
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-          <FormControl>
-            <FormLabel>일정 검색</FormLabel>
-            <Input
-              placeholder="검색어를 입력하세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </FormControl>
+          <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
           {filteredEvents.length === 0 ? (
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
               <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
-                <HStack justifyContent="space-between">
-                  <VStack align="start">
-                    <HStack>
-                      {notifiedEvents.includes(event.id) && <BellIcon color="red.500" />}
-                      <Text
-                        fontWeight={notifiedEvents.includes(event.id) ? 'bold' : 'normal'}
-                        color={notifiedEvents.includes(event.id) ? 'red.500' : 'inherit'}
-                      >
-                        {event.title}
-                      </Text>
-                    </HStack>
-                    <Text>{event.date}</Text>
-                    <Text>
-                      {event.startTime} - {event.endTime}
-                    </Text>
-                    <Text>{event.description}</Text>
-                    <Text>{event.location}</Text>
-                    <Text>카테고리: {event.category}</Text>
-                    {event.repeat.type !== 'none' && (
-                      <Text>
-                        반복: {event.repeat.interval}
-                        {event.repeat.type === 'daily' && '일'}
-                        {event.repeat.type === 'weekly' && '주'}
-                        {event.repeat.type === 'monthly' && '월'}
-                        {event.repeat.type === 'yearly' && '년'}
-                        마다
-                        {event.repeat.endDate && ` (종료: ${event.repeat.endDate})`}
-                      </Text>
-                    )}
-                    <Text>
-                      알림:{' '}
-                      {
-                        notificationOptions.find(
-                          (option) => option.value === event.notificationTime
-                        )?.label
-                      }
-                    </Text>
-                  </VStack>
-                  <HStack>
-                    <IconButton
-                      aria-label="Edit event"
-                      icon={<EditIcon />}
-                      onClick={() => editEvent(event)}
-                    />
-                    <IconButton
-                      aria-label="Delete event"
-                      icon={<DeleteIcon />}
-                      onClick={() => deleteEvent(event.id)}
-                    />
-                  </HStack>
-                </HStack>
+                <EventItem
+                  event={event}
+                  notifiedEvents={notifiedEvents}
+                  deleteEvent={deleteEvent}
+                  editEvent={editEvent}
+                />
               </Box>
             ))
           )}
         </VStack>
       </Flex>
 
-      <AlertDialog
-        isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              일정 겹침 경고
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              다음 일정과 겹칩니다:
-              {overlappingEvents.map((event) => (
-                <Text key={event.id}>
-                  {event.title} ({event.date} {event.startTime}-{event.endTime})
-                </Text>
-              ))}
-              계속 진행하시겠습니까?
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
-                취소
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setIsOverlapDialogOpen(false);
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
-                }}
-                ml={3}
-              >
-                계속 진행
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {isOverlapDialogOpen && (
+        <WarningAlert
+          isOverlapDialogOpen={isOverlapDialogOpen}
+          cancelRef={cancelRef}
+          setIsOverlapDialogOpen={setIsOverlapDialogOpen}
+          overlappingEvents={overlappingEvents}
+          saveEvent={() =>
+            saveEvent({
+              id: editingEvent ? editingEvent.id : undefined,
+              title,
+              date,
+              startTime,
+              endTime,
+              description,
+              location,
+              category,
+              repeat: {
+                type: isRepeating ? repeatType : 'none',
+                interval: repeatInterval,
+                endDate: repeatEndDate || undefined,
+              },
+              notificationTime,
+            })
+          }
+        />
+      )}
 
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">

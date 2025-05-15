@@ -3,6 +3,8 @@ import { Event } from '../types';
 const 초 = 1000;
 const 분 = 초 * 60;
 
+type NotificationMessageType = Pick<Event, 'notificationTime' | 'title'>;
+
 export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: string[]) {
   return events.filter((event) => {
     const eventStart = new Date(`${event.date}T${event.startTime}`);
@@ -11,6 +13,6 @@ export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: st
   });
 }
 
-export function createNotificationMessage({ notificationTime, title }: Event) {
+export function createNotificationMessage({ notificationTime, title }: NotificationMessageType) {
   return `${notificationTime}분 후 ${title} 일정이 시작됩니다.`;
 }
