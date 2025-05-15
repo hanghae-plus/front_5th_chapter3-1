@@ -1,4 +1,3 @@
-// src/__tests__/components/advanced.eventView.spec.tsx
 import { ChakraProvider } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
