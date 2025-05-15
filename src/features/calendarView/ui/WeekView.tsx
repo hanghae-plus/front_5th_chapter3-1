@@ -13,8 +13,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { getWeekDates } from '@/shared/lib/dateUtils';
 import { Event } from '@/types';
-import { getWeekDates } from '@/utils/dateUtils';
 
 type Props = {
   currentDate: Date;

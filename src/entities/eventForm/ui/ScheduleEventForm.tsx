@@ -12,8 +12,8 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 
+import { getTimeErrorMessage } from '@/shared/lib/timeValidation';
 import { RepeatType } from '@/types';
-import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 type Props = {
   formState: {

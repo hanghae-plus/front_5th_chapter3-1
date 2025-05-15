@@ -1,5 +1,5 @@
 import { Event } from '../../types';
-import { getFilteredEvents } from '../../utils/eventUtils';
+import { getFilteredEvents } from '../../shared/lib/eventUtils';
 
 describe('getFilteredEvents', () => {
   const events: Event[] = [

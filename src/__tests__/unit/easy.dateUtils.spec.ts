@@ -9,7 +9,7 @@ import {
   getWeekDates,
   getWeeksAtMonth,
   isDateInRange,
-} from '../../utils/dateUtils';
+} from '../../shared/lib/dateUtils';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {

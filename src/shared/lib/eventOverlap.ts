@@ -1,4 +1,4 @@
-import { Event, EventForm } from '../types';
+import { Event, EventForm } from '../../types';
 
 /**
  * Date 객체로 변환

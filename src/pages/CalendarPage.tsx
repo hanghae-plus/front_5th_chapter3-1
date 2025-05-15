@@ -24,8 +24,8 @@ import { useEventForm } from '../hooks/useEventForm.ts';
 import { useEventOperations } from '../hooks/useEventOperations.ts';
 import { useNotifications } from '../hooks/useNotifications.ts';
 import { useSearch } from '../hooks/useSearch.ts';
+import { findOverlappingEvents } from '../shared/lib/eventOverlap.ts';
 import { Event, EventForm } from '../types.ts';
-import { findOverlappingEvents } from '../utils/eventOverlap.ts';
 
 import EventList from '@/entities/event/ui/EventList.tsx';
 import ScheduleEventForm from '@/entities/eventForm/ui/ScheduleEventForm.tsx';

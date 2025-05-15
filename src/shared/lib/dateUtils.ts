@@ -1,4 +1,4 @@
-import { Event } from '../types.ts';
+import { Event } from '../../types.ts';
 
 /**
  * 주어진 년도와 월의 일수를 반환합니다.
@@ -26,6 +26,13 @@ export function getWeekDates(date: Date): Date[] {
   return weekDates;
 }
 
+function createWeekArray(): Array<number | null> {
+  return Array(7).fill(null);
+}
+function calculateWeekIndex(firstDayOfMonth: number, day: number) {
+  return (firstDayOfMonth + day - 1) % 7;
+}
+
 /**
  * 주어진 날짜가 속한 월의 모든 주의 날짜를 반환합니다.
  * @param currentDate
@@ -34,26 +41,24 @@ export function getWeekDates(date: Date): Date[] {
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
-
   const daysInMonth = getDaysInMonth(year, month + 1);
   const firstDayOfMonth = new Date(year, month, 1).getDay();
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-  const weeks = [];
 
-  const initWeek = () => Array(7).fill(null);
+  const weeks: Array<Array<number | null>> = [];
 
-  let week: Array<number | null> = initWeek();
+  let week = createWeekArray(); // ✅ 호출 시마다 새 배열 생성
 
   for (let i = 0; i < firstDayOfMonth; i++) {
     week[i] = null;
   }
 
   for (const day of days) {
-    const dayIndex = (firstDayOfMonth + day - 1) % 7;
+    const dayIndex = calculateWeekIndex(firstDayOfMonth, day);
     week[dayIndex] = day;
     if (dayIndex === 6 || day === daysInMonth) {
       weeks.push(week);
-      week = initWeek();
+      week = createWeekArray(); // ❗️새로운 배열을 만들어야 함
     }
   }
 

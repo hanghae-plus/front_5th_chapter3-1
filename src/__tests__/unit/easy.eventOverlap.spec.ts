@@ -4,7 +4,7 @@ import {
   findOverlappingEvents,
   isOverlapping,
   parseDateTime,
-} from '../../utils/eventOverlap';
+} from '../../shared/lib/eventOverlap';
 
 describe('parseDateTime', () => {
   const date = '2025-07-01';

@@ -13,8 +13,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/shared/lib/dateUtils';
 import { Event } from '@/types';
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '@/utils/dateUtils';
 
 type Props = {
   currentDate: Date;
