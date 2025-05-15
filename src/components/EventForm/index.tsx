@@ -9,6 +9,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { ChangeEvent } from 'react';
 
 import { RepeatType } from '../../types';
 
@@ -47,10 +48,20 @@ interface EventFormProps {
   errors: EventFormErrors;
   isEditing: boolean;
   onChange: <K extends keyof EventFormState>(field: K, value: EventFormState[K]) => void;
+  onStartTime: (e: ChangeEvent<HTMLInputElement>) => void;
+  onEndTime: (e: ChangeEvent<HTMLInputElement>) => void;
   onSubmit: () => void;
 }
 
-export const EventForm = ({ form, errors, isEditing, onChange, onSubmit }: EventFormProps) => {
+export const EventForm = ({
+  form,
+  errors,
+  isEditing,
+  onChange,
+  onSubmit,
+  onStartTime,
+  onEndTime,
+}: EventFormProps) => {
   const {
     title,
     date,
@@ -85,7 +96,7 @@ export const EventForm = ({ form, errors, isEditing, onChange, onSubmit }: Event
             <Input
               type="time"
               value={startTime}
-              onChange={(e) => onChange('startTime', e.target.value)}
+              onChange={onStartTime}
               isInvalid={!!errors.startTimeError}
             />
           </Tooltip>
@@ -96,7 +107,7 @@ export const EventForm = ({ form, errors, isEditing, onChange, onSubmit }: Event
             <Input
               type="time"
               value={endTime}
-              onChange={(e) => onChange('endTime', e.target.value)}
+              onChange={onEndTime}
               isInvalid={!!errors.endTimeError}
             />
           </Tooltip>

@@ -157,6 +157,8 @@ function App() {
             errors={{ startTimeError, endTimeError } as EventFormErrors}
             isEditing={!!editingEvent}
             onChange={handleFormChange}
+            onStartTime={handleStartTimeChange}
+            onEndTime={handleEndTimeChange}
             onSubmit={addOrUpdateEvent}
           />
         </Box>
