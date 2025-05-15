@@ -5,12 +5,10 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import { events } from '../__mocks__/response/events.json';
-import { server } from '../setupTests';
 import { Event } from '../types';
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
 const setup = (element: ReactElement) => {
