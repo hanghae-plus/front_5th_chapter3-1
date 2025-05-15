@@ -52,8 +52,8 @@ import {
   getWeeksAtMonth,
 } from './utils/dateUtils';
 
-import {EventFormWidget} from "./components/EventForm.tsx"
-import {weekDays, notificationOptions} from './constants.ts'
+import { EventFormWidget } from './components/EventForm.tsx';
+import { weekDays, notificationOptions } from './constants.ts';
 
 function App() {
   const {
@@ -72,6 +72,21 @@ function App() {
     editingEvent,
     setEditingEvent,
     editEvent,
+    setTitle,
+    setDate,
+    setDescription,
+    setLocation,
+    setCategory,
+    setIsRepeating,
+    setRepeatType,
+    setRepeatInterval,
+    setRepeatEndDate,
+    setNotificationTime,
+    startTimeError,
+    endTimeError,
+    resetForm,
+    handleStartTimeChange,
+    handleEndTimeChange,
   } = useEventForm();
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
@@ -85,10 +100,6 @@ function App() {
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);
-
-  
-
-  
 
   const renderWeekView = () => {
     const weekDates = getWeekDates(currentDate);
@@ -218,7 +229,35 @@ function App() {
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
-        <EventFormWidget 
+        <EventFormWidget
+          title={title}
+          setTitle={setTitle}
+          date={date}
+          setDate={setDate}
+          startTime={startTime}
+          endTime={endTime}
+          description={description}
+          setDescription={setDescription}
+          location={location}
+          setLocation={setLocation}
+          category={category}
+          setCategory={setCategory}
+          isRepeating={isRepeating}
+          setIsRepeating={setIsRepeating}
+          repeatType={repeatType}
+          setRepeatType={setRepeatType}
+          repeatInterval={repeatInterval}
+          setRepeatInterval={setRepeatInterval}
+          repeatEndDate={repeatEndDate}
+          setRepeatEndDate={setRepeatEndDate}
+          notificationTime={notificationTime}
+          setNotificationTime={setNotificationTime}
+          startTimeError={startTimeError}
+          endTimeError={endTimeError}
+          editingEvent={editingEvent}
+          resetForm={resetForm}
+          handleStartTimeChange={handleStartTimeChange}
+          handleEndTimeChange={handleEndTimeChange}
           setOverlappingEvents={setOverlappingEvents}
           setIsOverlapDialogOpen={setIsOverlapDialogOpen}
           events={events}
