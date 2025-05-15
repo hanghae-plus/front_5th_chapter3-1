@@ -10,9 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 
-import { useDialog } from '@/hooks/useDialog';
-import { useEventForm } from '@/hooks/useEventForm.ts';
-import { useEventOperations } from '@/hooks/useEventOperations.ts';
+import { useDialogContext, useEventFormContext, useEventOperationsContext } from '@/hooks/contexts';
 
 export const AlertEventDialog = () => {
   const {
@@ -29,12 +27,11 @@ export const AlertEventDialog = () => {
     repeatEndDate,
     notificationTime,
     editingEvent,
-    setEditingEvent,
-  } = useEventForm();
+  } = useEventFormContext();
 
-  const { saveEvent } = useEventOperations(Boolean(editingEvent), () => setEditingEvent(null));
+  const { saveEvent } = useEventOperationsContext();
 
-  const { isOverlapDialogOpen, setIsOverlapDialogOpen, overlappingEvents } = useDialog();
+  const { isOverlapDialogOpen, setIsOverlapDialogOpen, overlappingEvents } = useDialogContext();
 
   const cancelRef = useRef<HTMLButtonElement>(null);
 

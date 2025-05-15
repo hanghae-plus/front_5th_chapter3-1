@@ -3,10 +3,10 @@ import { Heading, HStack, IconButton, Select, VStack } from '@chakra-ui/react';
 
 import { MonthView } from '@/components/calendar/month-view';
 import { WeekView } from '@/components/calendar/week-view';
-import { useCalendarView } from '@/hooks/useCalendarView.ts';
+import { useCalendarViewContext } from '@/hooks/contexts';
 
 export const Calendar = () => {
-  const { view, setView, navigate } = useCalendarView();
+  const { view, setView, navigate } = useCalendarViewContext();
 
   return (
     <VStack flex={1} spacing={5} align="stretch">

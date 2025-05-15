@@ -11,22 +11,20 @@ import {
 } from '@chakra-ui/react';
 
 import { NOTIFICATION_OPTIONS } from '@/config/constants';
-import { useCalendarView } from '@/hooks/useCalendarView.ts';
-import { useEventForm } from '@/hooks/useEventForm.ts';
-import { useEventOperations } from '@/hooks/useEventOperations.ts';
-import { useNotifications } from '@/hooks/useNotifications.ts';
-import { useSearch } from '@/hooks/useSearch.ts';
+import {
+  useEventFormContext,
+  useEventOperationsContext,
+  useNotificationsContext,
+  useSearchContext,
+} from '@/hooks/contexts';
 
 export const EventSearch = () => {
-  const { editingEvent, setEditingEvent, editEvent } = useEventForm();
+  const { editEvent } = useEventFormContext();
 
-  const { events, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
-    setEditingEvent(null)
-  );
+  const { deleteEvent } = useEventOperationsContext();
 
-  const { notifiedEvents } = useNotifications(events);
-  const { view, currentDate } = useCalendarView();
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
+  const { notifiedEvents } = useNotificationsContext();
+  const { searchTerm, filteredEvents, setSearchTerm } = useSearchContext();
 
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">

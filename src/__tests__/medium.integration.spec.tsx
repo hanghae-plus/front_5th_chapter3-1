@@ -8,6 +8,7 @@ import {
   setupMockHandlerUpdating,
 } from '@/__mocks__/handlersUtils';
 import App from '@/App';
+import { Providers } from '@/components/providers';
 import { server } from '@/setupTests';
 import type { Event } from '@/types';
 waitFor;
@@ -23,7 +24,9 @@ beforeEach(() => {
 const renderApp = () => {
   return render(
     <ChakraProvider>
-      <App />
+      <Providers>
+        <App />
+      </Providers>
     </ChakraProvider>
   );
 };

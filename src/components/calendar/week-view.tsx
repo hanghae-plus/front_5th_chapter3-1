@@ -14,21 +14,17 @@ import {
 } from '@chakra-ui/react';
 
 import { WEEK_DAYS } from '@/config/constants';
-import { useCalendarView } from '@/hooks/useCalendarView.ts';
-import { useEventForm } from '@/hooks/useEventForm.ts';
-import { useEventOperations } from '@/hooks/useEventOperations.ts';
-import { useNotifications } from '@/hooks/useNotifications.ts';
-import { useSearch } from '@/hooks/useSearch.ts';
+import {
+  useCalendarViewContext,
+  useNotificationsContext,
+  useSearchContext,
+} from '@/hooks/contexts';
 import { formatWeek, getWeekDates } from '@/utils/dateUtils';
 
 export const WeekView = () => {
-  const { editingEvent, setEditingEvent } = useEventForm();
-
-  const { events } = useEventOperations(Boolean(editingEvent), () => setEditingEvent(null));
-
-  const { notifiedEvents } = useNotifications(events);
-  const { view, currentDate } = useCalendarView();
-  const { filteredEvents } = useSearch(events, currentDate, view);
+  const { notifiedEvents } = useNotificationsContext();
+  const { currentDate } = useCalendarViewContext();
+  const { filteredEvents } = useSearchContext();
 
   const weekDates = getWeekDates(currentDate);
   return (
