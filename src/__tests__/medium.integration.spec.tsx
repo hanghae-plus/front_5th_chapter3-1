@@ -84,8 +84,8 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    setupMockHandlerCreation();
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation());
     render(
       <ChakraProvider>
         <App />
@@ -120,8 +120,8 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    const user = userEvent.setup();
     server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
+    const user = userEvent.setup();
     render(
       <ChakraProvider>
         <App />
@@ -182,7 +182,7 @@ describe('일정 뷰', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -204,7 +204,7 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     vi.setSystemTime('2025-05-20');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -221,7 +221,7 @@ describe('일정 뷰', () => {
   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
     vi.setSystemTime('2025-04-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -237,7 +237,7 @@ describe('일정 뷰', () => {
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -254,7 +254,7 @@ describe('일정 뷰', () => {
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
     vi.setSystemTime('2025-01-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -277,7 +277,7 @@ describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -294,7 +294,7 @@ describe('검색 기능', () => {
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -311,7 +311,7 @@ describe('검색 기능', () => {
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -349,7 +349,7 @@ describe('일정 충돌', () => {
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
-    server.use(...setupMockHandlerCreation(MOCK_EVENTS));
+    setupMockHandlerCreation(MOCK_EVENTS);
     render(
       <ChakraProvider>
         <App />
@@ -423,7 +423,7 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   vi.setSystemTime('2025-05-01');
 
   const user = userEvent.setup();
-  server.use(...setupMockHandlerCreation());
+  setupMockHandlerCreation();
   render(
     <ChakraProvider>
       <App />
