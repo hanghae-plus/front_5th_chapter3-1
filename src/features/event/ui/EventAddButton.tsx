@@ -1,8 +1,8 @@
 import { Button } from '@chakra-ui/react';
 
 import { useDialogStore } from '../../../based/store/DialogStore';
-import { EventFormState } from '../model/useEventFormStateAndActions';
 import { Event, EventForm } from '../../../types';
+import { EventFormState } from '../model/useEventFormStateAndActions';
 
 export const EventAddButton = ({
   formState,

@@ -3,8 +3,8 @@ import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 
 import { notificationOptions } from '../../../based/constants/notificationOptions';
 import { EventDeleteButton, EventEditButton } from '../../../features/event';
-import { Event } from '../../../types';
 import { EventSearchInput } from '../../../features/event/ui/EventSearchInput';
+import { Event } from '../../../types';
 
 export const EventList = ({
   searchTerm,
@@ -13,7 +13,7 @@ export const EventList = ({
   notifiedEvents,
   onEdit,
   onDelete,
-}: {  
+}: {
   searchTerm: string;
   onSearch: (searchTerm: string) => void;
   filteredEvents: Event[];

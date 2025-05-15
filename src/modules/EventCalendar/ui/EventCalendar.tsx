@@ -3,8 +3,10 @@ import { Heading, Select, IconButton, HStack, VStack } from '@chakra-ui/react';
 
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
-import { CalendarViewActions } from '../../../features/event/model/useCalendarViewStateAndActions';
-import { CalendarViewState } from '../../../features/event/model/useCalendarViewStateAndActions';
+import {
+  CalendarViewActions,
+  CalendarViewState,
+} from '../../../features/event/model/useCalendarViewStateAndActions';
 
 export const EventCalendar = ({
   viewState,

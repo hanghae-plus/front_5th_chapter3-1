@@ -1,5 +1,6 @@
 import { EditIcon } from '@chakra-ui/icons';
 import { IconButton } from '@chakra-ui/react';
+
 import { Event } from '../../../types';
 
 export const EventEditButton = ({

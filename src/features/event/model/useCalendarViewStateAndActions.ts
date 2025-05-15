@@ -35,5 +35,3 @@ export interface CalendarViewActions {
   navigate: (direction: 'prev' | 'next') => void;
   setSearchTerm: (searchTerm: string) => void;
 }
-
-

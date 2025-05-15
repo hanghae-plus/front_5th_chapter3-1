@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "server": "node server.js",
     "server:watch": "node --watch server.js",
     "start": "vite",
@@ -12,7 +13,8 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "format:all": "pnpm format && pnpm lint"
   },
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -53,5 +55,6 @@
     "vite": "^5.3.1",
     "vite-plugin-eslint": "^1.8.1",
     "vitest": "^2.0.2"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }

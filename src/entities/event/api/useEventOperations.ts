@@ -1,6 +1,7 @@
 import { useToast } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+
 import { Event, EventForm } from '../../../types';
 
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
@@ -24,14 +25,13 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
-      let response;
       if (editing) {
-        response = await axios.put(`/api/events/${(eventData as Event).id}`, eventData, {
-          headers: { 'Content-Type': 'application/json' }
+        await axios.put(`/api/events/${(eventData as Event).id}`, eventData, {
+          headers: { 'Content-Type': 'application/json' },
         });
       } else {
-        response = await axios.post('/api/events', eventData, {
-          headers: { 'Content-Type': 'application/json' }
+        await axios.post('/api/events', eventData, {
+          headers: { 'Content-Type': 'application/json' },
         });
       }
 
@@ -57,7 +57,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const deleteEvent = async (id: string) => {
     try {
       await axios.delete(`/api/events/${id}`, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
 
       await fetchEvents();
