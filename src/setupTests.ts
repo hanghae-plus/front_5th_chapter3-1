@@ -10,7 +10,7 @@ vi.stubEnv('TZ', 'UTC'); // 타임존 문제 전체 처리
 
 beforeAll(() => {
   server.listen();
-  vi.useFakeTimers(); // useCalendarView 테스트 시 2025-10-01 고정
+  vi.useFakeTimers({ shouldAdvanceTime: true }); // useCalendarView 테스트 시 2025-10-01 고정
 });
 
 beforeEach(() => {
