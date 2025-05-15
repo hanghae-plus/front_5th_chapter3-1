@@ -17,7 +17,6 @@ describe('fetchHolidays', () => {
     expect(result).toEqual({});
   });
 
-  // TODO: 이건 왜 있는거지 주어진 월의 공휴일만 반환한다랑 겹치는것 같은데.
   it('여러 공휴일이 있는 월에 대해 모든 공휴일을 반환한다', () => {
     const result = fetchHolidays(new Date('2025-10-01'));
 

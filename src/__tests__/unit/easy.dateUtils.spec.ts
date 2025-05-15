@@ -302,7 +302,6 @@ describe('주어진 날짜에 대한 x년 x월 x주 정보를 반환합니다 (f
     const currentDate = new Date('2026-01-01');
     const result = formatWeek(currentDate);
 
-    // TODO: 이거 2025년 12월 5주차 인것 같은데 왜이렇게 나오는지 이해 불가.
     expect(result).toBe('2026년 1월 1주');
   });
 

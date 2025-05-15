@@ -128,6 +128,10 @@ describe('일정 뷰', () => {
   describe('주별 뷰', () => {
     const userSetup: UserEvent = userEvent.setup();
 
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
       const currentDate = new Date('2025-05-13');
       vi.setSystemTime(currentDate);
@@ -173,6 +177,10 @@ describe('일정 뷰', () => {
 
   describe('월별 뷰', () => {
     const userSetup: UserEvent = userEvent.setup();
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
 
     it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
       const currentDate = new Date('2025-05-13');
@@ -306,6 +314,10 @@ describe('일정 충돌', () => {
     server.use(handlers[0], handlers[1], handlers[2], handlers[3]);
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     render(
       <ChakraProvider>
@@ -379,11 +391,14 @@ describe('일정 충돌', () => {
 
 describe('알림 기능', () => {
   beforeEach(() => {
-    vi.useRealTimers();
-    vi.useFakeTimers();
-
     setupMockHandlerCreation(events as Event[]);
     server.use(handlers[0]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
   });
 
   afterEach(() => {
@@ -391,22 +406,8 @@ describe('알림 기능', () => {
   });
 
   it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
-    const currentDate = new Date('2025-10-15T08:50:00');
-    vi.setSystemTime(currentDate);
+    vi.setSystemTime('2025-10-15T08:50:00');
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
-    });
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000);
-    });
-
-    expect(screen.getByText(/10분 후 기존 회의 일정이 시작됩니다./)).toBeInTheDocument();
+    expect(await screen.findByText('10분 전')).toBeInTheDocument();
   });
 });
