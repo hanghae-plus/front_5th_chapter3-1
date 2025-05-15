@@ -1,7 +1,8 @@
-import { server } from '../setupTests';
-import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
-import { Event } from '../types';
 import { http, HttpResponse } from 'msw';
+
+import { events } from '@/__mocks__/response/events.json' assert { type: 'json' };
+import { server } from '@/setupTests';
+import { Event } from '@/types';
 
 export const setupMockHandlerCreation = (initEvents = events as Event[]) => {
   const mockEvents: Event[] = [...initEvents];
@@ -20,8 +21,7 @@ export const setupMockHandlerCreation = (initEvents = events as Event[]) => {
 };
 
 export const setupMockHandlerUpdating = (initEvents = events as Event[]) => {
-    const mockEvents: Event[] = [...initEvents];
-
+  const mockEvents: Event[] = [...initEvents];
 
   server.use(
     http.get('/api/events', () => {
