@@ -19,8 +19,8 @@ import { getTimeErrorMessage } from '../utils/timeValidation';
 
 interface EventFormProps {
   events: Event[];
-  saveEvent: (event: Event | EventForm) => Promise<void>;
-  checkOverlap: (eventData: Event | EventForm, events: Event[]) => boolean;
+  saveEvent: (_event: Event | EventForm) => Promise<void>;
+  checkOverlap: (_eventData: Event | EventForm, _events: Event[]) => boolean;
 }
 
 const EventFormComponent = ({ events, saveEvent, checkOverlap }: EventFormProps) => {

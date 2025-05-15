@@ -17,7 +17,7 @@ interface OverlapAlertDialogProps {
   isOpen: boolean;
   onClose: () => void;
   cancelRef: RefObject<HTMLButtonElement>;
-  saveEvent: (event: Event | EventForm) => void;
+  saveEvent: (_event: Event | EventForm) => void;
   editingEvent: Event | null;
   overlappingEvents: Event[];
 }

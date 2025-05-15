@@ -18,8 +18,8 @@ export interface EventListProps {
   notifiedEvents: string[];
   filteredEvents: Event[];
   searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  deleteEvent: (eventId: string) => void;
+  setSearchTerm: (_term: string) => void;
+  deleteEvent: (_eventId: string) => void;
 }
 
 const EventList = ({

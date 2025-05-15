@@ -1,5 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 
 import { Calendar } from '../components/calendar';
 import EventFormComponent from '../components/EventForm.tsx';

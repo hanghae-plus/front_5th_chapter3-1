@@ -9,10 +9,10 @@ interface CalendarProps {
   filteredEvents: Event[];
   notifiedEvents: string[];
   view: 'week' | 'month';
-  setView: (view: 'week' | 'month') => void;
+  setView: (_view: 'week' | 'month') => void;
   currentDate: Date;
   holidays: Record<string, string>;
-  navigate: (direction: 'prev' | 'next') => void;
+  navigate: (_direction: 'prev' | 'next') => void;
 }
 
 export const Calendar = ({

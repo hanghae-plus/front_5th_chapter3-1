@@ -67,8 +67,8 @@ export const useEventForm = () => {
 
   const addOrUpdateEvent = async (
     events: Event[],
-    saveEvent: (event: Event | EventForm) => Promise<void>,
-    checkOverlap: (eventData: Event | EventForm, events: Event[]) => boolean
+    saveEvent: (_event: Event | EventForm) => Promise<void>,
+    checkOverlap: (_eventData: Event | EventForm, _events: Event[]) => boolean
   ) => {
     const {
       title,
