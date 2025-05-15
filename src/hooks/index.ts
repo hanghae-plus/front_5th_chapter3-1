@@ -3,3 +3,4 @@ export * from './useEventForm';
 export * from './useEventOperations';
 export * from './useNotifications';
 export * from './useSearch';
+export * from './useDialog';

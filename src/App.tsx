@@ -23,13 +23,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { useRef, useState } from 'react';
 import {
   useCalendarView,
   useEventForm,
   useEventOperations,
   useNotifications,
   useSearch,
+  useDialog,
 } from '@/hooks';
 
 import { Event, EventForm, RepeatType } from '@/types';
@@ -79,9 +79,8 @@ function App() {
   const { view, currentDate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const { isOverlapDialogOpen, overlappingEvents, cancelRef, openDialog, closeDialog } =
+    useDialog();
 
   const toast = useToast({
     duration: 3000,
@@ -124,8 +123,7 @@ function App() {
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();
@@ -344,7 +342,7 @@ function App() {
       <AlertDialog
         isOpen={isOverlapDialogOpen}
         leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
+        onClose={closeDialog}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -363,13 +361,13 @@ function App() {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+              <Button ref={cancelRef} onClick={closeDialog}>
                 취소
               </Button>
               <Button
                 colorScheme="red"
                 onClick={() => {
-                  setIsOverlapDialogOpen(false);
+                  closeDialog();
                   saveEvent({
                     id: editingEvent ? editingEvent.id : undefined,
                     title,
