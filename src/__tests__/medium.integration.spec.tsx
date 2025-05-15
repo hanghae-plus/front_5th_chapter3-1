@@ -334,7 +334,7 @@ describe('일정 충돌', () => {
 
     const warningDialog = within(await screen.findByRole('alertdialog'));
 
-    expect(warningDialog.getByText('일정이 겹칩니다')).toBeInTheDocument();
+    expect(warningDialog.getByText('일정 겹침 경고')).toBeInTheDocument();
     expect(
       warningDialog.getByText('마케팅 전략 회의 (2025-10-15 09:00-10:00)')
     ).toBeInTheDocument();
