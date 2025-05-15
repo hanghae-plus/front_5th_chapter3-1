@@ -184,15 +184,22 @@ describe('일정 뷰', () => {
   });
 
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation([]);
+
     const { user } = setup(<App />);
 
-    await user.selectOptions(screen.getByLabelText('view'), 'month');
+    // 1월로 이동
+    const prevButton = screen.getByRole('button', { name: 'Previous' });
+    for (let i = 0; i < 9; i++) {
+      await user.click(prevButton);
+    }
 
     expect(await screen.findByTestId('month-view')).toBeInTheDocument();
+    const newYearHoliday = screen.findByText('신정');
+    expect(await newYearHoliday).toBeInTheDocument();
+    expect(newYearHoliday).toHaveStyle('color: #E53E3E');
 
-    // const holidayElement = screen.findByText('신정');
-    // expect(await screen.findByText('신정')).toBeInTheDocument();
-    // expect(holidayElement).toHaveStyle('color: #E53E3E');
+    // screen.debug();
   });
 });
 
