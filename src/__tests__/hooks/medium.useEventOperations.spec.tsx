@@ -1,4 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { ReactNode } from 'react';
 
 import {
   setupMockHandlerCreation,
@@ -7,6 +8,8 @@ import {
   setupMockHandlerFetchError,
   setupMockHandlerDeletionError,
 } from '../../__mocks__/handlersUtils.ts';
+import { EventProvider, useEvents } from '../../contexts/EventContext.tsx';
+import { EventFormProvider } from '../../contexts/EventFormContext.tsx';
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
@@ -23,10 +26,22 @@ vi.mock('@chakra-ui/react', async () => {
 
 const events = getTestEvents('integration');
 
+const wrapper = ({ children }: { children: ReactNode }) => (
+  <EventProvider>
+    <EventFormProvider>{children}</EventFormProvider>
+  </EventProvider>
+);
+
+const useEventTest = (isEditing?: boolean) => {
+  const eventContext = useEvents();
+  const operations = useEventOperations(isEditing);
+  return { ...eventContext, ...operations };
+};
+
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
   server.use(...setupMockHandlerCreation(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(false));
+  const { result } = renderHook(() => useEvents(), { wrapper });
 
   await waitFor(() => expect(result.current.events).toHaveLength(5));
 });
@@ -34,7 +49,7 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
   server.use(...setupMockHandlerCreation(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(false));
+  const { result } = renderHook(() => useEventTest(), { wrapper });
 
   await act(async () => {
     await result.current.saveEvent({
@@ -57,7 +72,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
 it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
   server.use(...setupMockHandlerUpdating(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(true));
+  const { result } = renderHook(() => useEventTest(true), { wrapper });
 
   await act(async () => {
     await result.current.saveEvent({
@@ -84,7 +99,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
   server.use(...setupMockHandlerDeletion(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(true));
+  const { result } = renderHook(() => useEventTest(), { wrapper });
 
   act(() => {
     result.current.deleteEvent('2b7545a6-ebee-426c-b906-2329bc8d62bd');
@@ -96,7 +111,7 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
 it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함께 에러 토스트가 표시되어야 한다", async () => {
   server.use(...setupMockHandlerFetchError());
 
-  const { result } = renderHook(() => useEventOperations(false));
+  const { result } = renderHook(() => useEventTest(), { wrapper });
 
   await waitFor(() => expect(result.current.events).toHaveLength(0));
 
@@ -111,7 +126,7 @@ it("이벤트 로딩 실패 시 '이벤트 로딩 실패'라는 텍스트와 함
 it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
   server.use(...setupMockHandlerUpdating(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(true));
+  const { result } = renderHook(() => useEventTest(true), { wrapper });
 
   act(() => {
     result.current.saveEvent({
@@ -141,7 +156,7 @@ it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스
 it("네트워크 오류 시 '일정 삭제 실패'라는 텍스트가 노출되며 이벤트 삭제가 실패해야 한다", async () => {
   server.use(...setupMockHandlerDeletionError(events as Event[]));
 
-  const { result } = renderHook(() => useEventOperations(true));
+  const { result } = renderHook(() => useEventTest(), { wrapper });
 
   await waitFor(() => expect(result.current.events).toHaveLength(5));
   act(() => result.current.deleteEvent('non-existent-event-id'));

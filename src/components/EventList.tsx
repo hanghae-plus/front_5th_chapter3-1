@@ -12,6 +12,7 @@ import {
 import React from 'react';
 
 import { useEventFormContext } from '../contexts/EventFormContext';
+import { useEventOperations } from '../hooks/useEventOperations';
 import { notificationOptions } from '../lib/configs';
 import { Event } from '../types';
 
@@ -20,7 +21,6 @@ interface EventListProps {
   notifiedEvents: string[];
   searchTerm: string;
   onSearchTermChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEventDelete: (id: string) => Promise<void>;
 }
 
 export function EventList({
@@ -28,9 +28,9 @@ export function EventList({
   notifiedEvents,
   searchTerm,
   onSearchTermChange,
-  onEventDelete,
 }: EventListProps) {
   const { editEvent } = useEventFormContext();
+  const { deleteEvent } = useEventOperations();
 
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
@@ -47,7 +47,7 @@ export function EventList({
             event={event}
             notifiedEvents={notifiedEvents}
             onEdit={() => editEvent(event)}
-            onDelete={() => onEventDelete(event.id)}
+            onDelete={() => deleteEvent(event.id)}
           />
         ))
       )}
