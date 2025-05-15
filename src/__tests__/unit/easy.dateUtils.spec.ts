@@ -10,6 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { createTestEvent } from '../helpers/event';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -167,42 +168,27 @@ describe('getWeeksAtMonth', () => {
 
 describe('getEventsForDay', () => {
   const events: Event[] = [
-    {
+    createTestEvent({
       id: '1',
       title: '이벤트 1',
       date: '2025-06-01',
       startTime: '09:00',
       endTime: '10:00',
-      description: '설명 1',
-      location: '장소 1',
-      category: '카테고리 1',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-    {
+    }),
+    createTestEvent({
       id: '2',
       title: '이벤트 2',
       date: '2025-06-15',
       startTime: '14:00',
       endTime: '15:00',
-      description: '설명 2',
-      location: '장소 2',
-      category: '카테고리 2',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 15,
-    },
-    {
+    }),
+    createTestEvent({
       id: '3',
       title: '이벤트 3',
       date: '2025-06-01',
       startTime: '16:00',
       endTime: '17:00',
-      description: '설명 3',
-      location: '장소 3',
-      category: '카테고리 3',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 5,
-    },
+    }),
   ];
 
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
@@ -211,29 +197,33 @@ describe('getEventsForDay', () => {
 
     expect(eventsForDay).toHaveLength(2);
 
-    expect(eventsForDay.at(0)!.id).toBe('1');
-    expect(eventsForDay.at(1)!.id).toBe('3');
+    expect(eventsForDay).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: '1' }),
+        expect.objectContaining({ id: '3' }),
+      ])
+    );
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
     const day = 2;
     const eventsForDay = getEventsForDay(events, day);
 
-    expect(eventsForDay).toHaveLength(0);
+    expect(eventsForDay).toEqual([]);
   });
 
   it('날짜가 0일 경우 빈 배열을 반환한다', () => {
     const day = 0;
     const eventsForDay = getEventsForDay(events, day);
 
-    expect(eventsForDay).toHaveLength(0);
+    expect(eventsForDay).toEqual([]);
   });
 
   it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
     const day = 32;
     const eventsForDay = getEventsForDay(events, day);
 
-    expect(eventsForDay).toHaveLength(0);
+    expect(eventsForDay).toEqual([]);
   });
 });
 
@@ -382,21 +372,25 @@ describe('fillZero', () => {
 describe('formatDate', () => {
   it('날짜를 YYYY-MM-DD 형식으로 포맷팅한다', () => {
     const date = new Date('2025-07-10');
+
     expect(formatDate(date)).toBe('2025-07-10');
   });
 
   it('day 파라미터가 제공되면 해당 일자로 포맷팅한다', () => {
     const date = new Date('2025-07-10');
+
     expect(formatDate(date, 1)).toBe('2025-07-01');
   });
 
   it('월이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
     const date = new Date('2025-7-10');
+
     expect(formatDate(date)).toBe('2025-07-10');
   });
 
   it('일이 한 자리 수일 때 앞에 0을 붙여 포맷팅한다', () => {
     const date = new Date('2025-07-1');
+
     expect(formatDate(date)).toBe('2025-07-01');
   });
 });
