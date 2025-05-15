@@ -512,3 +512,143 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   // 실제 UI는 '알림: 10분 전' 형태로 표시함
   expect(await within(eventList as HTMLElement).findByText(/알림: 10분 전/)).toBeInTheDocument();
 });
+
+describe('AddEventWidget 통합', () => {
+  beforeEach(() => {
+    setupMockHandlerCreation([]); // 초기 이벤트 없음
+  });
+
+  it('새 일정을 정상적으로 추가하면 리스트에 반영된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 오늘 날짜
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 입력
+    await userEvent.type(screen.getByLabelText('제목'), '통합테스트 일정');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '09:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.type(screen.getByLabelText('설명'), '설명입니다');
+    await userEvent.type(screen.getByLabelText('위치'), '회의실');
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await userEvent.selectOptions(screen.getByLabelText('알림 설정'), '10');
+
+    // 저장
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    // 리스트에 반영됐는지 확인
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList).findByText('통합테스트 일정')).toBeInTheDocument();
+    expect(within(eventList).getByText('설명입니다')).toBeInTheDocument();
+    expect(within(eventList).getByText('회의실')).toBeInTheDocument();
+    expect(within(eventList).getByText(/09:00/)).toBeInTheDocument();
+    expect(within(eventList).getByText(/10:00/)).toBeInTheDocument();
+  });
+
+  it('필수값을 입력하지 않고 저장하면 에러 토스트가 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+    expect(await screen.findByText('필수 정보를 모두 입력해주세요.')).toBeInTheDocument();
+  });
+
+  it('시작 시간이 종료 시간보다 늦으면 에러 토스트가 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 오늘 날짜
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    await userEvent.type(screen.getByLabelText('제목'), '시간오류 테스트');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '11:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    expect(await screen.findByText('시간 설정을 확인해주세요.')).toBeInTheDocument();
+  });
+
+  it('카테고리 선택 시 올바른 옵션이 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const select = await screen.findByLabelText('카테고리');
+    await userEvent.click(select);
+    expect(screen.getByRole('option', { name: '업무' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '개인' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '가족' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '기타' })).toBeInTheDocument();
+  });
+
+  it('알림 옵션이 올바르게 렌더링된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const select = await screen.findByLabelText('알림 설정');
+    await userEvent.click(select);
+    expect(screen.getByRole('option', { name: '1분 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '10분 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '1시간 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '2시간 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '1일 전' })).toBeInTheDocument();
+  });
+
+  it('입력값을 모두 지우고 다시 입력해도 정상적으로 저장된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 입력
+    await userEvent.type(screen.getByLabelText('제목'), '초기 입력');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '09:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.type(screen.getByLabelText('설명'), '설명1');
+    await userEvent.type(screen.getByLabelText('위치'), '장소1');
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await userEvent.selectOptions(screen.getByLabelText('알림 설정'), '10');
+    // 모두 지우기
+    await userEvent.clear(screen.getByLabelText('제목'));
+    await userEvent.clear(screen.getByLabelText('설명'));
+    await userEvent.clear(screen.getByLabelText('위치'));
+    // 다시 입력
+    await userEvent.type(screen.getByLabelText('제목'), '다시 입력');
+    await userEvent.type(screen.getByLabelText('설명'), '설명2');
+    await userEvent.type(screen.getByLabelText('위치'), '장소2');
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList).findByText('다시 입력')).toBeInTheDocument();
+    expect(within(eventList).getByText('설명2')).toBeInTheDocument();
+    expect(within(eventList).getByText('장소2')).toBeInTheDocument();
+  });
+});
