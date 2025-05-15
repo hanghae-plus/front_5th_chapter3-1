@@ -60,6 +60,6 @@ export const mockTestData: Event = {
   description: '기존 팀 미팅',
   location: '회의실 B',
   category: '업무',
-  repeat: { type: 'none', interval: 0 },
+  repeat: { type: 'none', interval: 10, endDate: '2025-06-01' },
   notificationTime: 10,
 };

@@ -3,7 +3,7 @@ import { createContext, ReactNode, useContext } from 'react';
 import { useEventFormContext } from './EventContext';
 import { useEventOperations } from '../hooks/useEventOperations';
 
-const EventOperationContext = createContext<ReturnType<typeof useEventOperations>>(null!);
+export const EventOperationContext = createContext<ReturnType<typeof useEventOperations>>(null!);
 
 export function EventOperationProvider({ children }: { children: ReactNode }) {
   const { setEditingEvent, editingEvent } = useEventFormContext();

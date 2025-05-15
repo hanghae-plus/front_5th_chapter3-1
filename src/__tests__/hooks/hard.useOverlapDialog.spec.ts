@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useOverlapDialog } from '../../hooks/useOverlapDialog';
 import { mockTestDataList } from '../data/mockTestData';
 
-describe('useOverlapDialog hook test', () => {
+describe('useOverlapDialog hook 테스트', () => {
   it('초기 상태는 closed, overlappingEvents는 빈 배열, cancelRef.current는 null 이다', () => {
     const { result } = renderHook(() => useOverlapDialog());
 

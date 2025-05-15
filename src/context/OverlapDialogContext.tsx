@@ -2,7 +2,7 @@ import { createContext, ReactNode, useContext } from 'react';
 
 import { useOverlapDialog } from '../hooks/useOverlapDialog';
 
-const OverlapDialogContext = createContext<ReturnType<typeof useOverlapDialog>>(null!);
+export const OverlapDialogContext = createContext<ReturnType<typeof useOverlapDialog>>(null!);
 
 export function OverlapDialogProvider({ children }: { children: ReactNode }) {
   const overlapDialog = useOverlapDialog();

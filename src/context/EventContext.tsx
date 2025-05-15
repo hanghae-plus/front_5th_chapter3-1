@@ -3,7 +3,7 @@ import { createContext, ReactNode, useContext } from 'react';
 import { useEventForm } from '../hooks/useEventForm';
 
 // EventContext.tsx
-const EventContext = createContext<ReturnType<typeof useEventForm>>(null!);
+export const EventContext = createContext<ReturnType<typeof useEventForm>>(null!);
 
 export function EventProvider({ children }: { children: ReactNode }) {
   const event = useEventForm();
