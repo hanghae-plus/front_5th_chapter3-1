@@ -425,8 +425,10 @@ function App() {
               aria-label="Previous"
               icon={<ChevronLeftIcon />}
               onClick={() => navigate('prev')}
+              data-testid="prev-button"
             />
             <Select
+              data-testid="view-select"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}

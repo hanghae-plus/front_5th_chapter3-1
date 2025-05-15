@@ -23,6 +23,8 @@ export default mergeConfig(
         reportsDirectory: './.coverage',
         reporter: ['lcov', 'json', 'json-summary'],
       },
+      // maxConcurrency: 10,
+      // maxWorkers: 10,
     },
   })
 );
