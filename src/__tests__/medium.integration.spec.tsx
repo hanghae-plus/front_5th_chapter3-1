@@ -418,7 +418,7 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+it('notificationTime을 1로 하면 지정 시간 1분 전 알람 텍스트가 노출된다', async () => {
   vi.setSystemTime('2025-05-01');
 
   const user = userEvent.setup();
@@ -437,7 +437,7 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
     description: '테스트 이벤트 설명',
     location: '테스트 이벤트 장소',
     category: '업무',
-    notificationTime: '10',
+    notificationTime: '1',
   };
 
   await user.type(screen.getByLabelText('제목'), NEW_EVENT_FORM.title);
@@ -459,9 +459,9 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
     expect(within(eventList).getByText(NEW_EVENT_FORM.date)).toBeInTheDocument();
   });
 
-  // 10분 전 알림 텍스트가 노출되는지 확인
-  vi.setSystemTime('2025-05-01 13:00');
-  expect(await screen.findByText('10분 전')).toBeInTheDocument();
+  // 1분 전 알림 텍스트가 노출되는지 확인
+  vi.setSystemTime('2025-05-01 13:09');
+  expect(await screen.findByText('1분 전')).toBeInTheDocument();
 
   vi.useRealTimers();
 });
