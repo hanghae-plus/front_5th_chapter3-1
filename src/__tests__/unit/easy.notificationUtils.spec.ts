@@ -1,4 +1,3 @@
-import { Event } from '../../types';
 import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
 import { createTestEvent } from '../helpers/event';
 
