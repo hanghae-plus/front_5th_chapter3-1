@@ -40,10 +40,13 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
+import { ViewNavigator } from './components/ViewNavigator';
+import { CATEGORIES, NOTIFICATION_OPTIONS, WEEK_DAYS } from './constants';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
+import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import { Event, EventForm, RepeatType } from './types';
 import {
@@ -56,18 +59,6 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
@@ -111,9 +102,13 @@ function App() {
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const {
+    isOverlapDialogOpen,
+    openOverlapDialog,
+    closeOverlapDialog,
+    overlappingEvents,
+    overlapCancelRef,
+  } = useOverlapDialog();
 
   const toast = useToast();
 
@@ -157,8 +152,7 @@ function App() {
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openOverlapDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();
@@ -173,7 +167,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {weekDays.map((day) => (
+              {WEEK_DAYS.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -226,7 +220,7 @@ function App() {
         <Table variant="simple" w="full">
           <Thead>
             <Tr>
-              {weekDays.map((day) => (
+              {WEEK_DAYS.map((day) => (
                 <Th key={day} width="14.28%">
                   {day}
                 </Th>
@@ -345,9 +339,13 @@ function App() {
 
           <FormControl>
             <FormLabel>카테고리</FormLabel>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
+            <Select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              data-testid="category-select"
+            >
               <option value="">카테고리 선택</option>
-              {categories.map((cat) => (
+              {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
                 </option>
@@ -367,8 +365,9 @@ function App() {
             <Select
               value={notificationTime}
               onChange={(e) => setNotificationTime(Number(e.target.value))}
+              data-testid="notification-time-select"
             >
-              {notificationOptions.map((option) => (
+              {NOTIFICATION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -420,26 +419,7 @@ function App() {
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
 
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
+          <ViewNavigator view={view} setView={setView} navigate={navigate} />
 
           {view === 'week' && renderWeekView()}
           {view === 'month' && renderMonthView()}
@@ -499,7 +479,7 @@ function App() {
                     <Text>
                       알림:{' '}
                       {
-                        notificationOptions.find(
+                        NOTIFICATION_OPTIONS.find(
                           (option) => option.value === event.notificationTime
                         )?.label
                       }
@@ -526,8 +506,8 @@ function App() {
 
       <AlertDialog
         isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
+        leastDestructiveRef={overlapCancelRef}
+        onClose={closeOverlapDialog}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -546,13 +526,13 @@ function App() {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+              <Button ref={overlapCancelRef} onClick={closeOverlapDialog}>
                 취소
               </Button>
               <Button
                 colorScheme="red"
                 onClick={() => {
-                  setIsOverlapDialogOpen(false);
+                  closeOverlapDialog();
                   saveEvent({
                     id: editingEvent ? editingEvent.id : undefined,
                     title,
