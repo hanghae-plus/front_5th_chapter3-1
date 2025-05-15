@@ -10,7 +10,7 @@ import { Event } from '../types';
 
 // 테스트 마다 초기 상태를 받아 독립적인 mockEvents를 사용하는 생성 핸들러
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
-  const mockEvents = [...initEvents];
+  let mockEvents = [...initEvents];
 
   return [
     http.get('/api/events', () => {
@@ -27,7 +27,7 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
 
 // 기존 mockEvents에서 특정 id 이벤트를 수정하는 핸들러
 export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
-  const mockEvents = [...initEvents];
+  let mockEvents = [...initEvents];
   return [
     http.get('/api/events', () => {
       return HttpResponse.json({ events: mockEvents }, { status: 200 });
@@ -49,7 +49,7 @@ export const setupMockHandlerUpdating = (initEvents = [] as Event[]) => {
 
 // 기존 mockEvents에서 특정 id 이벤트를 삭제하는 핸들러
 export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
-  const mockEvents = [...initEvents];
+  let mockEvents = [...initEvents];
 
   return [
     http.get('/api/events', () => {
@@ -58,8 +58,15 @@ export const setupMockHandlerDeletion = (initEvents = [] as Event[]) => {
     http.delete('/api/events/:id', ({ params }) => {
       const { id } = params;
       const eventIndex = mockEvents.findIndex((event) => event.id === id);
-      mockEvents.splice(eventIndex, 1);
-      return HttpResponse.json(null, { status: 204 });
+      if (eventIndex === -1) {
+        // 이벤트가 존재하지 않으면 404 반환
+        return new HttpResponse(null, { status: 404 });
+      }
+
+      // 이벤트 삭제
+      mockEvents = mockEvents.filter((event) => event.id !== id);
+      // 성공적인 삭제를 나타내는 204 상태 코드 반환
+      return new HttpResponse(null, { status: 204 });
     }),
   ];
 };
