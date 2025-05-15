@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { fetchHolidays } from '../apis/fetchHolidays';
+import { fetchHolidays } from '../components/fetchHolidays';
 
 export const useCalendarView = () => {
   const [view, setView] = useState<'week' | 'month'>('month');

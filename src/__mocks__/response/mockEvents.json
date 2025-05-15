@@ -1,0 +1,100 @@
+{
+  "events": [
+    {
+      "id": "1",
+      "title": "기존 회의",
+      "date": "2025-07-01",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "description": "기존 팀 미팅",
+      "location": "회의실 A",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "2",
+      "title": "기존 회의2",
+      "date": "2025-07-01",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "기존 팀 미팅 2",
+      "location": "회의실 B",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "3",
+      "title": "기존 회의3",
+      "date": "2025-07-15",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "description": "기존 팀 미팅 3",
+      "location": "회의실 C",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "4",
+      "title": "기존 회의4",
+      "date": "2025-07-15",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "기존 팀 미팅 4",
+      "location": "회의실 D",
+      "category": "업무 회의",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    },
+    {
+      "id": "5",
+      "title": "기존 회의5",
+      "date": "2025-07-30",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "description": "기존 팀 미팅 5",
+      "location": "회의실 E",
+      "category": "업무 회의",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    },
+    {
+      "id": "6",
+      "title": "기존 회의6",
+      "date": "2025-07-30",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "기존 팀 미팅 6",
+      "location": "회의실 F",
+      "category": "업무 회의",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    },
+    {
+      "id": "7",
+      "title": "이벤트 2",
+      "date": "2025-07-30",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "이벤트",
+      "location": "이벤트",
+      "category": "이벤트",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    },
+    {
+      "id": "8",
+      "title": "Event",
+      "date": "2025-08-30",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "이벤트",
+      "location": "이벤트",
+      "category": "이벤트",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 5
+    }
+  ]
+}
