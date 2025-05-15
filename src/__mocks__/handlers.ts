@@ -12,6 +12,8 @@ import {
 // ! 각 응답에 대한 MSW 핸들러를 작성해주세요. GET 요청은 이미 작성되어 있는 events json을 활용해주세요.
 export const handlers = [
   http.get('/api/events', () => {
+    // events.json의 데이터가 setupMockHandlerCreation에서 이미 초기화되었으므로,
+    // setupMockHandlerFetch를 호출하면 현재 테스트의 events.json 기반 데이터를 반환
     return HttpResponse.json({ events: setupMockHandlerFetch() });
   }),
 
