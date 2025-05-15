@@ -1,10 +1,10 @@
 import { Box, Flex, Heading, Text, useToast, VStack } from '@chakra-ui/react';
-import { useState } from 'react';
 
 import ScheduleSearch from './features/schedule/ui/ScheduleSearch.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
+import { useOverlappingEvent } from './hooks/useOverlappingEvent.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import CalendarViewSelect from './modules/calendar/ui/CalendarViewSelect.tsx';
 import MonthCalendar from './modules/calendar/ui/MonthCalendar.tsx';
@@ -45,9 +45,8 @@ function App() {
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
-
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
+  const { isOverlapDialogOpen, overlappingEvents, setOverlappingEvents, setIsOverlapDialogOpen } =
+    useOverlappingEvent();
 
   const toast = useToast();
 
