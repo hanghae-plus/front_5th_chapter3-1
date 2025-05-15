@@ -1,4 +1,4 @@
-import { screen, within, waitFor } from '@testing-library/react';
+import { screen, within, act } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event';
 // import { http, HttpResponse } from 'msw';
 
@@ -123,7 +123,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     await saveSchedule(user, form);
 
     // 렌더링 안정화 (검색 결과 없음 메시지 제거 기다리기)
-    await waitFor(() => expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument());
+    await act(() => null);
+    expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument();
 
     const list = await screen.getByTestId('event-list');
 
@@ -151,9 +152,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     await user.click(submit);
 
     // 수정 결과 확인
-    await waitFor(() => {
-      expect(within(list).getByText('수정된 팀 회의')).toBeInTheDocument();
-    });
+    await act(() => null);
+    expect(within(list).getByText('수정된 팀 회의')).toBeInTheDocument();
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
@@ -168,9 +168,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     await user.click(deleteButton);
 
     // 삭제 결과 확인
-    await waitFor(() => {
-      expect(within(list).queryByText(mockEvents[0].title)).not.toBeInTheDocument();
-    });
+    await act(() => null);
+    expect(within(list).queryByText(mockEvents[0].title)).not.toBeInTheDocument();
   });
 });
 
