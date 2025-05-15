@@ -26,7 +26,7 @@ vi.mock('@chakra-ui/react', async () => {
 });
 
 it('저장되어있는 초기 이벤트 데이터를 불러온다', async () => {
-  setupMockHandlerCreation(events as Event[]);
+  setupMockHandlerCreation();
   const { result } = renderHook(() => useEventOperations(false));
 
   await waitFor(() => {
@@ -53,7 +53,7 @@ it('저장되어있는 초기 이벤트 데이터를 불러온다', async () => 
 });
 
 it('정의된 이벤트 정보를 기준으로 이벤트가 저장 된다', async () => {
-  setupMockHandlerCreation(events as Event[]);
+  setupMockHandlerCreation();
   const { result } = renderHook(() => useEventOperations(false));
 
   const newEvent: Event = {
