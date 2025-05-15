@@ -17,14 +17,8 @@ import {
   IconButton,
   Input,
   Select,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useToast,
   VStack,
 } from '@chakra-ui/react';
@@ -32,15 +26,13 @@ import { useState } from 'react';
 
 import { AlertOverlapEvent } from './components/alert/AlertOverlapEvent.tsx';
 import { NotificationList } from './components/notification';
-import { WeekView } from './components/view/WeekView.tsx';
-import { weekDays } from './consts/calender.ts';
+import { MonthView, WeekView } from './components/view';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import { Event, EventForm, RepeatType } from './types';
-import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
 
@@ -147,81 +139,6 @@ function App() {
       await saveEvent(eventData);
       resetForm();
     }
-  };
-
-  const renderMonthView = () => {
-    const weeks = getWeeksAtMonth(currentDate);
-
-    return (
-      <VStack data-testid="month-view" align="stretch" w="full" spacing={4}>
-        <Heading size="md">{formatMonth(currentDate)}</Heading>
-        <Table variant="simple" w="full">
-          <Thead>
-            <Tr>
-              {weekDays.map((day) => (
-                <Th key={day} width="14.28%">
-                  {day}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {weeks.map((week, weekIndex) => (
-              <Tr key={weekIndex}>
-                {week.map((day, dayIndex) => {
-                  const dateString = day ? formatDate(currentDate, day) : '';
-                  const holiday = holidays[dateString];
-
-                  return (
-                    <Td
-                      key={dayIndex}
-                      height="100px"
-                      verticalAlign="top"
-                      width="14.28%"
-                      position="relative"
-                      data-testid="month-view-td"
-                    >
-                      {day && (
-                        <>
-                          <Text fontWeight="bold">{day}</Text>
-                          {holiday && (
-                            <Text color="red.500" fontSize="sm">
-                              {holiday}
-                            </Text>
-                          )}
-                          {getEventsForDay(filteredEvents, day).map((event) => {
-                            const isNotified = notifiedEvents.includes(event.id);
-                            return (
-                              <Box
-                                key={event.id}
-                                p={1}
-                                my={1}
-                                bg={isNotified ? 'red.100' : 'gray.100'}
-                                borderRadius="md"
-                                fontWeight={isNotified ? 'bold' : 'normal'}
-                                color={isNotified ? 'red.500' : 'inherit'}
-                                data-testid={`event-view-item`}
-                              >
-                                <HStack spacing={1}>
-                                  {isNotified && <BellIcon />}
-                                  <Text fontSize="sm" noOfLines={1}>
-                                    {event.title}
-                                  </Text>
-                                </HStack>
-                              </Box>
-                            );
-                          })}
-                        </>
-                      )}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </VStack>
-    );
   };
 
   return (
@@ -382,7 +299,14 @@ function App() {
               notifiedEvents={notifiedEvents}
             />
           )}
-          {view === 'month' && renderMonthView()}
+          {view === 'month' && (
+            <MonthView
+              currentDate={currentDate}
+              filteredEvents={filteredEvents}
+              notifiedEvents={notifiedEvents}
+              holidays={holidays}
+            />
+          )}
         </VStack>
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
