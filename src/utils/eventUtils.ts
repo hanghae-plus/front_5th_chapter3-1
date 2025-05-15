@@ -13,6 +13,11 @@ function containsTerm(target: string, term: string) {
 }
 
 function searchEvents(events: Event[], term: string) {
+  const keyword = term.trim();
+  if (keyword === '') {
+    return events;
+  }
+
   return events.filter(
     ({ title, description, location }) =>
       containsTerm(title, term) || containsTerm(description, term) || containsTerm(location, term)
@@ -38,13 +43,7 @@ export function getFilteredEvents(
 ): Event[] {
   const searchedEvents = searchEvents(events, searchTerm);
 
-  if (view === 'week') {
-    return filterEventsByDateRangeAtWeek(searchedEvents, currentDate);
-  }
-
-  if (view === 'month') {
-    return filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
-  }
-
-  return searchedEvents;
+  return view === 'week'
+    ? filterEventsByDateRangeAtWeek(searchedEvents, currentDate)
+    : filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
 }

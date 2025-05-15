@@ -20,8 +20,9 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
     'react/prop-types': 'off',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'import/order': [
       'error',
       {

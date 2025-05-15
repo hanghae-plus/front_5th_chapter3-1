@@ -102,3 +102,20 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
+
+// 주어진 날짜가 속한 주의 시작일과 종료일을 반환합니다.
+export function getNextWeekDate(base: Date, direction: 'next' | 'prev') {
+  const offset = direction === 'next' ? 7 : -7;
+  const newDate = new Date(base);
+  newDate.setDate(newDate.getDate() + offset);
+  return newDate;
+}
+
+// 주어진 날짜가 속한 월의 시작일과 종료일을 반환합니다.
+export function getNextMonthDate(base: Date, direction: 'next' | 'prev') {
+  const offset = direction === 'next' ? 1 : -1;
+  const newDate = new Date(base);
+  newDate.setDate(1);
+  newDate.setMonth(newDate.getMonth() + offset);
+  return newDate;
+}
