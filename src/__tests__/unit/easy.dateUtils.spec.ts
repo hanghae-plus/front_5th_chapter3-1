@@ -10,7 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-import { sampleEvents, createEvent } from '../fixtures/events';
+import { createEvent, getTestEvents } from '../fixtures/eventFactory';
 
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
@@ -108,15 +108,17 @@ describe('getWeeksAtMonth', () => {
 });
 
 describe('getEventsForDay', () => {
+  const events = getTestEvents('date');
+
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
-    const filteredEvents = getEventsForDay(sampleEvents, 1);
+    const filteredEvents = getEventsForDay(events, 1);
     expect(filteredEvents).toHaveLength(2);
     expect(filteredEvents[0].id).toBe('1');
     expect(filteredEvents[1].id).toBe('3');
   });
 
   it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
-    const filteredEvents = getEventsForDay(sampleEvents, 3);
+    const filteredEvents = getEventsForDay(events, 3);
     expect(filteredEvents).toHaveLength(0);
   });
 
