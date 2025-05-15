@@ -2,7 +2,6 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { vi } from 'vitest';
-import { server } from '../setupTests';
 
 import {
   setupMockHandlerCreation,
@@ -10,6 +9,7 @@ import {
   setupMockHandlerDeletion,
 } from '../__mocks__/handlersUtils.ts';
 import App from '../App';
+import { server } from '../setupTests';
 import { Event } from '../types';
 
 const mockEvents: Event[] = [
