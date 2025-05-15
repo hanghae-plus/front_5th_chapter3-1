@@ -14,7 +14,7 @@ import { NOTIFICATION_OPTIONS } from '../constants';
 import { useEventForm } from '../hooks/useEventForm';
 import { Event } from '../types';
 
-interface EventListProps {
+export interface EventListProps {
   notifiedEvents: string[];
   filteredEvents: Event[];
   searchTerm: string;
@@ -49,7 +49,9 @@ const EventList = ({
             <HStack justifyContent="space-between">
               <VStack align="start">
                 <HStack>
-                  {notifiedEvents.includes(event.id) && <BellIcon color="red.500" />}
+                  {notifiedEvents.includes(event.id) && (
+                    <BellIcon color="red.500" data-testid={`bell-icon-${event.id}`} />
+                  )}
                   <Text
                     fontWeight={notifiedEvents.includes(event.id) ? 'bold' : 'normal'}
                     color={notifiedEvents.includes(event.id) ? 'red.500' : 'inherit'}
