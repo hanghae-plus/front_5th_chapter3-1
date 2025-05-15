@@ -13,6 +13,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { EventBox } from './EventBox';
+import { HolidayText } from './HolidayText';
 import { weekDays } from '../../../based/constants';
 import {
   getWeeksAtMonth,
@@ -66,31 +68,10 @@ export const MonthView = ({
                     {day && (
                       <>
                         <Text fontWeight="bold">{day}</Text>
-                        {holiday && (
-                          <Text color="red.500" fontSize="sm">
-                            {holiday}
-                          </Text>
-                        )}
+                        {holiday && <HolidayText>{holiday}</HolidayText>}
                         {getEventsForDay(filteredEvents, day).map((event) => {
                           const isNotified = notifiedEvents.includes(event.id);
-                          return (
-                            <Box
-                              key={event.id}
-                              p={1}
-                              my={1}
-                              bg={isNotified ? 'red.100' : 'gray.100'}
-                              borderRadius="md"
-                              fontWeight={isNotified ? 'bold' : 'normal'}
-                              color={isNotified ? 'red.500' : 'inherit'}
-                            >
-                              <HStack spacing={1}>
-                                {isNotified && <BellIcon />}
-                                <Text fontSize="sm" noOfLines={1}>
-                                  {event.title}
-                                </Text>
-                              </HStack>
-                            </Box>
-                          );
+                          return <EventBox key={event.id} event={event} isNotified={isNotified} />;
                         })}
                       </>
                     )}

@@ -13,8 +13,9 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { HolidayText } from './HolidayText';
 import { weekDays } from '../../../based/constants';
-import { formatWeek, getWeekDates } from '../../../based/utils/dateUtils';
+import { formatDate, formatWeek, getWeekDates } from '../../../based/utils/dateUtils';
 import { Event } from '../../../types';
 
 export const WeekView = ({
@@ -45,39 +46,40 @@ export const WeekView = ({
         </Thead>
         <Tbody>
           <Tr>
-            {weekDates.map((date) => (
-              <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
-                <Text fontWeight="bold">{date.getDate()}</Text>
-                {holidays[date.toISOString().slice(0, 10)] && (
-                  <Text color="red.500" fontSize="sm">
-                    {holidays[date.toISOString().slice(0, 10)]}
-                  </Text>
-                )}
-                {filteredEvents
-                  .filter((event) => new Date(event.date).toDateString() === date.toDateString())
-                  .map((event) => {
-                    const isNotified = notifiedEvents.includes(event.id);
-                    return (
-                      <Box
-                        key={event.id}
-                        p={1}
-                        my={1}
-                        bg={isNotified ? 'red.100' : 'gray.100'}
-                        borderRadius="md"
-                        fontWeight={isNotified ? 'bold' : 'normal'}
-                        color={isNotified ? 'red.500' : 'inherit'}
-                      >
-                        <HStack spacing={1}>
-                          {isNotified && <BellIcon />}
-                          <Text fontSize="sm" noOfLines={1}>
-                            {event.title}
-                          </Text>
-                        </HStack>
-                      </Box>
-                    );
-                  })}
-              </Td>
-            ))}
+            {weekDates.map((date) => {
+              const dateString = date.getDate() ? formatDate(currentDate, date.getDate()) : '';
+              const holiday = holidays[dateString];
+
+              return (
+                <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
+                  <Text fontWeight="bold">{date.getDate()}</Text>
+                  {holiday && <HolidayText>{holiday}</HolidayText>}
+                  {filteredEvents
+                    .filter((event) => new Date(event.date).toDateString() === date.toDateString())
+                    .map((event) => {
+                      const isNotified = notifiedEvents.includes(event.id);
+                      return (
+                        <Box
+                          key={event.id}
+                          p={1}
+                          my={1}
+                          bg={isNotified ? 'red.100' : 'gray.100'}
+                          borderRadius="md"
+                          fontWeight={isNotified ? 'bold' : 'normal'}
+                          color={isNotified ? 'red.500' : 'inherit'}
+                        >
+                          <HStack spacing={1}>
+                            {isNotified && <BellIcon />}
+                            <Text fontSize="sm" noOfLines={1}>
+                              {event.title}
+                            </Text>
+                          </HStack>
+                        </Box>
+                      );
+                    })}
+                </Td>
+              );
+            })}
           </Tr>
         </Tbody>
       </Table>
