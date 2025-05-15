@@ -1,6 +1,8 @@
 import { Box, Flex } from '@chakra-ui/react';
 
 import { CalendarSection } from './components/calendar/CalendarSection.tsx';
+import { EventEditSection } from './components/event/EventEditSection.tsx';
+import { SearchEventSection } from './components/event/SearchEventSection.tsx';
 import { Notification } from './components/notification/Notification.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -8,8 +10,6 @@ import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import { EventForm } from './types';
-import { EventEditSection } from './components/event/EventEditSection.tsx';
-import { SearchEventSection } from './components/event/SearchEventSection.tsx';
 
 const notificationOptions = [
   { value: 1, label: '1분 전' },
