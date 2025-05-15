@@ -55,9 +55,6 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
       await fetchEvents();
 
-      //타입: onSave?: () => void
-      //형태: const [editingEvent, setEditingEvent] = useState<Event | null>(null);
-      //호출: () => setEditingEvent(null);
       onSave?.();
       toast({
         title: editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',

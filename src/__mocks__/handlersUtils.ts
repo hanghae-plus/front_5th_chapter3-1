@@ -32,11 +32,13 @@ export const createMockHandlers = (initEvents = [] as Event[]) => {
 
     http.delete('/api/events/:id', ({ params }) => {
       const deleteIndex = events.findIndex((event) => event.id === params.id);
+
+      events = events.filter((event) => event.id !== params.id);
+
       if (deleteIndex === -1) {
         return new HttpResponse(null, { status: 404 });
       }
-      events.splice(deleteIndex, 1);
-      return HttpResponse.json(null, { status: 204 });
+      return new HttpResponse(null, { status: 204 });
     }),
   ];
 };
