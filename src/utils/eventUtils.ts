@@ -43,13 +43,7 @@ export function getFilteredEvents(
 ): Event[] {
   const searchedEvents = searchEvents(events, searchTerm);
 
-  if (view === 'week') {
-    return filterEventsByDateRangeAtWeek(searchedEvents, currentDate);
-  }
-
-  if (view === 'month') {
-    return filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
-  }
-
-  return searchedEvents;
+  return view === 'week'
+    ? filterEventsByDateRangeAtWeek(searchedEvents, currentDate)
+    : filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
 }

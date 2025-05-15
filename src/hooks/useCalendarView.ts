@@ -9,15 +9,9 @@ export const useCalendarView = () => {
   const [holidays, setHolidays] = useState<{ [key: string]: string }>({});
 
   const navigate = (direction: 'prev' | 'next') => {
-    setCurrentDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      if (view === 'week') {
-        return getNextWeekDate(prevDate, direction);
-      } else if (view === 'month') {
-        return getNextMonthDate(prevDate, direction);
-      }
-      return newDate;
-    });
+    setCurrentDate((prevDate) =>
+      view === 'week' ? getNextWeekDate(prevDate, direction) : getNextMonthDate(prevDate, direction)
+    );
   };
 
   useEffect(() => {
