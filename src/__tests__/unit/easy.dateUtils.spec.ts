@@ -61,7 +61,6 @@ describe('getDaysInMonth', () => {
 describe('getWeekDates', () => {
   it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
     const result = getWeekDates(new Date('2025-05-15'));
-    console.log(result);
     expect(result).toEqual([
       new Date('2025-05-11'),
       new Date('2025-05-12'),
@@ -217,7 +216,6 @@ describe('getEventsForDay', () => {
 describe('formatWeek', () => {
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
     const result = formatWeek(new Date('2025-07-15'));
-    console.log('🚀 ~ it ~ result', result);
     expect(result).toBe('2025년 7월 3주');
   });
 

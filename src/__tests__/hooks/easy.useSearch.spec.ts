@@ -63,7 +63,6 @@ afterEach(() => {
 it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {
   // filteredEvents
   const { result } = renderHook(() => useSearch(events, new Date(), 'week'));
-  console.log('🚀 ~ it ~ result', result);
 
   expect(result.current.filteredEvents.length).toBe(2);
 });
