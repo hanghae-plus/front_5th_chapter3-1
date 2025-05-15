@@ -11,7 +11,14 @@ const NotificationList = ({ notifications, onClose }: Props) => {
   if (notifications.length === 0) return null;
 
   return (
-    <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
+    <VStack
+      position="fixed"
+      top={4}
+      right={4}
+      spacing={2}
+      align="flex-end"
+      data-testid="notification-list"
+    >
       {notifications.map((notification, index) => (
         <Alert key={index} status="info" variant="solid" width="auto">
           <AlertIcon />

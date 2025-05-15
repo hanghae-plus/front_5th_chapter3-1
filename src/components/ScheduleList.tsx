@@ -56,7 +56,9 @@ const ScheduleList = ({
             <HStack justifyContent="space-between">
               <VStack align="start">
                 <HStack>
-                  {notifiedEvents.includes(event.id) && <BellIcon color="red.500" />}
+                  {notifiedEvents.includes(event.id) && (
+                    <BellIcon color="red.500" aria-label="알림" />
+                  )}
                   <Text
                     fontWeight={notifiedEvents.includes(event.id) ? 'bold' : 'normal'}
                     color={notifiedEvents.includes(event.id) ? 'red.500' : 'inherit'}

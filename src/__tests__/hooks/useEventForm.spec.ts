@@ -3,6 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useEventForm } from '../../hooks/useEventForm.ts';
 import { Event } from '../../types.ts';
 
+// 추가 테스트
 it('초기값이 올바르게 설정되어야 한다', () => {
   const { result } = renderHook(() => useEventForm());
 
