@@ -38,7 +38,7 @@ export const MOCK_EVENTS: Event[] = [
     notificationTime: 1,
   },
   {
-    id: '4',
+    id: '6',
     title: 'Event 4',
     date: '2025-07-31',
     startTime: '16:00',
