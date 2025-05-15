@@ -1,9 +1,11 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
+import React from 'react';
 
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
+import OverlapAlertDialog from '../component/widget/OverlapAlertDialog';
 import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
@@ -650,5 +652,92 @@ describe('AddEventWidget 통합', () => {
     expect(await within(eventList).findByText('다시 입력')).toBeInTheDocument();
     expect(within(eventList).getByText('설명2')).toBeInTheDocument();
     expect(within(eventList).getByText('장소2')).toBeInTheDocument();
+  });
+});
+
+describe('OverlapAlertDialog', () => {
+  const overlappingEvents: Event[] = [
+    {
+      id: '1',
+      title: '겹침1',
+      date: '2024-06-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '2',
+      title: '겹침2',
+      date: '2024-06-01',
+      startTime: '11:00',
+      endTime: '12:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+
+  it('겹치는 일정 정보와 버튼이 정상적으로 노출된다', () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={true}
+          onClose={vi.fn()}
+          onConfirm={vi.fn()}
+          overlappingEvents={overlappingEvents}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(screen.getByText('겹침1 (2024-06-01 10:00-11:00)')).toBeInTheDocument();
+    expect(screen.getByText('겹침2 (2024-06-01 11:00-12:00)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '계속 진행' })).toBeInTheDocument();
+  });
+
+  it('취소/계속 진행 버튼 클릭 시 콜백이 호출된다', async () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    const onClose = vi.fn();
+    const onConfirm = vi.fn();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={true}
+          onClose={onClose}
+          onConfirm={onConfirm}
+          overlappingEvents={[overlappingEvents[0]]}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    await userEvent.click(screen.getByRole('button', { name: '취소' }));
+    expect(onClose).toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: '계속 진행' }));
+    expect(onConfirm).toHaveBeenCalled();
+  });
+
+  it('isOpen이 false면 다이얼로그가 렌더링되지 않는다', () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={false}
+          onClose={vi.fn()}
+          onConfirm={vi.fn()}
+          overlappingEvents={overlappingEvents}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    expect(screen.queryByText('일정 겹침 경고')).not.toBeInTheDocument();
   });
 });
