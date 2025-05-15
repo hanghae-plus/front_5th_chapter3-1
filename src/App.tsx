@@ -501,6 +501,7 @@ function App() {
                   </VStack>
                   <HStack>
                     <IconButton
+                      data-testid={`edit-event-button-${event.id}`}
                       aria-label="Edit event"
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
