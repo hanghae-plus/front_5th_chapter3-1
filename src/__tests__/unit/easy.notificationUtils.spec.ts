@@ -53,7 +53,6 @@ describe('getUpcomingEvents', () => {
   it('알림 시간이 정확히 도래한 이벤트를 반환한다', () => {
     // 정확히 도래한 이벤트
     const result = getUpcomingEvents(events, new Date('2025-05-02 14:29'), []);
-    console.log('🚀 ~ it ~ result', result);
     expect(result).toEqual([events[1]]);
   });
 

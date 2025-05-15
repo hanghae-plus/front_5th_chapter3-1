@@ -191,6 +191,7 @@ function App() {
                       const isNotified = notifiedEvents.includes(event.id);
                       return (
                         <Box
+                          data-testid="event-view-item"
                           key={event.id}
                           p={1}
                           my={1}
@@ -459,7 +460,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                key={event.id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+                data-testid={`event-item`}
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
@@ -501,11 +509,13 @@ function App() {
                   <HStack>
                     <IconButton
                       aria-label="Edit event"
+                      data-testid={`edit-event-button-${event.id}`}
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
                       aria-label="Delete event"
+                      data-testid={`delete-event-button-${event.id}`}
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
                     />
