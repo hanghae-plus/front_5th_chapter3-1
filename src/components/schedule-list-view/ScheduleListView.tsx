@@ -1,18 +1,19 @@
 import { Text, VStack } from '@chakra-ui/react';
 
 import ScheduleBox from './ScheduleBox';
+import { useEventFormContext } from '../../contexts/EventFormContext';
+import { useEventOperationsContext } from '../../contexts/EventOperationsContext';
+import { useNotificationsContext } from '../../contexts/NotificationsContext';
+import { useSearchContext } from '../../contexts/SearchContext';
+import { notificationOptions } from '../../libs/constants';
 import LabelInput from '../../shares/ui/input/LabelInput';
 
-const ScheduleListView = (props) => {
-  const {
-    filteredEvents,
-    notificationOptions,
-    deleteEvent,
-    editEvent,
-    notifiedEvents,
-    searchTerm,
-    setSearchTerm,
-  } = props;
+const ScheduleListView = () => {
+  const { filteredEvents, searchTerm, setSearchTerm } = useSearchContext();
+  const { deleteEvent } = useEventOperationsContext();
+  const { editEvent } = useEventFormContext();
+  const { notifiedEvents } = useNotificationsContext();
+
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
       <LabelInput
