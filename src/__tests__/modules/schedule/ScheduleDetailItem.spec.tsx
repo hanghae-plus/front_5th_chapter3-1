@@ -2,14 +2,51 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import { events } from '../../../../src/__mocks__/response/events.json';
+import * as ScheduleFormContext from '../../../modules/schedule/model/ScheduleFormContext';
 import ScheduleDetailItem from '../../../modules/schedule/ui/ScheduleDetailItem';
 import { Event } from '../../../types';
-
 describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
   const mockEvent = events[0] as Event;
 
   const mockEditEvent = vi.fn();
   const mockDeleteEvent = vi.fn();
+
+  beforeEach(() => {
+    vi.spyOn(ScheduleFormContext, 'useScheduleFormContext').mockReturnValue({
+      category: '',
+      title: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      description: '',
+      location: '',
+      isRepeating: false,
+      repeatType: 'none',
+      repeatInterval: 0,
+      repeatEndDate: '',
+      notificationTime: 0,
+      startTimeError: null,
+      endTimeError: null,
+      editingEvent: null,
+      setCategory: vi.fn(),
+      setTitle: vi.fn(),
+      setDate: vi.fn(),
+      setStartTime: vi.fn(),
+      setEndTime: vi.fn(),
+      setDescription: vi.fn(),
+      setLocation: vi.fn(),
+      setIsRepeating: vi.fn(),
+      setRepeatType: vi.fn(),
+      setRepeatInterval: vi.fn(),
+      setRepeatEndDate: vi.fn(),
+      setNotificationTime: vi.fn(),
+      setEditingEvent: vi.fn(),
+      handleStartTimeChange: vi.fn(),
+      handleEndTimeChange: vi.fn(),
+      resetForm: vi.fn(),
+      editEvent: mockEditEvent,
+    });
+  });
 
   const renderScheduleDetailItem = (event: Event, notifiedEvents: string[] = []) => {
     return render(
@@ -17,7 +54,6 @@ describe('일정 상세 아이템 (ScheduleDetailItem)', () => {
         <ScheduleDetailItem
           event={event}
           notifiedEvents={notifiedEvents}
-          editEvent={mockEditEvent}
           deleteEvent={mockDeleteEvent}
         />
       </ChakraProvider>

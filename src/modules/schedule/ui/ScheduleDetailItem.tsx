@@ -3,20 +3,17 @@ import { Box, HStack, IconButton, VStack, Text } from '@chakra-ui/react';
 
 import { notificationOptions } from '../../../base/lib/notification.constants';
 import { Event } from '../../../types';
+import { useScheduleFormContext } from '../model/ScheduleFormContext';
 
 interface ScheduleDetailItemProps {
   event: Event;
   notifiedEvents: string[];
-  editEvent: (event: Event) => void;
   deleteEvent: (id: string) => void;
 }
 
-const ScheduleDetailItem = ({
-  event,
-  notifiedEvents,
-  editEvent,
-  deleteEvent,
-}: ScheduleDetailItemProps) => {
+const ScheduleDetailItem = ({ event, notifiedEvents, deleteEvent }: ScheduleDetailItemProps) => {
+  const { editEvent } = useScheduleFormContext();
+
   return (
     <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
       <HStack justifyContent="space-between">

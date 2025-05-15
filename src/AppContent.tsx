@@ -1,16 +1,7 @@
-import { Box, Button, Flex, Heading, HStack, Text, useToast, VStack } from '@chakra-ui/react';
+import { Box, Flex, Heading, Text, useToast, VStack } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import ScheduleAlarmSelectForm from './features/schedule/ui/ScheduleAlarmSelectForm.tsx';
-import ScheduleCategorySelectForm from './features/schedule/ui/ScheduleCategorySelectForm.tsx';
-import ScheduleDateForm from './features/schedule/ui/ScheduleDateForm.tsx';
-import ScheduleDescriptionForm from './features/schedule/ui/ScheduleDescriptionForm.tsx';
-import ScheduleEndTimeForm from './features/schedule/ui/ScheduleEndTimeForm.tsx';
-import ScheduleLocationForm from './features/schedule/ui/ScheduleLocationForm.tsx';
-import ScheduleRepeatForm from './features/schedule/ui/ScheduleRepeatForm.tsx';
 import ScheduleSearch from './features/schedule/ui/ScheduleSearch.tsx';
-import ScheduleStartTimeForm from './features/schedule/ui/ScheduleStartTimeForm.tsx';
-import ScheduleTitleForm from './features/schedule/ui/ScheduleTitleForm.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
@@ -21,8 +12,8 @@ import WeekCalendar from './modules/calendar/ui/WeekCalendar.tsx';
 import NotificationAlarm from './modules/notification/ui/NotificationAlarm.tsx';
 import { useScheduleFormContext } from './modules/schedule/model/ScheduleFormContext.tsx';
 import ScheduleDetailItem from './modules/schedule/ui/ScheduleDetailItem.tsx';
+import ScheduleForm from './modules/schedule/ui/ScheduleForm.tsx';
 import ScheduleOverlapAlertDialog from './modules/schedule/ui/ScheduleOverlapAlertDialog.tsx';
-import ScheduleRepeatAlarmForm from './modules/schedule/ui/ScheduleRepeatAlarmForm.tsx';
 import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 
@@ -45,7 +36,6 @@ function App() {
     editingEvent,
     setEditingEvent,
     resetForm,
-    editEvent,
   } = useScheduleFormContext();
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
@@ -112,32 +102,7 @@ function App() {
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
-        <VStack w="400px" spacing={5} align="stretch">
-          <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
-
-          <ScheduleTitleForm />
-          <ScheduleDateForm />
-
-          <HStack width="100%">
-            <ScheduleStartTimeForm />
-            <ScheduleEndTimeForm />
-          </HStack>
-
-          <ScheduleDescriptionForm />
-          <ScheduleLocationForm />
-
-          <ScheduleCategorySelectForm />
-
-          <ScheduleRepeatForm />
-
-          <ScheduleAlarmSelectForm />
-
-          {isRepeating && <ScheduleRepeatAlarmForm />}
-
-          <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
-            {editingEvent ? '일정 수정' : '일정 추가'}
-          </Button>
-        </VStack>
+        <ScheduleForm addOrUpdateEvent={addOrUpdateEvent} />
 
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
@@ -171,7 +136,6 @@ function App() {
               <ScheduleDetailItem
                 event={event}
                 notifiedEvents={notifiedEvents}
-                editEvent={editEvent}
                 deleteEvent={deleteEvent}
               />
             ))
