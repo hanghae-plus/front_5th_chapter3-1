@@ -1,2 +1,2 @@
-export * from '../WeekView';
-export * from '../types';
+export * from './WeekView';
+export * from './types';
