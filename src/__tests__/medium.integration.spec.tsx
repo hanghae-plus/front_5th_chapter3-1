@@ -7,7 +7,7 @@ import {
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
-import { events } from '../__mocks__/response/realEvents.json' assert { type: 'json' };
+import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import App from '../App';
 import { EventFormProvider } from '../contexts/event-form-context';
 import { server } from '../setupTests';
