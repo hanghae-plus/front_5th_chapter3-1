@@ -10,6 +10,16 @@ import {
 import App from '../App';
 import { Event } from '../types';
 
+// 각 테스트 시작 전 App 렌더링, user 설정
+const setupAndRenderApp = () => ({
+  user: userEvent.setup(),
+  ...render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  ),
+});
+
 // 일정 저장 함수
 const saveSchedule = async (
   user: UserEvent,
@@ -31,23 +41,13 @@ const saveSchedule = async (
 };
 
 describe('일정 CRUD 및 기본 기능', () => {
-  // 각 테스트 시작 전 App 렌더링, user 설정
-  let user: UserEvent;
-  beforeEach(() => {
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
-    user = userEvent.setup();
-  });
-
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
 
     // event 추가/저장/삭제 로직을 전체 테스트에서 진행 시 각 테스트가 실행 순서의 영향을 받게 됨
     // 이를 방지 및 각 테스트들을 독립적으로 실행하도록 새로운 핸들러 및 mockEvents 생성 필요
     setupMockHandlerCreation();
+    const { user } = setupAndRenderApp();
 
     await saveSchedule(user, {
       title: '새 회의',
@@ -79,6 +79,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
     // handlerUtils에서 초기 데이터 및 수정 핸들러를 설정해 테스트를 독립적으로 실행
     setupMockHandlerUpdating();
+    const { user } = setupAndRenderApp();
 
     // 기존 일정 조회
     await waitFor(async () => {
@@ -102,6 +103,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
   it('일정을 삭제하면 더 이상 조회되지 않는다', async () => {
     setupMockHandlerDeletion();
+    const { user } = setupAndRenderApp();
 
     await waitFor(async () => {
       const eventList = within(await screen.getByTestId('event-list'));
@@ -117,17 +119,17 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 });
 
-// describe('일정 뷰', () => {
-//   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+describe('일정 뷰', () => {
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
 
-//   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
 
-//   it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
 
-//   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
 
-//   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
-// });
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+});
 
 // describe('검색 기능', () => {
 //   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
