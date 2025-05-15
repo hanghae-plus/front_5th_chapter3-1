@@ -36,6 +36,7 @@ export function getFilteredEvents(
   currentDate: Date,
   view: 'week' | 'month'
 ): Event[] {
+  console.log('events', events);
   const searchedEvents = searchEvents(events, searchTerm);
 
   if (view === 'week') {
