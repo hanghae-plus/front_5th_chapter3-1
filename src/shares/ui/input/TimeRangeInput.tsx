@@ -1,6 +1,19 @@
 import { FormControl, FormLabel, HStack, Input, Tooltip } from '@chakra-ui/react';
+import React from 'react';
 
-const TimeRangeInput = (props) => {
+interface TimeRangeInputProps {
+  startTime: string;
+  endTime: string;
+  onChangeStartTime: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeEndTime: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  startTimeTooltipLabel?: string;
+  endTimeTooltipLabel?: string;
+  isValidStartTime: boolean;
+  isValidEndTime: boolean;
+  onBlur: (startTime: string, endTime: string) => void;
+}
+
+const TimeRangeInput = (props: TimeRangeInputProps) => {
   const {
     startTime,
     endTime,

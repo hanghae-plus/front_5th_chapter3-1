@@ -1,11 +1,11 @@
 import { Button, Heading, VStack } from '@chakra-ui/react';
 
 import RepeatTimeForm from './RepeatTimeForm';
-import TimeRangeInput from './TimeRangeInput';
 import { useEventFormContext } from '../../contexts/EventFormContext';
 import { notificationOptions, categories } from '../../libs/constants';
 import CheckInput from '../../shares/ui/input/CheckInput';
 import LabelInput from '../../shares/ui/input/LabelInput';
+import TimeRangeInput from '../../shares/ui/input/TimeRangeInput';
 import Selector from '../../shares/ui/Selector';
 import { getTimeErrorMessage } from '../../utils/timeValidation';
 
