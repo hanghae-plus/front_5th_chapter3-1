@@ -18,6 +18,11 @@ export interface EventForm {
   notificationTime: number; // 분 단위로 저장
 }
 
+export interface Notification {
+  id: string;
+  message: string;
+}
+
 export interface Event extends EventForm {
   id: string;
 }
