@@ -77,7 +77,7 @@ describe('useEventOperations', () => {
 
       const { result } = renderHook(() => useEventOperations(true));
       await waitFor(() => result.current.saveEvent(newEvent));
-      expect(result.current.events[0]).toEqual(mockEvents[0]);
+      expect(result.current.events[0]).toEqual(newEvent);
     });
   });
 

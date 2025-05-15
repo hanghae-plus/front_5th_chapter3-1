@@ -22,12 +22,15 @@ export const createMockHandlers = (initEvents = [] as Event[]) => {
     }),
 
     http.put('/api/events/:id', async ({ params, request }) => {
-      const newEvent = (await request.json()) as Event;
-      const putIndex = events.findIndex((event) => event.id === params.id);
-      if (putIndex === -1) {
-        return new HttpResponse(null, { status: 404 });
-      }
-      return HttpResponse.json(newEvent, { status: 201 });
+      const modifiedEvent = (await request.json()) as Event;
+
+      events = events.map((event) => (event.id === modifiedEvent.id ? modifiedEvent : event));
+
+      const index = events.findIndex((event) => event.id === params.id);
+
+      return index !== -1
+        ? HttpResponse.json(modifiedEvent, { status: 201 })
+        : new HttpResponse(null, { status: 404 });
     }),
 
     http.delete('/api/events/:id', ({ params }) => {

@@ -29,13 +29,11 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     }
   };
 
-  /**
-   * @description
-   */
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
       let response;
       if (editing) {
+        console.log(editing);
         response = await fetch(`/api/events/${(eventData as Event).id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
