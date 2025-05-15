@@ -32,8 +32,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
-import MonthView from './component/calandar/MonthView.tsx';
-import WeekView from './component/calandar/WeekView.tsx';
+import MonthView from './component/calendar/MonthView.tsx';
+import WeekView from './component/calendar/WeekView.tsx';
 import AddEventWidget from './component/widget/AddEventWidget.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
