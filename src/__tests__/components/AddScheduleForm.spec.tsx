@@ -32,10 +32,6 @@ describe('AddScheduleForm', () => {
     );
   };
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('제목 입력 시 handleOnChangeEvent가 호출된다', () => {
     renderComponent();
 

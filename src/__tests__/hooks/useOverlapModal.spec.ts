@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { useOverlapModal } from '@/hooks/useOverlapModal';
 import { Event } from '@/types';
@@ -11,10 +11,6 @@ vi.mock('@/utils/eventOverlap', () => ({
 }));
 
 describe('useOverlapModal', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it('초기 상태가 올바르게 설정되어야 한다', () => {
     const { result } = renderHook(() => useOverlapModal());
 

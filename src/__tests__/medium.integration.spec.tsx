@@ -57,14 +57,11 @@ const renderComponent = () => {
 };
 
 beforeEach(() => {
-  vi.clearAllMocks();
   vi.setSystemTime(new Date('2025-10-01'));
 });
 
 afterEach(() => {
-  vi.clearAllMocks();
   vi.useRealTimers();
-  server.resetHandlers();
 });
 
 describe('일정 CRUD 및 기본 기능', () => {

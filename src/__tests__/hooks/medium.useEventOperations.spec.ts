@@ -1,10 +1,9 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import {
   setupMockHandlerCreation,
-  setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../../__mocks__/handlersUtils.ts';
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
@@ -46,23 +45,10 @@ describe('useEventOperations 훅 테스트', () => {
     },
   ];
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    const { getHandler } = setupMockHandlerCreation(mockEvents);
-    const { handler: updateHandler, getHandler: getUpdateHandler } =
-      setupMockHandlerUpdating(mockEvents);
-    const { handler: deleteHandler, getHandler: getDeleteHandler } =
-      setupMockHandlerDeletion(mockEvents);
-
-    server.use(getHandler, updateHandler, getUpdateHandler, deleteHandler, getDeleteHandler);
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
-  });
-
   it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+    const { handler, getHandler } = setupMockHandlerCreation(mockEvents);
+    server.use(handler, getHandler);
+
     const { result } = renderHook(() => useEventOperations(false));
 
     await waitFor(() => {
@@ -185,11 +171,9 @@ describe('useEventOperations 훅 테스트', () => {
   });
 
   it("존재하지 않는 이벤트 수정 시 '일정 저장 실패'라는 토스트가 노출되며 에러 처리가 되어야 한다", async () => {
-    server.use(
-      http.put('/api/events/:id', () => {
-        return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
-      })
-    );
+    const { handler, getHandler } = setupMockHandlerUpdating(mockEvents);
+
+    server.use(getHandler, handler);
 
     const { result } = renderHook(() => useEventOperations(true));
 
