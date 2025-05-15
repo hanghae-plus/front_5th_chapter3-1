@@ -10,6 +10,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { getNotificationLabel } from '../__tests__/utils.ts';
 import { notificationOptions } from '../constants';
 import { Event } from '../types';
 
@@ -76,11 +77,7 @@ export default function EventList({
                   </Text>
                 )}
                 <Text>
-                  알림:{' '}
-                  {
-                    notificationOptions.find((option) => option.value === event.notificationTime)
-                      ?.label
-                  }
+                  알림: {getNotificationLabel(event.notificationTime, notificationOptions)}
                 </Text>
               </VStack>
               <HStack>
