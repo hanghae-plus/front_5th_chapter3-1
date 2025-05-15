@@ -12,9 +12,6 @@ import {
   Button,
   CloseButton,
   Flex,
-  FormControl,
-  FormLabel,
-  Input,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -24,11 +21,10 @@ import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
-import { useSearch } from './hooks/useSearch.ts';
 import { Event } from './types';
 import { EventForm } from './components/EventForm.tsx';
 import { CalendarView } from './components/CalendarView.tsx';
-import { EventList } from './components/EventList.tsx';
+import { SearchView } from './components/SearchView.tsx';
 
 function App() {
   const {
@@ -70,7 +66,6 @@ function App() {
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
@@ -134,27 +129,14 @@ function App() {
           setView={setView}
         />
 
-        <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-          <FormControl>
-            <FormLabel>일정 검색</FormLabel>
-            <Input
-              placeholder="검색어를 입력하세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </FormControl>
-
-          {filteredEvents.length === 0 ? (
-            <Text>검색 결과가 없습니다.</Text>
-          ) : (
-            <EventList
-              events={filteredEvents}
-              editEvent={editEvent}
-              deleteEvent={deleteEvent}
-              notifiedEvents={notifiedEvents}
-            />
-          )}
-        </VStack>
+        <SearchView
+          events={events}
+          currentDate={currentDate}
+          view={view}
+          editEvent={editEvent}
+          deleteEvent={deleteEvent}
+          notifiedEvents={notifiedEvents}
+        />
       </Flex>
 
       <AlertDialog
