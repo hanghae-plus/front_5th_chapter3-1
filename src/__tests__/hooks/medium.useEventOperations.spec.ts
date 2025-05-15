@@ -1,11 +1,8 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
-import { setupMockHandlerCreation, setupMockHandlerFetch } from '../../__mocks__/handlersUtils.ts';
-import { server } from '../../setupTests.ts';
-import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
+
+import { setupMockHandlerCreation } from '../../__mocks__/handlersUtils.ts';
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { Event } from '../../types.ts';
-
-import { rest, RestRequest, ResponseComposition, RestContext } from 'msw';
 
 const originalEvent: Event[] = [
   {
