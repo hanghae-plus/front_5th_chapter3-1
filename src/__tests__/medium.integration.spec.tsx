@@ -21,87 +21,103 @@ const setup = (element: ReactElement) => {
 };
 
 // ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
-export const submitScheduleForm = async (
+const saveSchedule = async (
   user: UserEvent,
-  form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>,
-  action: 'create' | 'edit'
+  form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>
 ) => {
   const { title, date, startTime, endTime, location, description, category } = form;
 
-  const typeInput = async (label: string, value: string) => {
-    const input = screen.getByLabelText(label);
-    await user.clear(input);
-    await user.type(input, value);
-  };
+  await user.click(screen.getAllByText('일정 추가')[0]);
 
-  await typeInput('제목', title);
-  await typeInput('날짜', date);
-  await typeInput('시작 시간', startTime);
-  await typeInput('종료 시간', endTime);
-  await typeInput('설명', description);
-  await typeInput('위치', location);
+  await user.type(screen.getByLabelText('제목'), title);
+  await user.type(screen.getByLabelText('날짜'), date);
+  await user.type(screen.getByLabelText('시작 시간'), startTime);
+  await user.type(screen.getByLabelText('종료 시간'), endTime);
+  await user.type(screen.getByLabelText('설명'), description);
+  await user.type(screen.getByLabelText('위치'), location);
   await user.selectOptions(screen.getByLabelText('카테고리'), category);
 
-  const submitButtonLabel = action === 'create' ? '일정 추가' : '일정 수정';
-  await user.click(screen.getByRole('button', { name: submitButtonLabel }));
+  await user.click(screen.getByTestId('event-submit-button'));
 };
 
-// ✅ 테스트용 mock 일정
-const MOCK_EVENTS: Event[] = [
-  {
-    id: '1',
-    title: '기존 회의',
-    date: '2025-05-10',
-    startTime: '10:00',
-    endTime: '11:00',
-    location: '회의실 A',
-    description: '기존 회의 설명입니다.',
-    category: '업무',
-    notificationTime: 10,
-    repeat: {
-      type: 'daily',
-      interval: 0,
-      endDate: '2025-05-10',
-    },
-  },
-];
-
-beforeEach(() => {
-  vi.setSystemTime(new Date('2025-05-01'));
-  setupMockHandlerCreation(MOCK_EVENTS); // ✅ mock 일정 추가
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    // Given
     const { user } = setup(<App />);
+    setupMockHandlerCreation([]);
 
-    await user.click(await screen.findByRole('button', { name: '일정 추가' }));
+    const MOCK_EVENT = {
+      title: '스터디 준비',
+      date: '2025-10-06',
+      startTime: '14:00',
+      endTime: '16:30',
+      description: '스터디 발표 자료 정리',
+      location: '카페 24',
+      category: '업무',
+    };
 
-    await submitScheduleForm(
-      user,
-      {
-        title: '테스트 일정',
-        date: '2025-05-13',
-        startTime: '10:00',
-        endTime: '11:00',
-        location: '회의실 A',
-        description: '설명입니다',
-        category: '업무',
-      },
-      'create'
-    );
+    // When
+    await saveSchedule(user, MOCK_EVENT);
 
-    const list = await screen.findByTestId('event-list');
-    expect(within(list).getByText('테스트 일정')).toBeInTheDocument();
+    // Then
+    expect(screen.getAllByText('일정 추가')[0]).toBeInTheDocument();
+    expect(screen.getByText(MOCK_EVENT.date)).toBeInTheDocument();
+    expect(screen.getByText(`${MOCK_EVENT.startTime} - ${MOCK_EVENT.endTime}`)).toBeInTheDocument();
+    expect(screen.getByText(MOCK_EVENT.description)).toBeInTheDocument();
+    expect(screen.getByText(MOCK_EVENT.location)).toBeInTheDocument();
+    expect(screen.getByText(MOCK_EVENT.category)).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    // Given
+    const { user } = setup(<App />);
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    setupMockHandlerUpdating();
+
+    const editButton = await screen.findByLabelText('Edit event');
+    await user.click(editButton);
+
+    // When
+    const updatedTitle = '새벽 일정';
+    const updatedLocation = '스터디룸 B';
+
+    const titleInput = await screen.findByLabelText('제목');
+    const locationInput = await screen.getByLabelText('위치');
+    await user.clear(titleInput);
+    await user.type(titleInput, updatedTitle);
+    await user.clear(locationInput);
+    await user.type(locationInput, updatedLocation);
+
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // Then
+    const eventList = await screen.findByTestId('event-list');
+    const updated = within(eventList);
+    expect(updated.getByText(updatedTitle)).toBeInTheDocument();
+    expect(updated.getByText(updatedLocation)).toBeInTheDocument();
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    // Given
+    setupMockHandlerDeletion();
+    const { user } = setup(<App />);
+    const deletedTitle = '새벽 일정';
+
+    // When
+    const deleteBtn = await screen.findByLabelText('Delete event');
+    await user.click(deleteBtn);
+
+    const confirmBtn = screen.queryByRole('button', { name: /확인|삭제/i });
+    if (confirmBtn) {
+      await user.click(confirmBtn);
+    }
+
+    // Then
+    await waitFor(() => {
+      expect(screen.queryByText(deletedTitle)).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {
