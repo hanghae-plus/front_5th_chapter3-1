@@ -4,8 +4,8 @@ import React from 'react';
 
 interface ViewNavigatorProps {
   view: 'week' | 'month'; // App.tsx에서 사용하는 타입과 일치시킵니다.
-  setView: (view: 'week' | 'month') => void;
-  navigate: (direction: 'prev' | 'next') => void;
+  setView: (_view: 'week' | 'month') => void;
+  navigate: (_direction: 'prev' | 'next') => void;
 }
 
 export const ViewNavigator: React.FC<ViewNavigatorProps> = ({ view, setView, navigate }) => {
