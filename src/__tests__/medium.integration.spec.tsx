@@ -74,15 +74,6 @@ const MOCK_EVENTS: Event[] = [
   },
 ];
 
-const renderApp = () => {
-  const utils = render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  );
-  return utils;
-};
-
 describe('일정 CRUD 및 기본 기능', () => {
   beforeEach(() => {
     vi.setSystemTime('2025-05-01');
@@ -95,7 +86,11 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation());
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const NEW_EVENT_FORM = {
       title: '테스트 이벤트 1',
@@ -127,7 +122,11 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
     const user = userEvent.setup();
     server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const eventList = await screen.findByTestId('event-list');
     expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
@@ -157,7 +156,11 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
     const user = userEvent.setup();
     server.use(...setupMockHandlerDeletion(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const eventList = await screen.findByTestId('event-list');
     expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
@@ -180,7 +183,11 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     // 월별 뷰에서는 일정이 표시됨
     const eventList = await screen.findByTestId('event-list');
@@ -198,7 +205,11 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-05-20');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const viewSelector = screen.getByTestId('view-selector');
     await user.selectOptions(viewSelector, 'week');
@@ -211,7 +222,11 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-04-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const viewSelector = screen.getByTestId('view-selector');
     await user.selectOptions(viewSelector, 'month');
@@ -223,7 +238,11 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const viewSelector = screen.getByTestId('view-selector');
     await user.selectOptions(viewSelector, 'month');
@@ -236,7 +255,11 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-01-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const viewSelector = screen.getByTestId('view-selector');
     await user.selectOptions(viewSelector, 'month');
@@ -255,7 +278,11 @@ describe('검색 기능', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, '입력된 검색어');
@@ -268,7 +295,11 @@ describe('검색 기능', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, '팀 회의');
@@ -281,7 +312,11 @@ describe('검색 기능', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const searchInput = screen.getByLabelText('일정 검색');
     await user.type(searchInput, '팀 회의');
@@ -315,7 +350,11 @@ describe('일정 충돌', () => {
     vi.setSystemTime('2025-05-01');
     const user = userEvent.setup();
     server.use(...setupMockHandlerCreation(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     // mock data 첫번째 이벤트와 겹침
     const NEW_EVENT_FORM = {
@@ -345,7 +384,11 @@ describe('일정 충돌', () => {
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
     const user = userEvent.setup();
     server.use(...setupMockHandlerUpdating(MOCK_EVENTS));
-    renderApp();
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
     const eventList = await screen.findByTestId('event-list');
     expect(within(eventList).getByText(MOCK_EVENTS[0].title)).toBeInTheDocument();
@@ -381,7 +424,11 @@ it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
 
   const user = userEvent.setup();
   server.use(...setupMockHandlerCreation());
-  renderApp();
+  render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
 
   const NEW_EVENT_FORM = {
     title: 'notificationTime 테스트',
