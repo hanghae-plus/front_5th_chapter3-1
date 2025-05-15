@@ -21,8 +21,8 @@ interface WeekViewProps {
   filteredEvents: Event[];
   notifiedEvents: string[]; // Array of event IDs
   WEEK_DAYS: readonly string[]; // Or string[] if not readonly in constants
-  formatWeek: (date: Date) => string;
-  getWeekDates: (date: Date) => Date[];
+  formatWeek: (_date: Date) => string;
+  getWeekDates: (_date: Date) => Date[];
 }
 
 export const WeekView: React.FC<WeekViewProps> = ({

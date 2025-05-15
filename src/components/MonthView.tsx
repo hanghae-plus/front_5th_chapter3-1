@@ -22,10 +22,10 @@ interface MonthViewProps {
   filteredEvents: Event[];
   notifiedEvents: string[]; // Array of event IDs
   WEEK_DAYS: readonly string[];
-  formatMonth: (date: Date) => string;
-  getWeeksAtMonth: (date: Date) => (number | null)[][];
-  formatDate: (currentDate: Date, day: number) => string;
-  getEventsForDay: (events: Event[], day: number) => Event[];
+  formatMonth: (_date: Date) => string;
+  getWeeksAtMonth: (_date: Date) => (number | null)[][];
+  formatDate: (_currentDate: Date, _day: number) => string;
+  getEventsForDay: (_events: Event[], _day: number) => Event[];
 }
 
 export const MonthView: React.FC<MonthViewProps> = ({
