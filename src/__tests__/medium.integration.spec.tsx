@@ -165,34 +165,6 @@ describe('일정 CRUD 및 기본 기능', () => {
 describe('일정 뷰', () => {
   const user = userEvent.setup();
 
-  // 테스트용 이벤트 데이터 설정 (같은 주에 있는 일정들)
-  const weekEvents: Event[] = [
-    {
-      id: '1',
-      title: '주간 회의',
-      date: '2025-05-15', // 목요일
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '팀 미팅',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-    {
-      id: '2',
-      title: '프로젝트 미팅',
-      date: '2025-05-16', // 금요일
-      startTime: '14:00',
-      endTime: '15:00',
-      description: '프로젝트 진행상황 공유',
-      location: '회의실 B',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-  ];
-
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     // 일정이 없는 주의 데이터로 설정
     const emptyWeekEvents: Event[] = [];
