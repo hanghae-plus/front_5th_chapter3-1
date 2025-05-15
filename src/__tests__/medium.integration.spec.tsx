@@ -1,26 +1,24 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
-
+import App from '../App';
 import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
-import App from '../App';
+import { events } from '../__mocks__/response/events.json';
 import { server } from '../setupTests';
 import { Event } from '../types';
+import { ChakraProvider } from '@chakra-ui/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { UserEvent, userEvent } from '@testing-library/user-event';
+import { http, HttpResponse } from 'msw';
+import { ReactElement } from 'react';
 
-// ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 const setup = (element: ReactElement) => {
   const user = userEvent.setup();
 
-  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
+  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user };
 };
 
-// ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
 const saveSchedule = async (
   user: UserEvent,
   form: Omit<Event, 'id' | 'notificationTime' | 'repeat'>
@@ -40,27 +38,133 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
-// ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
-  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+  beforeAll(() => {
+    vi.useFakeTimers();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  afterAll(() => {
+    vi.useRealTimers();
+  });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
+    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-01'));
+
+    const { user } = setup(<App></App>);
+
+    const newEvent = {
+      title: '이벤트 1',
+      date: '2025-10-12',
+      startTime: '11:30',
+      endTime: '13:30',
+      description: '이벤트 1입니다',
+      location: '회의실 1',
+      category: '업무',
+    };
+
+    await saveSchedule(user, newEvent);
+
+    const event = await screen.findByLabelText(`event-${events.length + 1}`);
+
+    expect(within(event).getByText(newEvent.title)).toBeInTheDocument();
+  });
+
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    setupMockHandlerUpdating(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-11T12:00'));
+
+    const { user } = setup(<App></App>);
+    const targetId = events[0].id;
+
+    const event = await screen.findByLabelText(`event-${targetId}`);
+    await user.click(within(event).getByLabelText('Edit event'));
+
+    await user.clear(screen.getByLabelText('제목'));
+    await user.type(screen.getByLabelText('제목'), '수정된 일정');
+    await user.clear(screen.getByLabelText('설명'));
+    await user.type(screen.getByLabelText('설명'), '수정된 설명');
+    await user.clear(screen.getByLabelText('위치'));
+    await user.type(screen.getByLabelText('위치'), '수정된 위치');
+
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    expect(within(event).getByText('수정된 일정')).toBeInTheDocument();
+    expect(within(event).getByText('수정된 설명')).toBeInTheDocument();
+    expect(within(event).getByText('수정된 위치')).toBeInTheDocument();
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-11T12:00'));
+
+    const { user } = setup(<App></App>);
+    const targetId = events[0].id;
+
+    const event = await screen.findByLabelText(`event-${targetId}`);
+    await user.click(within(event).getByLabelText('Delete event'));
+
+    expect(screen.queryByLabelText(`event-${targetId}`)).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-08-13T12:00'));
+    const { user } = setup(<App></App>);
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const eventList = await screen.findByTestId('event-list');
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-13T12:00'));
+    const { user } = setup(<App></App>);
+
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    const event = await screen.findByLabelText(`event-${events[0].id}`);
+
+    expect(within(event).getByText(events[0].title)).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-08-13T12:00'));
+    setup(<App></App>);
+
+    const eventList = await screen.findByTestId('event-list');
+
+    expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-13T12:00'));
+    setup(<App></App>);
+
+    const event = await screen.findByLabelText(`event-${events[0].id}`);
+
+    expect(within(event).getByText(events[0].title)).toBeInTheDocument();
+  });
+
+  it('선택된 날짜가 1월일 때 달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-01-01T12:00'));
+    setup(<App></App>);
+
+    const event = screen.getByTestId('month-view');
+    const target = within(event).getByText('신정');
+
+    expect(target).toBeInTheDocument();
+    expect(target).toHaveClass('css-19gpx6');
+  });
 });
 
 describe('검색 기능', () => {
