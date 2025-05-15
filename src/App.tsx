@@ -34,7 +34,7 @@ import {
 
 import { Event, EventForm, RepeatType } from '@/types';
 import { findOverlappingEvents, getTimeErrorMessage } from '@/utils';
-import { Calendar, NotificationList } from '@/components';
+import { Calendar, EventSearchForm, NotificationList } from '@/components';
 import { categories, notificationOptions } from '@/lib';
 
 function App() {
@@ -270,14 +270,7 @@ function App() {
         </VStack>
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-          <FormControl>
-            <FormLabel>일정 검색</FormLabel>
-            <Input
-              placeholder="검색어를 입력하세요"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </FormControl>
+          <EventSearchForm searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
           {filteredEvents.length === 0 ? (
             <Text>검색 결과가 없습니다.</Text>
