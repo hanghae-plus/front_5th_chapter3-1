@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
 
