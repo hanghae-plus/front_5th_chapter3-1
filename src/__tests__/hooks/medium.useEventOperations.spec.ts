@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import { events } from '../../__mocks__/response/events.json';
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
+import { useEventOperations } from '../../entities/event/api/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
 import { Event, EventForm } from '../../types.ts';
 

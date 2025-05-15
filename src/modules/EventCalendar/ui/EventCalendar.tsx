@@ -3,14 +3,21 @@ import { Heading, Select, IconButton, HStack, VStack } from '@chakra-ui/react';
 
 import { MonthView } from './MonthView';
 import { WeekView } from './WeekView';
+import { CalendarViewActions } from '../../../features/event/model/useCalendarViewStateAndActions';
+import { CalendarViewState } from '../../../features/event/model/useCalendarViewStateAndActions';
 
 export const EventCalendar = ({
   viewState,
   viewActions,
+  notifiedEvents,
 }: {
-  viewState: ViewState;
-  viewActions: ViewActions;
+  viewState: CalendarViewState;
+  viewActions: CalendarViewActions;
+  notifiedEvents: string[];
 }) => {
+  const { view, currentDate, filteredEvents, holidays } = viewState;
+  const { setView, navigate } = viewActions;
+
   return (
     <VStack flex={1} spacing={5} align="stretch">
       <Heading>일정 보기</Heading>

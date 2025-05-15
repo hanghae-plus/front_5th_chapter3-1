@@ -5,6 +5,7 @@ import { createHandlers } from './__mocks__/handlers';
 import { createMockHandlersUtils } from './__mocks__/handlersUtils';
 import { events } from './__mocks__/response/events.json' assert { type: 'json' };
 import { Event } from './types';
+import { cleanup } from '@testing-library/react';
 
 const server = setupServer();
 export { server };

@@ -5,23 +5,21 @@ import { Event } from '../types';
 // ! 아래 이름을 사용하지 않아도 되니, 독립적이게 테스트를 구동할 수 있는 방법을 찾아보세요. 그리고 이 로직을 PR에 설명해주세요.
 
 export function createMockHandlersUtils(initEvents: Event[] = []) {
-  // eventStore를 클로저로 감싸서 각 테스트마다 인스턴스를 분리
-  // 각 테스트마다 새로운 eventStore를 생성해서 MSW 핸들러에 주입
-  let eventStore = [...initEvents];
+  let eventStore = JSON.parse(JSON.stringify(initEvents));
 
   return {
     setupMockHandlerFetch: () => eventStore,
     setupMockHandlerCreation: (initEvents = [] as Event[]) => {
-      eventStore = [...initEvents];
+      eventStore = JSON.parse(JSON.stringify(initEvents));
     },
     setupMockHandlerAppend: (newEvent: Event) => {
-      eventStore.push(newEvent);
+      eventStore.push(JSON.parse(JSON.stringify(newEvent)));
     },
     setupMockHandlerUpdateById: (update: Event[]) => {
-      eventStore = update;
+      eventStore = JSON.parse(JSON.stringify(update));
     },
     setupMockHandlerDeletion: (id: string) => {
-      eventStore = eventStore.filter((event) => event.id !== id);
+      eventStore = eventStore.filter((event: Event) => event.id !== id);
     },
     getEventStore: () => eventStore,
   };

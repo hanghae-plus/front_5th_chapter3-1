@@ -9,7 +9,7 @@ import { EventForm } from '../types';
 const createCurrentMonthEvent = (title = '테스트 일정', description = '테스트 일정 설명') => {
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1; // 0-based index이므로 +1
+  const currentMonth = currentDate.getMonth() + 1;
   const currentDay = currentDate.getDate();
 
   const newEvent = {
@@ -39,11 +39,11 @@ const addOrUpdateEvent = async (
   const endTimeInput = screen.getByLabelText(/종료 시간/i);
   const descriptionInput = screen.getByLabelText(/설명/i);
 
-  await user.type(titleInput, event.title);
-  await user.type(dateInput, event.date);
-  await user.type(startTimeInput, event.startTime);
-  await user.type(endTimeInput, event.endTime);
-  await user.type(descriptionInput, event.description);
+  fireEvent.change(titleInput, { target: { value: event.title } });
+  fireEvent.change(dateInput, { target: { value: event.date } });
+  fireEvent.change(startTimeInput, { target: { value: event.startTime } });
+  fireEvent.change(endTimeInput, { target: { value: event.endTime } });
+  fireEvent.change(descriptionInput, { target: { value: event.description } });
 
   const saveButton = screen.getByTestId('event-submit-button');
   await user.click(saveButton);
@@ -85,6 +85,7 @@ describe('일정 CUD 기능', () => {
     const eventItem = within(eventList).getByText(NEW_EVENT.title).closest('div');
     const parent = eventItem?.parentElement;
     const parentDiv = parent?.parentElement;
+
     // 해당 div 내의 edit 버튼을 찾고, data-testid에서 id 추출
     const editButton = within(parentDiv!).getByRole('button', { name: 'Edit event' });
     const editButtonTestId = editButton.getAttribute('data-testid');
@@ -314,6 +315,9 @@ describe('검색 기능', () => {
 
     render(<App />);
 
+    const NEW_EVENT = createCurrentMonthEvent();
+    await addOrUpdateEvent(user, NEW_EVENT);
+
     // 1. 초기 상태에서 일정 개수 저장
     const eventList = screen.getByTestId('event-list');
     const initialAllEvents = await waitFor(() => within(eventList).getAllByTestId('event-item'));
@@ -337,14 +341,14 @@ describe('일정 충돌', () => {
 
     render(<App />);
 
-    const NEW_EVENT = createCurrentMonthEvent('새로운 일정');
+    const NEW_EVENT = createCurrentMonthEvent('새로운 일정', '새로운 일정 설명');
 
     await addOrUpdateEvent(user, NEW_EVENT);
 
     const items = screen.getAllByText('새로운 일정');
     expect(items.length).toBeGreaterThan(0);
 
-    const OVERLAP_EVENT = createCurrentMonthEvent('겹치는 일정');
+    const OVERLAP_EVENT = createCurrentMonthEvent('겹치는 일정', '겹치는 일정 설명');
 
     // 각 input을 직접 비우고 type으로 입력
     const titleInput = screen.getByLabelText(/제목/i);
@@ -384,8 +388,11 @@ describe('일정 충돌', () => {
     render(<App />);
 
     // 첫 번째 일정 등록
-    const FIRST_EVENT = createCurrentMonthEvent('첫 번째 일정');
+    const FIRST_EVENT = createCurrentMonthEvent('첫 번째 일정', '첫 번째 일정 설명');
     await addOrUpdateEvent(user, FIRST_EVENT);
+
+    const monthView = screen.getByTestId('month-view');
+    expect(within(monthView).getByText(FIRST_EVENT.title)).toBeInTheDocument();
 
     // 두 번째 일정 등록
     const SECOND_EVENT = {
@@ -398,18 +405,25 @@ describe('일정 충돌', () => {
 
     await addOrUpdateEvent(user, SECOND_EVENT);
 
+    expect(within(monthView).getByText(SECOND_EVENT.title)).toBeInTheDocument();
+
     // 첫 번째 일정 수정 버튼 클릭
     const eventList = screen.getByTestId('event-list');
     const eventItem = within(eventList).getByText(FIRST_EVENT.title).closest('div');
+
+    expect(eventItem).toBeInTheDocument();
+
     const parent = eventItem?.parentElement;
     const parentDiv = parent?.parentElement;
-    const editButton = within(parentDiv!).getByRole('button', { name: 'Edit event' });
+
+    expect(parentDiv).toBeInTheDocument();
+    const editButton = within(parentDiv!).getByTestId(/^edit-event-button-/);
+
     const editButtonTestId = editButton.getAttribute('data-testid');
     const id = editButtonTestId?.split('-').pop();
 
     const editButtonById = screen.getByTestId(`edit-event-button-${id}`);
     await user.click(editButtonById);
-
     // 두 번째 일정과 겹치는 시간으로 수정
     const titleInput = screen.getByLabelText(/제목/i);
     const dateInput = screen.getByLabelText(/날짜/i);
@@ -417,27 +431,24 @@ describe('일정 충돌', () => {
     const endTimeInput = screen.getByLabelText(/종료 시간/i);
     const descriptionInput = screen.getByLabelText(/설명/i);
 
-    fireEvent.change(titleInput, { target: { value: '' } });
-    await user.type(titleInput, FIRST_EVENT.title);
+    fireEvent.change(titleInput, { target: { value: FIRST_EVENT.title } });
 
-    fireEvent.change(dateInput, { target: { value: '' } });
-    await user.type(dateInput, SECOND_EVENT.date);
+    fireEvent.change(dateInput, { target: { value: SECOND_EVENT.date } });
 
-    fireEvent.change(startTimeInput, { target: { value: '' } });
-    await user.type(startTimeInput, SECOND_EVENT.startTime);
+    fireEvent.change(startTimeInput, { target: { value: SECOND_EVENT.startTime } });
 
-    fireEvent.change(endTimeInput, { target: { value: '' } });
-    await user.type(endTimeInput, SECOND_EVENT.endTime);
+    fireEvent.change(endTimeInput, { target: { value: SECOND_EVENT.endTime } });
 
-    fireEvent.change(descriptionInput, { target: { value: '' } });
-    await user.type(descriptionInput, FIRST_EVENT.description);
+    fireEvent.change(descriptionInput, { target: { value: FIRST_EVENT.description } });
 
     const saveButton = screen.getByTestId('event-submit-button');
+    expect(saveButton).toBeInTheDocument();
     await user.click(saveButton);
 
-    const overlapDialog = await waitFor(() => screen.getByTestId('overlap-dialog'));
-
-    expect(overlapDialog).toBeInTheDocument();
+    await waitFor(() => {
+      const overlapDialog = screen.getByTestId('overlap-dialog');
+      expect(overlapDialog).toBeInTheDocument();
+    });
   });
 });
 

@@ -21,12 +21,12 @@ export function createHandlers(utils: ReturnType<typeof createMockHandlersUtils>
       const update = (await request.json()) as Event;
       const currentEvents = utils.setupMockHandlerFetch();
 
-      const eventIndex = currentEvents.findIndex((event) => event.id === id);
+      const eventIndex = currentEvents.findIndex((event: Event) => event.id === id);
       if (eventIndex === -1) {
         throw new Error('해당 id의 이벤트가 존재하지 않습니다.');
       }
 
-      const updatedEvent = currentEvents.map((event) =>
+      const updatedEvent = currentEvents.map((event: Event) =>
         event.id === id ? { ...event, ...update } : event
       );
       utils.setupMockHandlerUpdateById(updatedEvent);

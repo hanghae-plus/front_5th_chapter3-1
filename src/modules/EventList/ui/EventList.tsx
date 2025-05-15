@@ -1,30 +1,29 @@
-import { DeleteIcon, EditIcon, BellIcon } from '@chakra-ui/icons';
-import {
-  Box,
-  IconButton,
-  FormControl,
-  FormLabel,
-  HStack,
-  Input,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
+import { BellIcon } from '@chakra-ui/icons';
+import { Box, HStack, Text, VStack } from '@chakra-ui/react';
 
 import { notificationOptions } from '../../../based/constants/notificationOptions';
 import { EventDeleteButton, EventEditButton } from '../../../features/event';
+import { Event } from '../../../types';
+import { EventSearchInput } from '../../../features/event/ui/EventSearchInput';
 
-export const EventList = () => {
+export const EventList = ({
+  searchTerm,
+  onSearch,
+  filteredEvents,
+  notifiedEvents,
+  onEdit,
+  onDelete,
+}: {  
+  searchTerm: string;
+  onSearch: (searchTerm: string) => void;
+  filteredEvents: Event[];
+  notifiedEvents: string[];
+  onEdit: (event: Event) => void;
+  onDelete: (eventId: string) => void;
+}) => {
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
-      <FormControl>
-        <FormLabel>일정 검색</FormLabel>
-        <Input
-          data-testid="search-input"
-          placeholder="검색어를 입력하세요"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </FormControl>
+      <EventSearchInput searchTerm={searchTerm} onSearch={onSearch} />
 
       {filteredEvents.length === 0 ? (
         <Text>검색 결과가 없습니다.</Text>
@@ -76,8 +75,8 @@ export const EventList = () => {
                 </Text>
               </VStack>
               <HStack>
-                <EventEditButton />
-                <EventDeleteButton />
+                <EventEditButton event={event} editEvent={onEdit} />
+                <EventDeleteButton event={event} onDelete={onDelete} />
               </HStack>
             </HStack>
           </Box>

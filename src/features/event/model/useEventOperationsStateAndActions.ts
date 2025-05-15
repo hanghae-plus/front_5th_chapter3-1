@@ -1,4 +1,4 @@
-import { useEventOperations } from '../../../hooks/useEventOperations';
+import { useEventOperations } from '../../../entities/event/api/useEventOperations';
 import { useNotifications } from '../../../hooks/useNotifications';
 import { Event } from '../../../types';
 

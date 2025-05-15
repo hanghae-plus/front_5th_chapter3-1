@@ -18,8 +18,7 @@ export function isOverlapping(event1: Event | EventForm, event2: Event | EventFo
   return start1 < end2 && start2 < end1;
 }
 
-export function findOverlappingEvents(newEvent: Event | EventForm, events: Event[]) {
-  return events.filter(
+export function findOverlappingEvents(newEvent: Event | EventForm, events: Event[]) {  return events.filter(
     (event) => event.id !== (newEvent as Event).id && isOverlapping(event, newEvent)
   );
 }

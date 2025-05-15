@@ -1,44 +1,6 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
-import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  Checkbox,
-  CloseButton,
-  Flex,
-  FormControl,
-  FormLabel,
-  Heading,
-  HStack,
-  IconButton,
-  Input,
-  Select,
-  Text,
-  Tooltip,
-  useToast,
-  VStack,
-} from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { Box, Flex } from '@chakra-ui/react';
 
-import { categories } from '../based/constants/categories.ts';
-import { notificationOptions } from '../based/constants/notificationOptions.ts';
 import { useDialogStore } from '../based/store/DialogStore.ts';
-import { findOverlappingEvents } from '../based/utils/eventOverlap.ts';
-import { getTimeErrorMessage } from '../based/utils/timeValidation.ts';
 import {
   EventAddForm,
   useCalendarViewStateAndActions,
@@ -47,16 +9,10 @@ import {
   useEventSubmission,
   useOverlapStateAndActions,
 } from '../features/event';
-import { useCalendarView } from '../hooks/useCalendarView.ts';
-import { useEventForm } from '../hooks/useEventForm.ts';
-import { useEventOperations } from '../hooks/useEventOperations.ts';
-import { useNotifications } from '../hooks/useNotifications.ts';
-import { useSearch } from '../hooks/useSearch.ts';
-import { EventCalendar, MonthView, WeekView } from '../modules/EventCalendar';
+import { EventCalendar } from '../modules/EventCalendar';
 import { EventList } from '../modules/EventList';
 import { Notifications } from '../modules/Notifications';
 import { OverlapDialog } from '../modules/OverlapDialog';
-import { Event, EventForm } from '../types';
 
 export const EventManagerPage = () => {
   const { formState, formActions } = useEventFormStateAndActions();
@@ -66,7 +22,7 @@ export const EventManagerPage = () => {
   );
   const { viewState, viewActions } = useCalendarViewStateAndActions(operationsState.events);
   const { isOverlapDialogOpen, setIsOverlapDialogOpen } = useDialogStore();
-  const { overlapActions } = useOverlapStateAndActions();
+  const { overlapState, overlapActions } = useOverlapStateAndActions();
   const { addOrUpdateEvent } = useEventSubmission(
     formState,
     formActions,
@@ -82,20 +38,29 @@ export const EventManagerPage = () => {
         <EventCalendar
           viewState={viewState}
           viewActions={viewActions}
-          events={operationsState.events}
+          notifiedEvents={operationsState.notifiedEvents}
         />
         <EventList
-          events={operationsState.events}
           searchTerm={viewState.searchTerm}
           onSearch={viewActions.setSearchTerm}
+          filteredEvents={viewState.filteredEvents}
+          notifiedEvents={operationsState.notifiedEvents}
+          onEdit={formActions.editEvent}
+          onDelete={operationsActions.deleteEvent}
         />
       </Flex>
 
-      <OverlapDialog isOpen={isOverlapDialogOpen} onClose={() => setIsOverlapDialogOpen(false)} />
+      <OverlapDialog
+        isOpen={isOverlapDialogOpen}
+        onClose={() => setIsOverlapDialogOpen(false)}
+        overlappingEvents={overlapState.overlappingEvents}
+        formState={formState}
+        onSave={operationsActions.saveEvent}
+      />
 
       <Notifications
         notifications={operationsState.notifications}
-        notifiedEvents={operationsState.notifiedEvents}
+        setNotifications={operationsActions.setNotifications}
       />
     </Box>
   );

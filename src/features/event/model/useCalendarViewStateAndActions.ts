@@ -21,3 +21,19 @@ export const useCalendarViewStateAndActions = (events: Event[]) => {
     },
   };
 };
+
+export interface CalendarViewState {
+  view: 'week' | 'month';
+  currentDate: Date;
+  holidays: Record<string, string>;
+  searchTerm: string;
+  filteredEvents: Event[];
+}
+
+export interface CalendarViewActions {
+  setView: (view: 'week' | 'month') => void;
+  navigate: (direction: 'prev' | 'next') => void;
+  setSearchTerm: (searchTerm: string) => void;
+}
+
+
