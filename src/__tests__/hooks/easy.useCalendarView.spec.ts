@@ -117,5 +117,5 @@ it("currentDate가 '2025-01-01' 변경되면 1월 휴일 '신정'으로 업데�
     result.current.setCurrentDate(new Date('2025-01-01'));
   });
 
-  assertDate(result.current.currentDate, new Date('2025-01-01'));
+  expect(result.current.holidays).toHaveProperty('2025-01-01', '신정');
 });
