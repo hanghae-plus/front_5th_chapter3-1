@@ -9,10 +9,28 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import React, { FC } from 'react';
 
+import { Event } from '../types';
 import EventDetails from './EventDetails';
 
-function EventList({ events, searchTerm, setSearchTerm, editEvent, deleteEvent, notifiedEvents }) {
+type EventListProps = {
+  events: Event[];
+  searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  editEvent: (event: Event) => void;
+  deleteEvent: (id: string) => void;
+  notifiedEvents: string[];
+};
+
+const EventList: FC<EventListProps> = ({
+  events,
+  searchTerm,
+  setSearchTerm,
+  editEvent,
+  deleteEvent,
+  notifiedEvents,
+}) => {
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
       <FormControl>
@@ -50,6 +68,6 @@ function EventList({ events, searchTerm, setSearchTerm, editEvent, deleteEvent, 
       )}
     </VStack>
   );
-}
+};
 
 export default EventList;

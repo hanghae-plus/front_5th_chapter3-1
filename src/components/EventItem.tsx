@@ -1,7 +1,15 @@
 import { BellIcon } from '@chakra-ui/icons';
 import { Box, HStack, Text } from '@chakra-ui/react';
+import { FC } from 'react';
 
-function EventItem({ event, isNotified }) {
+import { Event } from '../types';
+
+type EventItemProps = {
+  event: Event;
+  isNotified: boolean;
+};
+
+const EventItem: FC<EventItemProps> = ({ event, isNotified }) => {
   return (
     <Box
       p={1}
@@ -19,6 +27,6 @@ function EventItem({ event, isNotified }) {
       </HStack>
     </Box>
   );
-}
+};
 
 export default EventItem;

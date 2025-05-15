@@ -8,8 +8,25 @@ import {
   Button,
   Text,
 } from '@chakra-ui/react';
+import { FC, RefObject } from 'react';
 
-function OverlapDialog({ isOpen, onClose, overlappingEvents, onConfirm, cancelRef }) {
+import { Event } from '../types';
+
+type OverlapDialogProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  overlappingEvents: Event[];
+  cancelRef: RefObject<HTMLButtonElement>;
+};
+
+const OverlapDialog: FC<OverlapDialogProps> = ({
+  isOpen,
+  onClose,
+  overlappingEvents,
+  onConfirm,
+  cancelRef,
+}) => {
   return (
     <AlertDialog isOpen={isOpen} leastDestructiveRef={cancelRef} onClose={onClose}>
       <AlertDialogOverlay>
@@ -40,6 +57,6 @@ function OverlapDialog({ isOpen, onClose, overlappingEvents, onConfirm, cancelRe
       </AlertDialogOverlay>
     </AlertDialog>
   );
-}
+};
 
 export default OverlapDialog;

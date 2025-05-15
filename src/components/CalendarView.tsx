@@ -1,9 +1,25 @@
 import { VStack } from '@chakra-ui/react';
+import { FC } from 'react';
 
+import { Event } from '../types';
 import MonthView from './MonthView';
 import WeekView from './WeekView';
 
-function CalendarView({ view, currentDate, holidays, filteredEvents, notifiedEvents }) {
+type CalendarViewProps = {
+  view: 'week' | 'month';
+  currentDate: Date;
+  holidays: { [key: string]: string };
+  filteredEvents: Event[];
+  notifiedEvents: string[];
+};
+
+const CalendarView: FC<CalendarViewProps> = ({
+  view,
+  currentDate,
+  holidays,
+  filteredEvents,
+  notifiedEvents,
+}) => {
   return (
     <VStack flex={1} align="stretch">
       {view === 'week' ? (
@@ -22,6 +38,6 @@ function CalendarView({ view, currentDate, holidays, filteredEvents, notifiedEve
       )}
     </VStack>
   );
-}
+};
 
 export default CalendarView;

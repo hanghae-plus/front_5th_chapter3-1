@@ -22,7 +22,7 @@ const CalendarHeader: FC<CalendarHeaderProps> = ({ view, setView, navigate }) =>
         data-testid="view-select"
         aria-label="view"
         value={view}
-        onChange={(e) => setView(e.target.value)}
+        onChange={(e) => setView(e.target.value as ViewType)}
         width="auto"
       >
         <option value="week">Week</option>

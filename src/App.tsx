@@ -12,6 +12,7 @@ import { useEventForm } from './hooks/useEventForm';
 import { useEventOperations } from './hooks/useEventOperations';
 import { useNotifications } from './hooks/useNotifications';
 import { useSearch } from './hooks/useSearch';
+import { Event } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 
 function App() {
@@ -44,7 +45,7 @@ function App() {
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState([]);
+  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef(null);
 
   const handleEventSubmit = async () => {
@@ -131,7 +132,7 @@ function App() {
       <Flex gap={6} h="full">
         <EventForm {...formProps} />
 
-        <Flex flex={1} direction="column" spacing={5}>
+        <Flex flex={1} direction="column" gap={5}>
           <CalendarHeader view={view} setView={setView} navigate={navigate} />
           <CalendarView {...calendarProps} />
         </Flex>

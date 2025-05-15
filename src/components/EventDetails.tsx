@@ -1,5 +1,8 @@
 import { BellIcon } from '@chakra-ui/icons';
 import { HStack, Text, VStack } from '@chakra-ui/react';
+import { FC } from 'react';
+
+import { Event } from '../types';
 
 const notificationOptions = [
   { value: 1, label: '1분 전' },
@@ -9,7 +12,12 @@ const notificationOptions = [
   { value: 1440, label: '1일 전' },
 ];
 
-function EventDetails({ event, isNotified }) {
+type EventDetailsProps = {
+  event: Event;
+  isNotified: boolean;
+};
+
+const EventDetails: FC<EventDetailsProps> = ({ event, isNotified }) => {
   const getRepeatText = () => {
     if (event.repeat.type === 'none') return null;
 
@@ -60,6 +68,6 @@ function EventDetails({ event, isNotified }) {
       <Text>알림: {notificationLabel}</Text>
     </VStack>
   );
-}
+};
 
 export default EventDetails;
