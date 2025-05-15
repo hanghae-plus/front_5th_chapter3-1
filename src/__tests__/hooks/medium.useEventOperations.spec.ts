@@ -79,7 +79,9 @@ describe('useEventOperations', () => {
       await waitFor(() => result.current.saveEvent(newEvent));
       console.log(result.current.events[0]);
       console.log(newEvent);
-      expect(result.current.events[0]).toEqual(newEvent);
+      await waitFor(() => expect(result.current.events[0]).toEqual(newEvent));
+
+      // expect(result.current.events[0]).toEqual(newEvent);
     });
   });
 
