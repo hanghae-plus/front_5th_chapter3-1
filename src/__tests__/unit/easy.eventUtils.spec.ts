@@ -11,7 +11,7 @@ const mockEvents: Event[] = [
     description: '첫 번째 이벤트',
     location: '장소 1',
     category: '카테고리 1',
-    repeat: { type: 'none', interval: 1 },
+    repeat: { type: 'none', interval: 1, endDate: '' },
     notificationTime: 15,
   },
   {
@@ -23,7 +23,7 @@ const mockEvents: Event[] = [
     description: '두 번째 이벤트',
     location: '장소 2',
     category: '카테고리 2',
-    repeat: { type: 'none', interval: 1 },
+    repeat: { type: 'none', interval: 1, endDate: '' },
     notificationTime: 15,
   },
   {
@@ -35,7 +35,7 @@ const mockEvents: Event[] = [
     description: '세 번째 이벤트',
     location: '장소 3',
     category: '카테고리 3',
-    repeat: { type: 'none', interval: 1 },
+    repeat: { type: 'none', interval: 1, endDate: '' },
     notificationTime: 15,
   },
 ];
@@ -88,7 +88,7 @@ describe('getFilteredEvents', () => {
       description: '6월 마지막 날 이벤트',
       location: '장소 4',
       category: '카테고리 4',
-      repeat: { type: 'none', interval: 1 },
+      repeat: { type: 'none', interval: 1, endDate: '' },
       notificationTime: 15,
     };
     const result = getFilteredEvents(

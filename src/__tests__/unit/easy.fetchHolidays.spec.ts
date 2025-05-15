@@ -15,7 +15,7 @@ describe('fetchHolidays', () => {
 
   it('공휴일이 없는 월에 대해 빈 객체를 반환한다', () => {
     const date = new Date('2025-02-28');
-    // 2025-02-29는 왜 안되는지..?
+    // 2025-02-29는 왜 안되는지..? -> 2025년도는 윤년이 아니기 때문.
     const result = fetchHolidays(date);
     expect(result).toEqual({});
   });

@@ -10,7 +10,7 @@ const mockSchedule: Event = {
   description: '',
   location: '',
   category: '',
-  repeat: { type: 'none', interval: 1 },
+  repeat: { type: 'none', interval: 1, endDate: '' },
   notificationTime: 30,
 };
 

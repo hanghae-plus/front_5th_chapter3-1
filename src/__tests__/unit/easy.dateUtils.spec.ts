@@ -10,6 +10,9 @@ import {
   isDateInRange,
 } from '../../utils/dateUtils';
 
+// getDaysInMonth : 해당 연도와 월에 며칠까지 있는지 반환하는 함수.
+// getDaysInMonth(2025, 1)은 2025년 1월의 일 수를 반환하고, 결과는 31일
+
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
     expect(getDaysInMonth(2025, 1)).toBe(31);
