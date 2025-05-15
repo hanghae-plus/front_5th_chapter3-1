@@ -11,6 +11,90 @@
       "category": "업무",
       "repeat": { "type": "none", "interval": 0 },
       "notificationTime": 10
+    },
+    {
+      "id": "2",
+      "title": "기존 회의",
+      "date": "2025-10-01",
+      "startTime": "19:00",
+      "endTime": "20:00",
+      "description": "TF 미팅",
+      "location": "회의실 C",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "3",
+      "title": "이벤트 2",
+      "date": "2025-11-01",
+      "startTime": "13:00",
+      "endTime": "15:00",
+      "description": "주간 회의",
+      "location": "회의실 A",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "4",
+      "title": "7월 첫째주 회의",
+      "date": "2025-07-01",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "description": "7월 첫째주 화요일 회의",
+      "location": "회의실 D",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "5",
+      "title": "7월 첫째주 워크샵",
+      "date": "2025-07-03",
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "description": "7월 첫째주 목요일 워크샵",
+      "location": "세미나실",
+      "category": "교육",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "6",
+      "title": "7월 둘째주 미팅",
+      "date": "2025-07-08",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "description": "7월 둘째주 화요일 미팅",
+      "location": "회의실 E",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "7",
+      "title": "7월 셋째주 세미나",
+      "date": "2025-07-16",
+      "startTime": "15:00",
+      "endTime": "17:00",
+      "description": "7월 셋째주 수요일 세미나",
+      "location": "세미나실",
+      "category": "교육",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    },
+    {
+      "id": "8",
+      "title": "CLASS 1",
+      "date": "2025-09-16",
+      "startTime": "11:00",
+      "endTime": "12:00",
+      "description": "CLASS 1",
+      "location": "교육실",
+      "category": "교육",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
     }
   ]
 }

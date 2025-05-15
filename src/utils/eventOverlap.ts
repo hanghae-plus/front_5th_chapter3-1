@@ -5,10 +5,18 @@ export function parseDateTime(date: string, time: string) {
 }
 
 export function convertEventToDateRange({ date, startTime, endTime }: Event | EventForm) {
-  return {
-    start: parseDateTime(date, startTime),
-    end: parseDateTime(date, endTime),
-  };
+  const start = parseDateTime(date, startTime);
+  const end = parseDateTime(date, endTime);
+
+  // 둘 중 하나라도 Invalid Date면 둘 다 Invalid Date로 반환
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return {
+      start: new Date('Invalid Date'),
+      end: new Date('Invalid Date'),
+    };
+  }
+
+  return { start, end };
 }
 
 export function isOverlapping(event1: Event | EventForm, event2: Event | EventForm) {
