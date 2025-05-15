@@ -7,7 +7,7 @@ import {
   setupMockHandlerUpdating,
 } from '@/__mocks__/handlersUtils.ts';
 import { events } from '@/__mocks__/response/events.json';
-import { RootProvider as wrapper } from '@/app/providers/rootProvider';
+import { RootProvider as wrapper } from '@/app/providers/RootProvider';
 import { Event, RepeatType } from '@/entities/event/model/types';
 import { useEventOperations } from '@/entities/event/model/useEventOperations';
 import { server } from '@/setupTests';
@@ -43,7 +43,7 @@ const initialEvents: Event[] = events.map((event) => ({
 
 it("저장되어있는 초기 이벤트 데이터를 불러오고 '일정 로딩 완료!' 라는 텍스트와 함께 안내 토스트가 표시되어야 한다", async () => {
   setupMockHandlerCreation(initialEvents);
-  const { result } = renderHook(() => useEventOperations(false), {
+  const { result } = renderHook(() => useEventOperations(), {
     wrapper,
   });
 
