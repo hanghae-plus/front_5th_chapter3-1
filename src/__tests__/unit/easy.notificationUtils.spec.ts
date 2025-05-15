@@ -96,7 +96,7 @@ describe('createNotificationMessage', () => {
   it('올바른 알림 메시지를 생성해야 한다', () => { 
     const alert = createNotificationMessage(event)
 
-    expect(alert).toBe('10분 후 팀 미팅 일정이 시작됩니다.');
+    expect(alert).toBe('10분 후 알람 시작 예정 일정이 시작됩니다.');
 
   });
 });

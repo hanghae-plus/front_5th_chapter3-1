@@ -25,23 +25,36 @@ vi.mock('@chakra-ui/react', async () => {
   };
 });
 
-const newEvent: Event[] = [
-  {
-    "id": "1",
-    "title": "기존 회의",
-    "date": "2025-10-15",
-    "startTime": "09:00",
-    "endTime": "10:00",
-    "description": "기존 팀 미팅",
-    "location": "회의실 B",
-    "category": "업무",
-    "repeat": { "type": "none", "interval": 0 },
-    "notificationTime": 10
-  }
-]
+const newEvent: Event = {
+  id: '1',
+  title: '신규 회의',
+  date: '2025-11-01',
+  startTime: '14:00',
+  endTime: '15:00',
+  description: '신규 회의 설명',
+  location: '회의실 A',
+  category: '업무',
+  repeat: { type: 'none', interval: 0 },
+  notificationTime: 5,
+};
+
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
-  const initialEvents: Event[] = newEvent;
+  const initialEvents: Event[] = [
+    {
+      id: '1',
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+
   setupMockHandlerCreation(initialEvents);
 
   const { result } = renderHook(()=> useEventOperations(false));
@@ -55,7 +68,7 @@ it('saveEvent 호출 시 새로운 이벤트가 저장된다.', async () => {
 
   const { result } = renderHook(() => useEventOperations(false));
 
-  await act(() => result.current.saveEvent(newEvent[0]));
+  await act(() => result.current.saveEvent(newEvent));
 
   expect(result.current.events[0]).toEqual(newEvent);
   expect(toastFn).toHaveBeenCalledWith(
@@ -99,9 +112,9 @@ it("saveEvent 호출 시 기존 이벤트의 title과 endtime이 업데이트 �
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
   setupMockHandlerDeletion();
   const { result } = renderHook(() => useEventOperations(false))
-  result.current.saveEvent(newEvent[0]);
+  result.current.saveEvent(newEvent);
 
-  await act(() => result.current.deleteEvent(newEvent[0].id))
+  await act(() => result.current.deleteEvent(newEvent.id))
 
   expect(result.current.events).toHaveLength(0);
   expect(toastFn).toHaveBeenCalledWith(

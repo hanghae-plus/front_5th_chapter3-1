@@ -88,7 +88,7 @@ const events: Event[] = [
   },
   {
     "id": "8",
-    "title": "친구 생일 파티",
+    "title": "birthday_party",
     "date": "2025-07-30",
     "startTime": "19:00",
     "endTime": "22:00",
@@ -123,37 +123,37 @@ describe('getFilteredEvents', () => {
   it('주간 뷰에서 2025-07-01 주의 이벤트만 반환한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-01'), 'week');
 
-    expect(result.map((e) => e.id)).toEqual(['1', '2']);
+    expect(result.map((e) => e.id)).toEqual(['2']);
   });
 
   it('월간 뷰에서 2025년 7월의 모든 이벤트를 반환한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-10'), 'month');
 
-    expect(result.map((e) => e.id).sort()).toEqual(['2', '3', '4']);
+    expect(result.map((e) => e.id).sort()).toEqual(['2', '3', '4', '6', '8']);
   });
 
   it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다", () => {
     const result = getFilteredEvents(events, '이벤트', new Date('2025-07-01'), 'week');
 
-    expect(result.map((e) => e.id)).toEqual(['1', '2']);
+    expect(result.map((e) => e.id)).toEqual(['2']);
   });
 
   it('검색어가 없을 때 모든 이벤트를 반환한다', () => {
     const result = getFilteredEvents(events, '', new Date('2025-07-01'), 'month');
 
-    expect(result.map((e) => e.id)).toEqual(['2', '3', '4']);
+    expect(result.map((e) => e.id)).toEqual(['2', '3', '4', '6', '8']);
   });
 
   it('검색어가 대소문자를 구분하지 않고 작동한다', () => {
-    const result = getFilteredEvents(events, 'quick_meeting', new Date('2025-07-01'), 'month');
+    const result = getFilteredEvents(events, 'birthday_party', new Date('2025-07-01'), 'month');
 
-    expect(result.map((e) => e.id)).toEqual(['4']);
+    expect(result.map((e) => e.id)).toEqual(['8']);
   });
 
   it('월의 경계에 있는 이벤트를 올바르게 필터링한다', () => {
-    const result = getFilteredEvents(events, '', new Date('2025-06-01'), 'month');
+    const result = getFilteredEvents(events, '', new Date('2025-08-01'), 'month');
 
-    expect(result.map((e) => e.id)).toEqual(['1']);
+    expect(result.map((e) => e.id)).toEqual(['5', '9']);
   });
 
   it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {

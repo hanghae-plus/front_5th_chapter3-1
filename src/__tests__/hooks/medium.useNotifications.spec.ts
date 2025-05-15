@@ -43,7 +43,7 @@ it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다
     act(() => vi.advanceTimersByTime(1000));
 
     expect(result.current.notifications).toHaveLength(1);
-    expect(result.current.notifications[0].message).toBe('1분 후 미래 알림 일정이 시작됩니다.');
+    expect(result.current.notifications[0].message).toBe('1분 후 새로 생성될 알림 일정이 시작됩니다.');
     expect(result.current.notifiedEvents).toEqual(['1']);    
 });
 
