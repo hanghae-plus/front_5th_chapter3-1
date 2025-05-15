@@ -1,12 +1,10 @@
 import { cleanup, screen, within } from '@testing-library/react';
-import { server } from '../setupTests';
 import App from '../App';
 import { Event } from '../types';
 import render from '../utils/test/render';
 import { UserEvent } from '@testing-library/user-event';
 import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import { setupMockHandlerCreation } from '@/__mocks__/handlersUtils';
-import { handlers } from '@/__mocks__/handlers';
 
 const MOCK_EVENTS: Event[] = [
   {
@@ -65,15 +63,25 @@ describe('일정 CRUD 및 기본 기능', () => {
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
-
     await typeEvent(user, MOCK_EVENTS[0]);
 
-    const eventList = screen.getByTestId('event-list');
+    const [firstEvent] = screen.getAllByTestId('event-item');
 
-    expect(within(eventList).getByText('새 일정 123')).toBeInTheDocument();
-    expect(within(eventList).getByText('2025-05-12')).toBeInTheDocument();
-    expect(within(eventList).getByText('새 일정 설명')).toBeInTheDocument();
-    expect(within(eventList).getByText('새 위치')).toBeInTheDocument();
+    expect(within(firstEvent).getByRole('button', { name: 'Edit event' })).toBeInTheDocument();
+
+    await user.click(within(firstEvent).getByRole('button', { name: 'Edit event' }));
+
+    await user.clear(screen.getByLabelText('위치'));
+    expect(screen.getByLabelText('위치')).toHaveValue('');
+    await user.type(screen.getByLabelText('위치'), '회의실 C');
+    expect(screen.getByLabelText('위치')).toHaveValue('회의실 C');
+
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    const eventList = await screen.findByTestId('event-list');
+
+    expect(within(eventList).queryByText('회의실 B')).not.toBeInTheDocument();
+    expect(within(eventList).getByText('회의실 C')).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
@@ -112,7 +120,6 @@ describe('일정 CRUD 및 기본 기능', () => {
 describe('일정 뷰', () => {
   beforeEach(async () => {
     setupMockHandlerCreation(events as Event[]);
-    server.use(handlers[0]);
   });
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     vi.setSystemTime('2025-05-15');
@@ -159,7 +166,6 @@ describe('검색 기능', () => {
   beforeEach(async () => {
     vi.setSystemTime('2025-10-01');
     setupMockHandlerCreation(events as Event[]);
-    server.use(handlers[0]);
   });
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const { user } = await render(<App />);
