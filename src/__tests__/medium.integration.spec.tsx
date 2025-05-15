@@ -9,7 +9,7 @@ import {
   setupMockHandlerUpdating,
   setupMockHandlerDeletion,
 } from '../__mocks__/handlersUtils';
-import App from '../App';
+import App from '../app/App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 

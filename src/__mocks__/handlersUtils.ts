@@ -8,8 +8,6 @@ import { Event } from '../types';
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   let mockEvents = [...initEvents];
 
-  // console.log('mockEvents=>', mockEvents);
-
   return [
     http.get('/api/events', () => {
       console.log('🟢 [MSW] GET /api/events called');

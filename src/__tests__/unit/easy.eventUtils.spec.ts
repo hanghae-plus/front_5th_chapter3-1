@@ -135,7 +135,7 @@ describe('getFilteredEvents', () => {
       },
       {
         id: '3',
-        title: '7월 마지막',
+        title: '7월 30일',
         date: '2025-07-30',
         startTime: '11:00',
         endTime: '12:00',
