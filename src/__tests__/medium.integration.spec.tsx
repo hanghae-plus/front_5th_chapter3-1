@@ -75,7 +75,46 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(screen.getByText(`카테고리: ${form.category}`)).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    // 이미 일정이 있음 -> 수정 클릭 -> 입력값 변경 -> 일정 수정 클릭 -> 수정 내용 반영 확인
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    // 기존 일정 '기존 회의'가 먼저 나타나야 함
+    const list = await screen.findByTestId('event-list');
+    const existingEvent = within(list).getByText('기존 회의');
+    expect(existingEvent).toBeInTheDocument();
+
+    // 수정 버튼 클릭
+    const editButtons = screen.getAllByLabelText('Edit event');
+    await user.click(editButtons[0]);
+
+    // 기존 값이 입력 필드에 채워져 있어야 함
+    const titleInput = screen.getByLabelText('제목');
+    expect(titleInput).toHaveValue('기존 회의');
+
+    // 수정 - 제목 변경, 종료 시간 변경, 설명 추가
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 회의');
+
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    await user.clear(endTimeInput);
+    await user.type(endTimeInput, '11:00');
+
+    const descInput = screen.getByLabelText('설명');
+    await user.clear(descInput);
+    await user.type(descInput, '회의 설명 변경');
+
+    await user.click(screen.getByTestId('event-submit-button')); // 수정 버튼
+
+    // 업데이트된 리스트에서 반영된 내용 확인
+    const all = await screen.findAllByText('수정된 회의');
+    expect(all.length).toBeGreaterThan(0);
+
+    expect(screen.getByText('09:00 - 11:00')).toBeInTheDocument();
+    expect(screen.getByText('회의 설명 변경')).toBeInTheDocument();
+  });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
 });
