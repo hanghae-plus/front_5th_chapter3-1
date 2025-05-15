@@ -1,18 +1,6 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
+import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
@@ -27,26 +15,19 @@ import {
   IconButton,
   Input,
   Select,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
   Tooltip,
-  Tr,
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useAtom } from 'jotai';
-import { useRef, useState } from 'react';
 
-import { Calander } from './components/index.ts';
+import { Calander, AlertOverlapDialog } from './components';
+import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
+import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { calanderViewAtom } from './state/calancerViewAtom.ts';
 import { Event, EventForm, RepeatType } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
@@ -101,14 +82,16 @@ function App() {
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
 
-  const [calanderView] = useAtom(calanderViewAtom);
+  const { view, setView, currentDate, holidays, navigate } = useCalendarView();
+  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  // TODO: currentDate atom으로 관리하기
-  const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, new Date(), calanderView);
-
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
+  const {
+    isOverlapDialogOpen,
+    overlappingEvents,
+    openOverlapDialog,
+    closeOverlapDialog,
+    cancelRef,
+  } = useOverlapDialog();
 
   const toast = useToast();
 
@@ -153,17 +136,12 @@ function App() {
     const overlapping = findOverlappingEvents(eventData, events);
 
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openOverlapDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();
     }
   };
-
-  // 일정 보기 주 단위
-
-  // 일정 보기 월 단위
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
@@ -294,7 +272,15 @@ function App() {
         </VStack>
 
         {/* 일정 보기 월 or 주 */}
-        <Calander filteredEvents={filteredEvents} notifiedEvents={notifiedEvents} />
+        <Calander
+          filteredEvents={filteredEvents}
+          notifiedEvents={notifiedEvents}
+          view={view}
+          setView={setView}
+          currentDate={currentDate}
+          holidays={holidays}
+          navigate={navigate}
+        />
 
         {/* 일정 검색 view*/}
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
@@ -377,60 +363,30 @@ function App() {
       </Flex>
 
       {/* 일정 겹침 토스트 */}
-      <AlertDialog
-        isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent data-testid="overlap-dialog">
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              일정 겹침 경고
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              다음 일정과 겹칩니다:
-              {overlappingEvents.map((event) => (
-                <Text key={event.id}>
-                  {event.title} ({event.date} {event.startTime}-{event.endTime})
-                </Text>
-              ))}
-              계속 진행하시겠습니까?
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
-                취소
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setIsOverlapDialogOpen(false);
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
-                }}
-                ml={3}
-              >
-                계속 진행
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      <AlertOverlapDialog
+        isOverlapDialogOpen={isOverlapDialogOpen}
+        overlappingEvents={overlappingEvents}
+        cancelRef={cancelRef}
+        closeOverlapDialog={closeOverlapDialog}
+        saveEvent={() =>
+          saveEvent({
+            id: editingEvent ? editingEvent.id : undefined,
+            title,
+            date,
+            startTime,
+            endTime,
+            description,
+            location,
+            category,
+            repeat: {
+              type: isRepeating ? repeatType : 'none',
+              interval: repeatInterval,
+              endDate: repeatEndDate || undefined,
+            },
+            notificationTime,
+          })
+        }
+      />
 
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">

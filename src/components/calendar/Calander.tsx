@@ -1,23 +1,29 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { Heading, HStack, IconButton, Select, VStack } from '@chakra-ui/react';
-import { useAtom } from 'jotai';
 
 import { MonthCalendar } from './MonthCalendar';
 import { WeekCalendar } from './WeekCalendar';
-import { useCalendarView } from '../../hooks/useCalendarView';
-import { calanderViewAtom } from '../../state/calancerViewAtom';
 import { Event } from '../../types';
 
 interface CalanderProps {
+  view: 'week' | 'month';
+  currentDate: Date;
+  holidays: { [key: string]: string };
+  navigate: (direction: 'prev' | 'next') => void;
+  setView: (view: 'week' | 'month') => void;
   filteredEvents: Event[];
   notifiedEvents: string[];
 }
 
-export const Calander = ({ filteredEvents, notifiedEvents }: CalanderProps) => {
-  const { currentDate, holidays, navigate } = useCalendarView();
-
-  const [calanderView, setCalanderView] = useAtom(calanderViewAtom);
-
+export const Calander = ({
+  filteredEvents,
+  notifiedEvents,
+  view,
+  setView,
+  currentDate,
+  holidays,
+  navigate,
+}: CalanderProps) => {
   return (
     <VStack flex={1} spacing={5} align="stretch">
       <Heading>일정 보기</Heading>
@@ -30,8 +36,8 @@ export const Calander = ({ filteredEvents, notifiedEvents }: CalanderProps) => {
         />
         <Select
           aria-label="view"
-          value={calanderView}
-          onChange={(e) => setCalanderView(e.target.value as 'week' | 'month')}
+          value={view}
+          onChange={(e) => setView(e.target.value as 'week' | 'month')}
         >
           <option value="week">Week</option>
           <option value="month">Month</option>
@@ -43,18 +49,18 @@ export const Calander = ({ filteredEvents, notifiedEvents }: CalanderProps) => {
         />
       </HStack>
 
-      {calanderView === 'week' && (
+      {view === 'week' && (
         <WeekCalendar
           currentDate={currentDate}
           notifiedEvents={notifiedEvents}
           filteredEvents={filteredEvents}
         />
       )}
-      {calanderView === 'month' && (
+      {view === 'month' && (
         <MonthCalendar
           currentDate={currentDate}
-          notifiedEvents={notifiedEvents}
-          filteredEvents={filteredEvents}
+          notifiedEvents={[]}
+          filteredEvents={[]}
           holidays={holidays}
         />
       )}

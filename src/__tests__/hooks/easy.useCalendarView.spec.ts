@@ -13,9 +13,9 @@ afterAll(() => {
 });
 
 describe('초기 상태', () => {
-  it('calanderView는 "month"이어야 한다', () => {
+  it('view는 "month"이어야 한다', () => {
     const { result } = renderHook(() => useCalendarView());
-    expect(result.current.calanderView).toBe('month');
+    expect(result.current.view).toBe('month');
   });
 
   it('currentDate는 오늘 날짜인 "2025-10-01"이어야 한다', () => {
@@ -34,17 +34,17 @@ describe('초기 상태', () => {
 it("view를 'week'으로 변경 시 적절하게 반영된다", () => {
   const { result } = renderHook(() => useCalendarView());
   act(() => {
-    result.current.setCalanderView('week');
+    result.current.setView('week');
   });
-  expect(result.current.calanderView).toBe('week');
+  expect(result.current.view).toBe('week');
 });
 
 it("주간 뷰에서 다음으로 navigate시 7일 후 '2025-10-08' 날짜로 지정이 된다", () => {
   const { result } = renderHook(() => useCalendarView());
   act(() => {
-    result.current.setCalanderView('week');
+    result.current.setView('week');
   });
-  expect(result.current.calanderView).toBe('week'); // 실제로 주간 모드가 됐는지 확인
+  expect(result.current.view).toBe('week'); // 실제로 주간 모드가 됐는지 확인
 
   // 2) 주간 네비게이트
   act(() => {
@@ -56,9 +56,9 @@ it("주간 뷰에서 다음으로 navigate시 7일 후 '2025-10-08' 날짜로 �
 it("주간 뷰에서 이전으로 navigate시 7일 후 '2025-09-24' 날짜로 지정이 된다", () => {
   const { result } = renderHook(() => useCalendarView());
   act(() => {
-    result.current.setCalanderView('week');
+    result.current.setView('week');
   });
-  expect(result.current.calanderView).toBe('week'); // 실제로 주간 모드가 됐는지 확인
+  expect(result.current.view).toBe('week'); // 실제로 주간 모드가 됐는지 확인
 
   // 2) 주간 네비게이트
   act(() => {
@@ -69,9 +69,7 @@ it("주간 뷰에서 이전으로 navigate시 7일 후 '2025-09-24' 날짜로 �
 
 it("월간 뷰에서 다음으로 navigate시 한 달 전 '2025-11-01' 날짜여야 한다", () => {
   const { result } = renderHook(() => useCalendarView());
-  act(() => {
-    result.current.setCalanderView('month');
-  });
+  // 초기 view는 'month'이므로 바로 navigate
   act(() => {
     result.current.navigate('next');
   });
@@ -80,9 +78,6 @@ it("월간 뷰에서 다음으로 navigate시 한 달 전 '2025-11-01' 날짜여
 
 it("월간 뷰에서 이전으로 navigate시 한 달 전 '2025-09-01' 날짜여야 한다", () => {
   const { result } = renderHook(() => useCalendarView());
-  act(() => {
-    result.current.setCalanderView('month');
-  });
   act(() => {
     result.current.navigate('prev');
   });
