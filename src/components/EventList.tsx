@@ -12,6 +12,7 @@ import {
 import React from 'react';
 
 import { notificationOptions } from '../config/const';
+import { useEditingEventStore } from '../store/editing-event';
 import { Event } from '../types';
 
 interface EventListProps {
@@ -19,7 +20,6 @@ interface EventListProps {
   notifiedEvents: string[];
   searchTerm: string;
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
-  editEvent: (event: Event) => void;
   deleteEvent: (id: string) => Promise<void>;
 }
 
@@ -28,9 +28,10 @@ export const EventList = ({
   notifiedEvents,
   searchTerm,
   setSearchTerm,
-  editEvent,
   deleteEvent,
 }: EventListProps) => {
+  const { setEditingEvent } = useEditingEventStore();
+
   return (
     <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
       <FormControl>
@@ -89,7 +90,7 @@ export const EventList = ({
                   data-testid={`edit-event-button-${event.id}`}
                   aria-label="Edit event"
                   icon={<EditIcon />}
-                  onClick={() => editEvent(event)}
+                  onClick={() => setEditingEvent(event)}
                 />
                 <IconButton
                   data-testid={`delete-event-button-${event.id}`}
