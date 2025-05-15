@@ -30,6 +30,10 @@ export const setupMockHandlerUpdating = (initEvents: Event[] = []) => {
   let events = [...initEvents];
 
   const handlers = [
+    /**GET */
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events });
+    }),
     /** PUT */
     http.put('/api/events/:id', async ({ request, params }) => {
       const { id } = params;
@@ -49,6 +53,11 @@ export const setupMockHandlerDeletion = (initEvents: Event[] = []) => {
   let events = [...initEvents];
 
   const handlers = [
+    /**GET */
+    http.get('/api/events', () => {
+      return HttpResponse.json({ events });
+    }),
+
     /** DELETE */
     http.delete('/api/events/:id', ({ params }) => {
       const { id } = params;

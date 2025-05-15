@@ -3,10 +3,14 @@
 // import { ReactElement } from 'react';
 
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
-import { setupMockHandlerCreation, setupMockHandlerUpdating } from '../__mocks__/handlersUtils';
+import {
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerUpdating,
+} from '../__mocks__/handlersUtils';
 import eventJson from '../__mocks__/response/realEvents.json';
 import App from '../App';
 import { server } from '../setupTests';
@@ -17,7 +21,7 @@ import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
   beforeEach(() => {
-    vi.setSystemTime(new Date('2025-05-15T10:00:00'));
+    vi.setSystemTime(new Date('2025-05-20T10:00:00'));
   });
 
   afterEach(() => {
@@ -37,7 +41,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     // 1. 사용자 입력 시뮬레이션
     await userEvent.type(screen.getByLabelText(/제목/), '테스트 일정');
-    await userEvent.type(screen.getByLabelText(/날짜/), '2025-05-15');
+    await userEvent.type(screen.getByLabelText(/날짜/), '2025-05-20');
     await userEvent.type(screen.getByLabelText(/시작 시간/), '10:00');
     await userEvent.type(screen.getByLabelText(/종료 시간/), '11:00');
     await userEvent.type(screen.getByLabelText(/설명/), '통합 테스트 설명');
@@ -54,7 +58,8 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    const { handlers } = setupMockHandlerUpdating(eventJson.events as Event[]);
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerUpdating(mockEvent);
     server.use(...handlers);
 
     render(
@@ -62,21 +67,179 @@ describe('일정 CRUD 및 기본 기능', () => {
         <App />
       </ChakraProvider>
     );
+
+    // 기존 일정 선택
+    const eventList = await screen.findByTestId('event-list');
+    await waitFor(() => {
+      expect(within(eventList).getByText(mockEvent[0].title)).toBeInTheDocument();
+    });
+
+    // 수정 버튼 클릭
+
+    const editButtons = screen.getAllByRole('button', { name: /Edit event/i });
+    await userEvent.click(editButtons[0]);
+
+    // 수정 입력
+    const titleInput = screen.getByLabelText(/제목/);
+    await userEvent.clear(titleInput);
+    await userEvent.type(titleInput, '수정된 제목');
+
+    const endTimeInput = screen.getByLabelText(/종료 시간/);
+    await userEvent.clear(endTimeInput);
+    await userEvent.type(endTimeInput, '12:30');
+
+    //  저장 버튼 클릭
+    const submitButton = screen.getByTestId('event-submit-button');
+    await userEvent.click(submitButton);
+
+    // 수정된 내용이 반영됐는지 확인
+    const matches = await screen.findAllByText('수정된 제목');
+    expect(matches.length).toBeGreaterThan(0);
+
+    const updatedEndTime = await screen.findByText(/10:00\s*-\s*12:30/);
+    expect(updatedEndTime).toBeInTheDocument();
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerDeletion(mockEvent);
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 초기 이벤트가 잘 보이는지 확인
+    const eventList = await screen.findByTestId('event-list');
+    const targetTitle = mockEvent[0].title;
+    const existingEventItem = within(eventList).getByText((t) => t.includes(targetTitle));
+    expect(existingEventItem).toBeInTheDocument();
+
+    // 삭제 버튼 클릭
+    const deleteButtons = screen.getAllByRole('button', { name: /Delete event/i });
+    await userEvent.click(deleteButtons[0]);
+
+    // 삭제 후 해당 이벤트가 리스트에서 사라졌는지 확인
+    await screen.findByTestId('event-list');
+    expect(screen.queryByText((t) => t.includes(targetTitle))).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-05-01'));
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerCreation(mockEvent);
+    server.use(...handlers);
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    //  주간 뷰 선택
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    const viewSelect = screen.getByTestId('view-select');
+    userEvent.selectOptions(viewSelect, 'week');
+
+    // 주간 뷰에 아무 일정도 안 나오는지 확인
+
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).queryByText(mockEvent[0].title)).not.toBeInTheDocument();
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    vi.setSystemTime('2025-05-20');
+
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerCreation(mockEvent);
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelect = screen.getByTestId('view-select');
+    userEvent.selectOptions(viewSelect, 'week');
+
+    const eventList = await screen.findByTestId('event-list');
+    await waitFor(() => {
+      expect(
+        within(eventList).getByText((text) => text.includes('수정된 제목'))
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-02-01'));
+
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerCreation([]); // 이벤트 없음
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelector = screen.getByTestId('view-select');
+    userEvent.selectOptions(viewSelector, 'month');
+
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).queryByText(mockEvent[0].title)).not.toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    vi.setSystemTime('2025-05-20');
+
+    const mockEvent = eventJson.events as Event[];
+    const { handlers } = setupMockHandlerCreation(mockEvent);
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelector = screen.getByTestId('view-select');
+    userEvent.selectOptions(viewSelector, 'month');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(mockEvent[0].title)).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-01-01'));
+
+    const { handlers } = setupMockHandlerCreation([]); // 이벤트 없어도 휴일은 표시됨
+    server.use(...handlers);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const viewSelector = screen.getByTestId('view-select');
+    userEvent.selectOptions(viewSelector, 'month');
+
+    const calendar = screen.getByTestId('month-view');
+    expect(within(calendar).getByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
