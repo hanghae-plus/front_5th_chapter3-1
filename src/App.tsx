@@ -56,18 +56,7 @@ import {
   getTimeErrorMessage,
 } from '@/utils';
 import { Notification } from '@/components';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
+import { categories, notificationOptions, weekDays } from '@/lib';
 
 function App() {
   const {
