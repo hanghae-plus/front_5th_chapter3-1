@@ -102,5 +102,6 @@ export const useEventForm = (initialEvent?: Event) => {
     handleEndTimeChange,
     resetForm,
     editEvent,
+    setTimeError,
   };
 };
