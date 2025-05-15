@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
 import type { Event } from '../types';
-import { events } from './response/events.json' assert { type: 'json' };
+import { events } from './response/events.json';
 
 let mockEvents = {
   events,
