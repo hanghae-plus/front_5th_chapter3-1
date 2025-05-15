@@ -1,45 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { useSearch } from '../../hooks/useSearch.ts';
-import type { Event } from '../../types.ts';
-
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: '회의',
-    description: '팀 회의',
-    location: '회의실 A',
-    date: '2025-10-01',
-    startTime: '10:00',
-    endTime: '11:00',
-    category: '업무',
-    repeat: { type: 'none', interval: 1 },
-    notificationTime: 10,
-  },
-  {
-    id: '2',
-    title: '점심 식사',
-    description: '동료들과 점심',
-    location: '식당',
-    date: '2025-10-01',
-    startTime: '12:00',
-    endTime: '13:00',
-    category: '식사',
-    repeat: { type: 'none', interval: 1 },
-    notificationTime: 5,
-  },
-  {
-    id: '3',
-    title: '개인 일정',
-    description: '병원 방문',
-    location: '서울 병원',
-    date: '2025-11-01',
-    startTime: '09:00',
-    endTime: '10:00',
-    category: '개인',
-    repeat: { type: 'none', interval: 1 },
-    notificationTime: 15,
-  },
-];
+import { mockEvents } from '../utils/mockEvent.ts';
 
 describe('useSearch', () => {
   const currentDate = new Date('2025-10-01');
