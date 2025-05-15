@@ -1,20 +1,23 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { act, renderHook } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+import { act, renderHook, waitFor } from '@testing-library/react';
 
 import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
-} from '../../__mocks__/handlersUtils.ts';
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
-import { server } from '../../setupTests.ts';
-import { Event } from '../../types.ts';
-import { EventForm, RepeatType } from '../../entities/event/model/types.ts';
+} from '../../__mocks__/handlersUtils';
+import { events } from '../../__mocks__/response/events.json';
+import { Event } from '../../entities/event/model/types';
+import { EventForm, RepeatType } from '../../entities/event/model/types';
+import { useEventOperations } from '../../hooks/useEventOperations';
+import { server } from '../../setupTests';
 
-const wrapper = ({ children }: { children: ReactNode }) => (
-  <ChakraProvider>{children}</ChakraProvider>
-);
+const MOCK_EVENTS = events as Event[];
+
+const mockToast = vi.fn();
+
+vi.mock('@chakra-ui/react', () => ({
+  useToast: () => mockToast,
+}));
 
 it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
   const { result } = renderHook(() => useEventOperations(false));
@@ -29,7 +32,7 @@ it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다',
 });
 
 it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
-  const { result } = renderHook(() => useEventOperations(false), { wrapper });
+  const { result } = renderHook(() => useEventOperations(false));
 
   const newEvent: EventForm = {
     title: '새 미팅',
@@ -55,7 +58,21 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   );
 });
 
-it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {});
+it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업데이트 된다", async () => {
+  const modifiedEvent = {
+    ...MOCK_EVENTS[0],
+    title: '테스트 회의2',
+    endTime: '23:00',
+  };
+
+  const { result } = renderHook(() => useEventOperations(true));
+
+  // 이벤트 수정 및 완료 대기
+  await waitFor(async () => await result.current.saveEvent(modifiedEvent));
+
+  // 수정된 이벤트 검증
+  expect(result.current.events[0]).toEqual(modifiedEvent);
+});
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {});
 
