@@ -3,8 +3,6 @@ import { vi } from 'vitest';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
 
 describe('useNotifications', () => {
   beforeEach(() => {

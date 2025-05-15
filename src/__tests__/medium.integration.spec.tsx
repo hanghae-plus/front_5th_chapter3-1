@@ -568,7 +568,7 @@ describe('일정 충돌', () => {
       expect(dialogHeader).toBeInTheDocument();
 
       // 겹치는 일정 정보 확인
-      const eventInfo = screen.getByText((content, element) => {
+      const eventInfo = screen.getByText((content) => {
         return content.includes('팀 회의') && content.includes(todayEvent.date);
       });
       expect(eventInfo).toBeInTheDocument();
@@ -631,7 +631,7 @@ describe('일정 충돌', () => {
       expect(dialogTitle).toBeInTheDocument();
 
       // 겹치는 이벤트 정보 확인
-      const conflictingEventInfo = screen.getByText((content, element) => {
+      const conflictingEventInfo = screen.getByText((content) => {
         return content.includes('다른 회의') && content.includes(anotherTodayEvent.date);
       });
       expect(conflictingEventInfo).toBeInTheDocument();
@@ -656,7 +656,7 @@ describe('알림 기능', () => {
 
   beforeEach(() => {
     // https://github.com/vitest-dev/vitest/issues/3117#issuecomment-1493249764
-    globalThis.jest = vi;
+    (globalThis as any).jest = vi;
   });
 
   afterAll(() => {
