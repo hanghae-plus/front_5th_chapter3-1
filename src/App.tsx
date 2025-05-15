@@ -1,10 +1,4 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
+import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
 import {
   AlertDialog,
   AlertDialogBody,
@@ -38,9 +32,9 @@ import {
   useSearch,
 } from '@/hooks';
 
-import { CalendarView, Event, EventForm, RepeatType } from '@/types';
+import { Event, EventForm, RepeatType } from '@/types';
 import { findOverlappingEvents, getTimeErrorMessage } from '@/utils';
-import { MonthView, Notification, WeekView } from '@/components';
+import { Calendar, NotificationList } from '@/components';
 import { categories, notificationOptions } from '@/lib';
 
 function App() {
@@ -81,23 +75,24 @@ function App() {
     setEditingEvent(null)
   );
 
-  const { notifications, notifiedEvents } = useNotifications(events);
-  const { view, setView, currentDate, navigate } = useCalendarView();
+  const { notifiedEvents } = useNotifications(events);
+  const { view, currentDate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);
 
-  const toast = useToast();
+  const toast = useToast({
+    duration: 3000,
+    isClosable: true,
+  });
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
       toast({
         title: '필수 정보를 모두 입력해주세요.',
         status: 'error',
-        duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -106,8 +101,6 @@ function App() {
       toast({
         title: '시간 설정을 확인해주세요.',
         status: 'error',
-        duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -273,30 +266,7 @@ function App() {
 
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
-
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as CalendarView)}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
-
-          {view === 'week' && <WeekView />}
-          {view === 'month' && <MonthView />}
+          <Calendar />
         </VStack>
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
@@ -433,13 +403,7 @@ function App() {
         </AlertDialogOverlay>
       </AlertDialog>
 
-      {notifications.length > 0 && (
-        <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification) => (
-            <Notification key={notification.id} notification={notification} />
-          ))}
-        </VStack>
-      )}
+      <NotificationList />
     </Box>
   );
 }
