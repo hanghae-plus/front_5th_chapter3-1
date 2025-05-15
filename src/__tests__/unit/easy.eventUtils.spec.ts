@@ -47,7 +47,7 @@ describe('getFilteredEvents', () => {
     expect(result).toEqual([MOCK_EVENTS[0], MOCK_EVENTS[1]]);
   });
 
-  it("검색어 '이벤트'와 주간 뷰 필터링을 동시에 적용한다.", () => {
+  it("검색어 '이벤트'를 입력하고, 2025-07-01 주간 뷰에서 두 이벤트 모두 반환되는지 검증한다.", () => {
     const result = getFilteredEvents(MOCK_EVENTS, '이벤트', new Date('2025-07-01'), 'week');
 
     expect(result).toEqual(MOCK_EVENTS);
@@ -65,15 +65,25 @@ describe('getFilteredEvents', () => {
     expect(result).toEqual(MOCK_EVENTS);
   });
 
-  it('월의 경계에 있는 이벤트를 올바르게 필터링한다', () => {
-    const result = getFilteredEvents(MOCK_EVENTS, '', new Date('2025-07-01'), 'month');
+  it('7월 31일에 등록된 이벤트가 7월 월간 뷰에서 정상적으로 노출된다.', () => {
+    const result = getFilteredEvents(MOCK_EVENTS, '', new Date('2025-07-31'), 'month');
 
     expect(result).toEqual(MOCK_EVENTS);
   });
 
-  it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {
+  it('빈 이벤트 리스트에 대해 빈 배열을 반환한다.', () => {
     const result = getFilteredEvents([], '', new Date('2025-07-01'), 'week');
 
     expect(result).toEqual([]);
+  });
+
+  it('검색어가 description에만 일치하면 해당 이벤트만 반환한다.', () => {
+    const result = getFilteredEvents(MOCK_EVENTS, 'Event1 설명', new Date('2025-07-01'), 'month');
+    expect(result).toEqual([MOCK_EVENTS[0]]);
+  });
+
+  it('검색어가 location에만 일치하면 해당 이벤트만 반환한다.', () => {
+    const result = getFilteredEvents(MOCK_EVENTS, '이벤트2 장소', new Date('2025-07-02'), 'month');
+    expect(result).toEqual([MOCK_EVENTS[1]]);
   });
 });

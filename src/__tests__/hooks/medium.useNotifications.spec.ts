@@ -120,7 +120,6 @@ it('알람 생성 후 index를 기준으로 알림을 제거할 수 있다', () 
 });
 
 it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
-  // 1. 알림이 발생할 시각으로 시스템 시간 고정
   vi.useFakeTimers();
   vi.setSystemTime(new Date('2024-03-21T13:50:00'));
 
@@ -132,7 +131,7 @@ it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생
       startTime: '14:00',
       endTime: '15:00',
       description: '설명',
-      notificationTime: 10, // 10분 전 알림
+      notificationTime: 10,
       location: '',
       category: '',
       repeat: { type: 'none', interval: 0 },
@@ -141,21 +140,53 @@ it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생
 
   const { result } = renderHook(() => useNotifications(MOCK_EVENTS));
 
-  // 2. 1초 흐르게 해서 알림이 한 번 생성되게 함
   act(() => {
     vi.advanceTimersByTime(1000);
   });
 
-  // 3. 알림이 1개 생성됐는지 확인
   expect(result.current.notifications).toHaveLength(1);
 
-  // 4. 다시 5초 흐르게 (알림이 중복 생성되면 안 됨)
   act(() => {
     vi.advanceTimersByTime(5000);
   });
 
-  // 5. 여전히 알림이 1개인지 확인 (중복 알림 없음)
   expect(result.current.notifications).toHaveLength(1);
 
   vi.useRealTimers();
+});
+
+it('notificationTime이 음수인 이벤트는 알림이 생성되지 않는다', () => {
+  vi.useFakeTimers();
+
+  const now = new Date();
+  const soon = new Date(now.getTime() + 1000 * 60);
+  const events: Event[] = [
+    {
+      id: '1',
+      title: '이벤트 1',
+      date: formatDate(soon),
+      startTime: parseHM(soon.getTime()),
+      endTime: parseHM(soon.getTime() + 1000 * 60),
+      notificationTime: -5,
+      repeat: { type: 'none', interval: 0 },
+      location: '장소',
+      category: '카테고리',
+      description: '설명',
+    },
+  ];
+
+  const { result } = renderHook(() => useNotifications(events));
+
+  act(() => {
+    vi.advanceTimersByTime(1000 * 60 * 10);
+  });
+
+  expect(result.current.notifications).toHaveLength(0);
+
+  vi.useRealTimers();
+});
+
+it('이벤트가 하나도 없을 때 알림이 생성되지 않는다', () => {
+  const { result } = renderHook(() => useNotifications([]));
+  expect(result.current.notifications).toEqual([]);
 });

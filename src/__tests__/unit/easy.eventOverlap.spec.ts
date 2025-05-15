@@ -51,7 +51,7 @@ describe('convertEventToDateRange', () => {
     });
   });
 
-  it('잘못된 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+  it('date가 "Invalid Date"인 이벤트를 변환하면 start/end가 Invalid Date가 된다', () => {
     const INVALID_EVENT = {
       ...MOCK_EVENT,
       date: 'Invalid Date',
@@ -65,11 +65,11 @@ describe('convertEventToDateRange', () => {
     });
   });
 
-  it('잘못된 시간 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+  it('startTime, endTime이 "Invalid Time"인 이벤트를 변환하면 start/end가 Invalid Date가 된다', () => {
     const INVALID_EVENT = {
       ...MOCK_EVENT,
-      startTime: 'Invalid Time',
-      endTime: 'Invalid Time',
+      startTime: '',
+      endTime: '',
     };
 
     const result = convertEventToDateRange(INVALID_EVENT);

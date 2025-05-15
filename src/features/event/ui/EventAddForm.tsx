@@ -11,8 +11,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { categories } from '../../../based/constants';
-import { notificationOptions } from '../../../based/constants/notificationOptions';
+import { categories, notificationOptions, repeatOptions } from '../../../based/constants';
 import { getTimeErrorMessage } from '../../../based/utils/timeValidation';
 import { RepeatType } from '../../../types';
 import { EventFormState, EventFormActions } from '../model/useEventFormStateAndActions';
@@ -151,10 +150,11 @@ export const EventAddForm = ({
               value={repeatType}
               onChange={(e) => setRepeatType(e.target.value as RepeatType)}
             >
-              <option value="daily">매일</option>
-              <option value="weekly">매주</option>
-              <option value="monthly">매월</option>
-              <option value="yearly">매년</option>
+              {repeatOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </Select>
           </FormControl>
           <HStack width="100%">

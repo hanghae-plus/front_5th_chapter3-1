@@ -28,6 +28,7 @@ export const EventAddButton = ({
   } = formState;
 
   const { setIsOverlapDialogOpen } = useDialogStore();
+
   return (
     <Button
       colorScheme="red"

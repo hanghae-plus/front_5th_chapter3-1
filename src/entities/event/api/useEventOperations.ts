@@ -26,13 +26,9 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const saveEvent = async (eventData: Event | EventForm) => {
     try {
       if (editing) {
-        await axios.put(`/api/events/${(eventData as Event).id}`, eventData, {
-          headers: { 'Content-Type': 'application/json' },
-        });
+        await axios.put(`/api/events/${(eventData as Event).id}`, eventData);
       } else {
-        await axios.post('/api/events', eventData, {
-          headers: { 'Content-Type': 'application/json' },
-        });
+        await axios.post('/api/events', eventData);
       }
 
       await fetchEvents();
@@ -56,9 +52,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   const deleteEvent = async (id: string) => {
     try {
-      await axios.delete(`/api/events/${id}`, {
-        headers: { 'Content-Type': 'application/json' },
-      });
+      await axios.delete(`/api/events/${id}`);
 
       await fetchEvents();
       toast({

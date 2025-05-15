@@ -9,8 +9,8 @@ import {
   useEventSubmission,
   useOverlapStateAndActions,
 } from '../features/event';
-import { EventCalendar } from '../modules/EventCalendar';
-import { EventList } from '../modules/EventList';
+import { EventCalendar } from '../modules/EventCalendar/index.ts';
+import { EventList } from '../modules/EventList/index.ts';
 import { Notifications } from '../modules/Notifications';
 import { OverlapDialog } from '../modules/OverlapDialog';
 

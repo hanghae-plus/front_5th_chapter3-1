@@ -31,13 +31,13 @@ const MOCK_EVENTS: Event[] = [
   },
 ];
 
-it('검색어가 비어있을 때 모든 이벤트를 반환해야 한다', () => {
+it('검색어가 비어있을 때 모든 이벤트를 반환한다.', () => {
   const { result } = renderHook(() => useSearch(MOCK_EVENTS, new Date(), 'month'));
 
   expect(result.current.filteredEvents).toEqual(MOCK_EVENTS);
 });
 
-it('검색어에 맞는 이벤트만 필터링해야 한다', () => {
+it('검색어가 이벤트 제목과 일치할 때 해당 이벤트만 반환한다.', () => {
   const { result } = renderHook(() => useSearch(MOCK_EVENTS, new Date(), 'month'));
 
   act(() => {
@@ -47,7 +47,7 @@ it('검색어에 맞는 이벤트만 필터링해야 한다', () => {
   expect(result.current.filteredEvents).toEqual([MOCK_EVENTS[0]]);
 });
 
-it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이벤트를 반환해야 한다', () => {
+it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이벤트를 반환한다.', () => {
   const { result } = renderHook(() => useSearch(MOCK_EVENTS, new Date(), 'month'));
 
   act(() => {
@@ -69,7 +69,7 @@ it('검색어가 제목, 설명, 위치 중 하나라도 일치하면 해당 이
   expect(result.current.filteredEvents).toEqual([MOCK_EVENTS[0]]);
 });
 
-it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다', () => {
+it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환한다.', () => {
   const { result } = renderHook(() => useSearch(MOCK_EVENTS, new Date(), 'month'));
 
   expect(result.current.filteredEvents).toEqual(MOCK_EVENTS);
@@ -79,7 +79,7 @@ it('현재 뷰(주간/월간)에 해당하는 이벤트만 반환해야 한다',
   expect(result2.current.filteredEvents).toEqual([MOCK_EVENTS[0]]);
 });
 
-it("검색어를 '회의'에서 '점심'으로 변경하면 필터링된 결과가 즉시 업데이트되어야 한다", () => {
+it("검색어를 '회의'에서 '점심'으로 변경하면 필터링된 결과가 즉시 업데이트된다.", () => {
   const { result } = renderHook(() => useSearch(MOCK_EVENTS, new Date(), 'month'));
 
   act(() => {
