@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {
   Button,
   Checkbox,
@@ -8,7 +9,6 @@ import {
   Input,
   Select,
   Tooltip,
-  useToast,
   VStack,
 } from '@chakra-ui/react';
 import React from 'react';

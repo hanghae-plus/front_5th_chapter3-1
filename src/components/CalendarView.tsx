@@ -8,12 +8,7 @@ import { useCalendarView } from '../hooks/useCalendarView';
 import { useNotifications } from '../hooks/useNotifications';
 
 interface CalendarViewProps {
-  // view: 'week' | 'month';
-  // currentDate: Date;
   events: Event[];
-  // holidays: Record<string, string>;
-  // navigate: (direction: 'prev' | 'next') => void;
-  // setView: (view: 'week' | 'month') => void;
 }
 
 export const CalendarView = ({ events }: CalendarViewProps) => {
