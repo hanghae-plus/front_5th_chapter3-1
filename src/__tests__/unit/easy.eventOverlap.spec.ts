@@ -1,10 +1,10 @@
-import { Event, EventForm } from '../../types';
 import {
   convertEventToDateRange,
   findOverlappingEvents,
   isOverlapping,
   parseDateTime,
 } from '../../shared/lib/eventOverlap';
+import { Event, EventForm } from '../../types';
 
 describe('parseDateTime', () => {
   const date = '2025-07-01';

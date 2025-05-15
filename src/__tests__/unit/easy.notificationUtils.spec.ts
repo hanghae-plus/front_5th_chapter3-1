@@ -1,5 +1,5 @@
-import { Event } from '../../types';
 import { createNotificationMessage, getUpcomingEvents } from '../../shared/lib/notificationUtils';
+import { Event } from '../../types';
 
 describe('getUpcomingEvents', () => {
   // 기준 시간: 2025-07-01T10:00:00
