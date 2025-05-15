@@ -1,18 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
-// import { http, HttpResponse } from 'msw';
 
-// import {
-//   setupMockHandlerCreation,
-//   setupMockHandlerDeletion,
-//   setupMockHandlerUpdating,
-// } from '../../__mocks__/handlersUtils.ts';
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-// import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { useNotifications } from '../../hooks/useNotifications.ts';
-// import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
-// import { formatDate } from '../../utils/dateUtils.ts';
-// import { parseHM } from '../utils.ts';
 
 const INITIAL_EVENTS = events as Event[];
 
