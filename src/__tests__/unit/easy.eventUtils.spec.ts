@@ -103,7 +103,6 @@ describe('getFilteredEvents', () => {
     const view = 'week';
 
     const result = getFilteredEvents(events, searchTerm, currentDate, view);
-    console.log('🚀 ~ it ~ result', result);
     expect(result).toEqual(events);
   });
 

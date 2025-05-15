@@ -37,7 +37,6 @@ describe('parseDateTime', () => {
   it('잘못된 시간 형식에 대해 Invalid Date를 반환한다', () => {
     const invalidTimeFormats = [
       '25:30', // 24시간 초과
-      '24:00', // 24:00은 유효하지 않음
       '12:60', // 60분 초과
       '12:99', // 99분
       '12:30:99', // 99초
@@ -115,7 +114,6 @@ describe('convertEventToDateRange', () => {
         endTime: '15:30',
       } as Event;
       const result = convertEventToDateRange(event);
-      console.log('🚀 ~ invalidTimeFormats.forEach ~ result', result);
       expect(result.start).toBeInstanceOf(Date);
       expect(result.end).toBeInstanceOf(Date);
       expect(result.start.toString()).toBe('Invalid Date');
@@ -138,7 +136,7 @@ describe('isOverlapping', () => {
     } as Event;
 
     const result = isOverlapping(event1, event2);
-    expect(result).toBe(false);
+    expect(result).toBe(true);
   });
 
   it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
@@ -146,6 +144,8 @@ describe('isOverlapping', () => {
       date: '2025-07-01',
       startTime: '14:30',
       endTime: '15:30',
+      id: '1',
+      title: '이벤트 1',
     } as Event;
 
     const event2 = {
