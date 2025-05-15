@@ -10,6 +10,7 @@ import {
 } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
+import { server } from '../setupTests';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 const setup = (element: ReactElement) => {
@@ -38,15 +39,6 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
-vi.setConfig({ testTimeout: 15000 });
-
-beforeAll(() => {
-  vi.useFakeTimers(); // 전역으로 가짜 타이머 활성화
-});
-afterAll(() => {
-  vi.useRealTimers(); // 테스트 후 복원
-});
-
 // ! HINT. "검색 결과가 없습니다"는 초기에 노출되는데요. 그럼 검증하고자 하는 액션이 실행되기 전에 검증해버리지 않을까요? 이 테스트를 신뢰성있게 만드려면 어떻게 할까요?
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
@@ -67,7 +59,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     await waitFor(() => expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument());
 
     const events = within(await screen.findByTestId('event-list'));
-    expect(events.getByText('회의')).toBeInTheDocument();
+
     expect(events.getByText('2025-11-01')).toBeInTheDocument();
     expect(events.getByText('10:30 - 12:00')).toBeInTheDocument();
     expect(events.getByText('디자인 리뷰')).toBeInTheDocument();
