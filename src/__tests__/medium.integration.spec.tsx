@@ -44,6 +44,35 @@ const saveSchedule = async (
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    // App 렌더링 -> 새 일정 입력 -> 일정 추가 클릭 -> 입력값 입력 -> 저장 -> 결과
+    setupMockHandlerCreation();
+
+    const { user } = setup(<App />);
+
+    const form = {
+      title: '팀 회의',
+      date: '2025-10-05',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '프로젝트 논의',
+      location: '회의실 A',
+      category: '업무',
+    };
+
+    await saveSchedule(user, form);
+
+    // 일정 보기
+    const eventList = await screen.findByTestId('event-list');
+    const created = within(eventList).getByText(form.title);
+
+    expect(created).toBeInTheDocument();
+
+    // 내가 입력한 값이 잘 있나
+    expect(screen.getByText(form.date)).toBeInTheDocument();
+    expect(screen.getByText(`${form.startTime} - ${form.endTime}`)).toBeInTheDocument();
+    expect(screen.getByText(form.description)).toBeInTheDocument();
+    expect(screen.getByText(form.location)).toBeInTheDocument();
+    expect(screen.getByText(`카테고리: ${form.category}`)).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
