@@ -20,7 +20,7 @@ import {
 import { Fragment } from 'react';
 
 import { Event } from '../../../types';
-import { MonthlyCalendar, WeeklyCalendar } from '../../organisms/calender';
+import { MonthlyCalendar, WeeklyCalendar } from '../../organisms/schedule/calender';
 
 interface ViewScheduleTemplateProps {
   view: 'week' | 'month';

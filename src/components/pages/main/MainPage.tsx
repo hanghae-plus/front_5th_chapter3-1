@@ -26,11 +26,9 @@ export function MainPage() {
     resetForm,
     editEvent,
   } = useEventForm();
-
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
   );
-
   const { notifications, notifiedEvents, removeNotification } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
@@ -137,6 +135,7 @@ export function MainPage() {
           setSearchTerm={setSearchTerm}
         />
       </Flex>
+
       <AlertModal
         isOpen={isOverlapDialogOpen}
         onCloseModal={setIsOverlapDialogOpen}
@@ -144,7 +143,6 @@ export function MainPage() {
         onSaveOverlapEvent={handleSaveOverlapEvent}
         ref={cancelRef}
       />
-
       {notifications.length > 0 && (
         <AlertContainer notifications={notifications} removeNotification={removeNotification} />
       )}

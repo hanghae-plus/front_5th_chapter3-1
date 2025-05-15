@@ -13,8 +13,8 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { Event } from '../../../types';
-import { formatWeek, getWeekDates } from '../../../utils/dateUtils';
+import { Event } from '../../../../types';
+import { formatWeek, getWeekDates } from '../../../../utils/dateUtils';
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
 interface WeeklyCalendarProps {

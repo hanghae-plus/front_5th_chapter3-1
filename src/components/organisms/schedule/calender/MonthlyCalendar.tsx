@@ -13,13 +13,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { Event } from '../../../types';
+import { Event } from '../../../../types';
 import {
   formatDate,
   formatMonth,
   getEventsForDay,
   getWeeksAtMonth,
-} from '../../../utils/dateUtils';
+} from '../../../../utils/dateUtils';
 
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 

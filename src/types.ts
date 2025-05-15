@@ -21,3 +21,5 @@ export interface EventForm {
 export interface Event extends EventForm {
   id: string;
 }
+
+export type ScheduleField = keyof EventForm | keyof RepeatInfo;
