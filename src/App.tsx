@@ -37,6 +37,8 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
+import { EventFormWidget } from './components/EventForm.tsx';
+import { weekDays, notificationOptions } from './constants.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -51,9 +53,6 @@ import {
   getWeekDates,
   getWeeksAtMonth,
 } from './utils/dateUtils';
-
-import { EventFormWidget } from './components/EventForm.tsx';
-import { weekDays, notificationOptions } from './constants.ts';
 
 function App() {
   const {

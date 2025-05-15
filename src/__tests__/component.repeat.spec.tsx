@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { ReactElement } from 'react';
+import { render, screen } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 
 import { Repeat } from '../components/Repeat';
 

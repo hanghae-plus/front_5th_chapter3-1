@@ -11,11 +11,12 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { RepeatType, Event, EventForm } from '../types';
-import { getTimeErrorMessage } from '../utils/timeValidation';
+
 import { categories, notificationOptions } from '../constants.ts';
-import { findOverlappingEvents } from '../utils/eventOverlap';
+import { Event, EventForm } from '../types';
 import { Repeat } from './Repeat.tsx';
+import { findOverlappingEvents } from '../utils/eventOverlap';
+import { getTimeErrorMessage } from '../utils/timeValidation';
 
 export const EventFormWidget = ({
   title,
