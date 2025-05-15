@@ -12,22 +12,17 @@ import {
   IconButton,
   Input,
   Text,
-  useToast,
   VStack,
 } from '@chakra-ui/react';
 
 import { Calander, AlertOverlapDialog } from './components';
 import { EventForm } from './components/event/EventForm.tsx';
+import { useCalendarContext } from './context/CalendarContext.tsx';
 import { useEventFormContext } from './context/EventContext';
 import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
-import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, RepeatType } from './types';
-import { findOverlappingEvents } from './utils/eventOverlap';
-import { getTimeErrorMessage } from './utils/timeValidation';
 
 const notificationOptions = [
   { value: 1, label: '1분 전' },
@@ -38,55 +33,23 @@ const notificationOptions = [
 ];
 
 function App() {
-  const {
-    title,
-    date,
-    startTime,
-    endTime,
-    description,
-    location,
-    category,
-    isRepeating,
-    repeatType,
-    repeatInterval,
-    repeatEndDate,
-    notificationTime,
-    editingEvent,
-    setEditingEvent,
-    editEvent,
-  } = useEventFormContext();
+  const { editingEvent, setEditingEvent, editEvent } = useEventFormContext();
 
-  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
+  const { events, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
   );
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
 
-  const { view, setView, currentDate, holidays, navigate } = useCalendarView();
+  const { view, currentDate } = useCalendarContext();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
-
-  const {
-    isOverlapDialogOpen,
-    overlappingEvents,
-    openOverlapDialog,
-    closeOverlapDialog,
-    cancelRef,
-  } = useOverlapDialog();
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
         {/* 일정 보기 월 or 주 */}
         <EventForm />
-        <Calander
-          filteredEvents={filteredEvents}
-          notifiedEvents={notifiedEvents}
-          view={view}
-          setView={setView}
-          currentDate={currentDate}
-          holidays={holidays}
-          navigate={navigate}
-        />
+        <Calander />
 
         {/* 일정 검색 view*/}
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">

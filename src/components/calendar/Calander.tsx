@@ -3,27 +3,14 @@ import { Heading, HStack, IconButton, Select, VStack } from '@chakra-ui/react';
 
 import { MonthCalendar } from './MonthCalendar';
 import { WeekCalendar } from './WeekCalendar';
-import { Event } from '../../types';
+import { useCalendarContext } from '../../context/CalendarContext';
+import { useNotificationContext } from '../../context/NotificationContext';
+import { useSearchContext } from '../../context/SearchContext';
 
-interface CalanderProps {
-  view: 'week' | 'month';
-  currentDate: Date;
-  holidays: { [key: string]: string };
-  navigate: (direction: 'prev' | 'next') => void;
-  setView: (view: 'week' | 'month') => void;
-  filteredEvents: Event[];
-  notifiedEvents: string[];
-}
-
-export const Calander = ({
-  filteredEvents,
-  notifiedEvents,
-  view,
-  setView,
-  currentDate,
-  holidays,
-  navigate,
-}: CalanderProps) => {
+export const Calander = () => {
+  const { view, setView, currentDate, holidays, navigate } = useCalendarContext();
+  const { notifiedEvents } = useNotificationContext();
+  const { filteredEvents } = useSearchContext();
   return (
     <VStack flex={1} spacing={5} align="stretch">
       <Heading>일정 보기</Heading>
