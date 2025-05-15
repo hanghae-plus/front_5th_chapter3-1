@@ -4,6 +4,14 @@ import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
 
+import {
+  cleanupMockHandler,
+  setupMockHandlerAppend,
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerFetch,
+  setupMockHandlerUpdating,
+} from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
 import { Event, EventForm } from '../types';
@@ -15,28 +23,27 @@ const renderWithChakra = (ui: ReactElement) => {
 describe('일정 CRUD 및 기본 기능', () => {
   let user: UserEvent;
   // 각 테스트에서 사용할 메모리 내 이벤트 목록
-  let inMemoryEvents: Event[];
+  let testId: string;
 
   beforeEach(async () => {
     user = userEvent.setup();
-    inMemoryEvents = []; // 각 테스트 시작 시 이벤트 목록 초기화
     vi.setSystemTime(new Date('2025-05-20'));
 
-    server.use(
-      http.get('/api/events', async () => {
-        return HttpResponse.json({ events: [...inMemoryEvents] });
-      })
-    );
+    // 독립된 테스트 환경 생성
+    testId = setupMockHandlerCreation([]);
 
     server.use(
+      http.get('/api/events', () => {
+        return HttpResponse.json({ events: setupMockHandlerFetch() });
+      }),
       http.post('/api/events', async ({ request }) => {
-        const newEventData = (await request.json()) as EventForm;
-        const newEventWithId: Event = {
-          id: `mock-event-${Date.now()}`,
-          ...newEventData,
+        const event = (await request.json()) as Event;
+        const newEvent = {
+          ...event,
+          id: `event-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
         };
-        inMemoryEvents.push(newEventWithId);
-        return HttpResponse.json(newEventWithId, { status: 201 });
+        setupMockHandlerAppend(newEvent);
+        return HttpResponse.json(newEvent);
       })
     );
 
@@ -49,9 +56,12 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   afterEach(() => {
+    if (testId) {
+      cleanupMockHandler(testId);
+    }
     vi.useRealTimers();
     cleanup();
-    server.resetHandlers(); // 각 테스트 후 핸들러 초기화
+    server.resetHandlers();
   });
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
@@ -112,22 +122,24 @@ describe('일정 CRUD 및 기본 기능', () => {
       notificationTime: 10,
     };
 
-    // 메모리에 초기 이벤트 추가
-    inMemoryEvents.push(initialEvent);
+    setupMockHandlerAppend(initialEvent);
 
-    // PUT 핸들러 추가
+    // PUT 핸들러 수정
     server.use(
       http.put('/api/events/:id', async ({ params, request }) => {
         const id = params.id as string;
         const updatedData = (await request.json()) as Event;
 
-        // 메모리 내 이벤트 업데이트
-        const index = inMemoryEvents.findIndex((e) => e.id === id);
-        if (index !== -1) {
-          inMemoryEvents[index] = { ...updatedData, id };
-        }
+        const currentEvents = setupMockHandlerFetch();
 
-        return HttpResponse.json({ ...updatedData, id }, { status: 200 });
+        const updatedEvents = currentEvents.map((event) =>
+          event.id === id ? { ...event, ...updatedData } : event
+        );
+
+        setupMockHandlerUpdating(updatedEvents);
+
+        const updatedEvent = updatedEvents.find((event) => event.id === id);
+        return HttpResponse.json(updatedEvent || { ...updatedData, id }, { status: 200 });
       })
     );
 
@@ -189,17 +201,13 @@ describe('일정 CRUD 및 기본 기능', () => {
       notificationTime: 10,
     };
 
-    // 메모리에 삭제할 이벤트 추가
-    inMemoryEvents.push(eventToDelete);
+    setupMockHandlerAppend(eventToDelete);
 
-    // DELETE 핸들러 추가
+    // DELETE 핸들러 수정
     server.use(
       http.delete('/api/events/:id', ({ params }) => {
         const id = params.id as string;
-
-        // 메모리 내 이벤트 삭제
-        inMemoryEvents = inMemoryEvents.filter((e) => e.id !== id);
-
+        setupMockHandlerDeletion(id);
         return new HttpResponse(null, { status: 204 });
       })
     );
