@@ -6,19 +6,9 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Checkbox,
-  CloseButton,
   Flex,
   FormControl,
   FormLabel,
@@ -38,7 +28,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import OverlapDialog from './components/dialogs/OverlapDialog.tsx';
 import ToastNotifications from './components/notifications/ToastNotifications.tsx';
