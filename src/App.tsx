@@ -1,3 +1,19 @@
+import { useCalendarView } from './hooks/useCalendarView.ts';
+import { useEventForm } from './hooks/useEventForm.ts';
+import { useEventOperations } from './hooks/useEventOperations.ts';
+import { useNotifications } from './hooks/useNotifications.ts';
+import { useSearch } from './hooks/useSearch.ts';
+import { Event, EventForm, RepeatType } from './types';
+import {
+  formatDate,
+  formatMonth,
+  formatWeek,
+  getEventsForDay,
+  getWeekDates,
+  getWeeksAtMonth,
+} from './utils/dateUtils';
+import { findOverlappingEvents } from './utils/eventOverlap';
+import { getTimeErrorMessage } from './utils/timeValidation';
 import {
   BellIcon,
   ChevronLeftIcon,
@@ -39,23 +55,6 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
-
-import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useEventForm } from './hooks/useEventForm.ts';
-import { useEventOperations } from './hooks/useEventOperations.ts';
-import { useNotifications } from './hooks/useNotifications.ts';
-import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
-import {
-  formatDate,
-  formatMonth,
-  formatWeek,
-  getEventsForDay,
-  getWeekDates,
-  getWeeksAtMonth,
-} from './utils/dateUtils';
-import { findOverlappingEvents } from './utils/eventOverlap';
-import { getTimeErrorMessage } from './utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -459,7 +458,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                aria-label={`event-${event.id}`}
+                key={event.id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
