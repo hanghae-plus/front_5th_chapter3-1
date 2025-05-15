@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { events } from '../../__mocks__/response/mockEvents.json' assert { type: 'json' };
 import { useSearch } from '../../hooks/useSearch.ts';
 import { Event } from '../../types.ts';
-import { events } from '../../__mocks__/response/mockEvents.json' assert { type: 'json' };
 const MOCK_EVENTS = [...events] as Event[];
 
 beforeEach(() => {

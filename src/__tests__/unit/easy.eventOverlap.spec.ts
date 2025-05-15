@@ -1,5 +1,5 @@
-import { Event } from '../../types';
 import { events } from '../../__mocks__/response/mockEvents.json' assert { type: 'json' };
+import { Event } from '../../types';
 import {
   convertEventToDateRange,
   findOverlappingEvents,

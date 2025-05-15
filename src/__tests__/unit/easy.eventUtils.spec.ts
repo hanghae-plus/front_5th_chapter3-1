@@ -1,6 +1,6 @@
+import { events } from '../../__mocks__/response/mockEvents.json' assert { type: 'json' };
 import { Event } from '../../types';
 import { getFilteredEvents } from '../../utils/eventUtils';
-import { events } from '../../__mocks__/response/mockEvents.json' assert { type: 'json' };
 
 const MOCK_EVENTS = [...events] as Event[];
 describe('getFilteredEvents', () => {
