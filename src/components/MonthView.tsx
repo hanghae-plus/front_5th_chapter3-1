@@ -1,11 +1,21 @@
 import { Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
+import { FC } from 'react';
 
+import { Event } from '../types';
 import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../utils/dateUtils';
+// eslint-disable-next-line import/order
 import EventItem from './EventItem';
 
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-function MonthView({ currentDate, events, holidays, notifiedEvents }) {
+type MonthViewProps = {
+  currentDate: Date;
+  events: Event[];
+  holidays: { [key: string]: string };
+  notifiedEvents: string[];
+};
+
+const MonthView: FC<MonthViewProps> = ({ currentDate, events, holidays, notifiedEvents }) => {
   const weeks = getWeeksAtMonth(currentDate);
 
   return (
@@ -63,6 +73,6 @@ function MonthView({ currentDate, events, holidays, notifiedEvents }) {
       </Table>
     </VStack>
   );
-}
+};
 
 export default MonthView;

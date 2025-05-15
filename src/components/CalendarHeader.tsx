@@ -1,7 +1,16 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { HStack, IconButton, Select } from '@chakra-ui/react';
+import React, { FC } from 'react';
 
-function CalendarHeader({ view, setView, navigate }) {
+type ViewType = 'week' | 'month';
+
+type CalendarHeaderProps = {
+  view: ViewType;
+  setView: React.Dispatch<React.SetStateAction<ViewType>>;
+  navigate: (direction: 'prev' | 'next') => void;
+};
+
+const CalendarHeader: FC<CalendarHeaderProps> = ({ view, setView, navigate }) => {
   return (
     <HStack mx="auto" justifyContent="space-between" mb={5}>
       <IconButton
@@ -22,6 +31,6 @@ function CalendarHeader({ view, setView, navigate }) {
       <IconButton aria-label="Next" icon={<ChevronRightIcon />} onClick={() => navigate('next')} />
     </HStack>
   );
-}
+};
 
 export default CalendarHeader;

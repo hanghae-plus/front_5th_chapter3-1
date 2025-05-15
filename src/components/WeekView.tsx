@@ -1,11 +1,20 @@
 import { Heading, Table, Tbody, Td, Text, Th, Thead, Tr, VStack } from '@chakra-ui/react';
+import { FC } from 'react';
 
+import { Event } from '../types';
 import { formatWeek, getWeekDates } from '../utils/dateUtils';
+// eslint-disable-next-line import/order
 import EventItem from './EventItem';
+
+type WeekViewProps = {
+  currentDate: Date;
+  events: Event[];
+  notifiedEvents: string[];
+};
 
 const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
-function WeekView({ currentDate, events, notifiedEvents }) {
+const WeekView: FC<WeekViewProps> = ({ currentDate, events, notifiedEvents }) => {
   const weekDates = getWeekDates(currentDate);
 
   return (
@@ -42,6 +51,6 @@ function WeekView({ currentDate, events, notifiedEvents }) {
       </Table>
     </VStack>
   );
-}
+};
 
 export default WeekView;
