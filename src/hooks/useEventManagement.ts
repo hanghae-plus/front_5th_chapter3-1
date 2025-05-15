@@ -22,8 +22,8 @@ interface EventManagementProps {
   editingEvent: Event | null;
   events: Event[];
 
-  resetForm: () => void;
-  saveEvent: (eventData: Event | EventFormType) => Promise<void>;
+  onResetForm: () => void;
+  onSave: (eventData: Event | EventFormType) => Promise<void>;
 }
 
 export const useEventManagement = ({
@@ -42,9 +42,9 @@ export const useEventManagement = ({
   startTimeError,
   endTimeError,
   editingEvent,
-  resetForm,
-  saveEvent,
   events,
+  onResetForm,
+  onSave,
 }: EventManagementProps) => {
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
@@ -75,7 +75,7 @@ export const useEventManagement = ({
   };
 
   const createEventDataObject = (): Event | EventFormType => ({
-    id: editingEvent ? editingEvent.id : undefined,
+    id: editingEvent?.id,
     title,
     date,
     startTime,
@@ -100,16 +100,16 @@ export const useEventManagement = ({
       setOverlappingEvents(overlapping);
       setIsOverlapDialogOpen(true);
     } else {
-      await saveEvent(eventData);
-      resetForm();
+      await onSave(eventData);
+      onResetForm();
     }
   };
 
   const handleContinueSaveAfterOverlap = async () => {
     setIsOverlapDialogOpen(false);
     const eventData = createEventDataObject();
-    await saveEvent(eventData);
-    resetForm();
+    await onSave(eventData);
+    onResetForm();
   };
 
   return {

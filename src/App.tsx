@@ -58,7 +58,7 @@ function App() {
     handleSubmitEvent,
     handleContinueSaveAfterOverlap,
     isOverlapDialogOpen,
-    setIsOverlapDialogOpen, // OverlapDialog를 직접 제어하기 위해 필요
+    setIsOverlapDialogOpen,
     overlappingEvents,
     cancelRef,
   } = useEventManagement({
@@ -78,8 +78,8 @@ function App() {
     endTimeError,
     editingEvent,
     events,
-    resetForm,
-    saveEvent,
+    onResetForm: resetForm,
+    onSave: saveEvent,
   });
 
   const eventFormSection = (
@@ -108,9 +108,9 @@ function App() {
       setNotificationTime={setNotificationTime}
       startTimeError={startTimeError}
       endTimeError={endTimeError}
-      handleStartTimeChange={handleStartTimeChange}
-      handleEndTimeChange={handleEndTimeChange}
-      addOrUpdateEvent={handleSubmitEvent}
+      onStartTimeChange={handleStartTimeChange}
+      onEndTimeChange={handleEndTimeChange}
+      onSubmit={handleSubmitEvent}
       editingEvent={editingEvent}
     />
   );

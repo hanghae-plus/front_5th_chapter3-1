@@ -41,9 +41,9 @@ interface EventFormProps {
   setNotificationTime: (notificationTime: number) => void;
   startTimeError: string | null;
   endTimeError: string | null;
-  handleStartTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleEndTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  addOrUpdateEvent: () => void;
+  onStartTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEndTimeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: () => void;
   editingEvent: Event | null;
 }
 
@@ -72,9 +72,9 @@ export const EventForm = ({
   setNotificationTime,
   startTimeError,
   endTimeError,
-  handleStartTimeChange,
-  handleEndTimeChange,
-  addOrUpdateEvent,
+  onStartTimeChange,
+  onEndTimeChange,
+  onSubmit,
   editingEvent,
 }: EventFormProps) => {
   return (
@@ -98,7 +98,7 @@ export const EventForm = ({
             <Input
               type="time"
               value={startTime}
-              onChange={handleStartTimeChange}
+              onChange={onStartTimeChange}
               onBlur={() => getTimeErrorMessage(startTime, endTime)}
               isInvalid={!!startTimeError}
             />
@@ -110,7 +110,7 @@ export const EventForm = ({
             <Input
               type="time"
               value={endTime}
-              onChange={handleEndTimeChange}
+              onChange={onEndTimeChange}
               onBlur={() => getTimeErrorMessage(startTime, endTime)}
               isInvalid={!!endTimeError}
             />
@@ -197,7 +197,7 @@ export const EventForm = ({
         </VStack>
       )}
 
-      <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
+      <Button data-testid="event-submit-button" onClick={onSubmit} colorScheme="blue">
         {editingEvent ? '일정 수정' : '일정 추가'}
       </Button>
     </VStack>

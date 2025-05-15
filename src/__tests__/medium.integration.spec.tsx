@@ -14,7 +14,7 @@ import {
 } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { server } from '../setupTests';
-import { Event, EventForm } from '../types';
+import { Event } from '../types';
 
 const renderWithChakra = (ui: ReactElement) => {
   return render(<ChakraProvider>{ui}</ChakraProvider>);
