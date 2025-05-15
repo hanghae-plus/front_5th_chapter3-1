@@ -8,14 +8,16 @@ interface FindByIdParams {
 }
 
 // 어떻게 해야할지 모르겠어서 여기는 배꼈습니다 .. medium에 잘나와있네요 .. ㅎ
-export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
+export const setupMockHandlerCreation = (initEvents: Event[] = [], logging = false) => {
   const mockEvents = [...initEvents];
 
   server.use(
     http.get('/api/events', () => {
-      console.group('🚀 GET /api/events ( setupMockHandlerCreation )');
-      console.log('🚀 events >> ', mockEvents);
-      console.groupEnd();
+      if (logging) {
+        console.group('🚀 GET /api/events ( setupMockHandlerCreation )');
+        console.log('🚀 events >> ', mockEvents);
+        console.groupEnd();
+      }
 
       return HttpResponse.json({ events: mockEvents });
     }),
@@ -24,9 +26,11 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
       newEvent.id = String(mockEvents.length + 1);
       mockEvents.push(newEvent);
 
-      console.group('🚀 POST /api/events ( setupMockHandlerCreation ) ');
-      console.log('🚀 newEvent >> ', newEvent);
-      console.groupEnd();
+      if (logging) {
+        console.group('🚀 POST /api/events ( setupMockHandlerCreation ) ');
+        console.log('🚀 newEvent >> ', newEvent);
+        console.groupEnd();
+      }
 
       return HttpResponse.json(newEvent, { status: 201 });
     }),
@@ -34,10 +38,12 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
       const updatedEvent = await request.json();
       const updatedEventId = params.id;
 
-      console.group('🚀 PUT /api/events/:id ( setupMockHandlerCreation )');
-      console.log('🚀 params >> ', params);
-      console.log('🚀 body >> ', updatedEvent);
-      console.groupEnd();
+      if (logging) {
+        console.group('🚀 PUT /api/events/:id ( setupMockHandlerCreation )');
+        console.log('🚀 params >> ', params);
+        console.log('🚀 body >> ', updatedEvent);
+        console.groupEnd();
+      }
 
       const exEventIndex = mockEvents.findIndex((event) => event.id === updatedEventId);
       if (exEventIndex === -1) {
@@ -53,9 +59,11 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
     http.delete<FindByIdParams, Event>('/api/events/:id', async ({ params }) => {
       const deletedEventId = params.id;
 
-      console.group('🚀 DELETE /api/events/:id ( setupMockHandlerCreation )');
-      console.log('🚀 params >> ', params);
-      console.groupEnd();
+      if (logging) {
+        console.group('🚀 DELETE /api/events/:id ( setupMockHandlerCreation )');
+        console.log('🚀 params >> ', params);
+        console.groupEnd();
+      }
 
       const exEventIndex = mockEvents.findIndex((event) => event.id === deletedEventId);
       if (exEventIndex === -1) {
