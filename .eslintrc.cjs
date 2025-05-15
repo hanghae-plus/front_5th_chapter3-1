@@ -21,7 +21,7 @@ module.exports = {
   },
   rules: {
     'linebreak-style': 'off',
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
     'react/prop-types': 'off',
     'import/order': [
       'error',
