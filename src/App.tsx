@@ -36,6 +36,7 @@ import { useRef, useState } from 'react';
 
 import { MonthView } from './components/Calendar/MonthView/MonthView.tsx';
 import { WeekView } from './components/Calendar/WeekView.tsx';
+import { Notification } from './components/Notification/Alert/Notification.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -149,6 +150,10 @@ function App() {
       await saveEvent(eventData);
       resetForm();
     }
+  };
+
+  const handleNotificationClose = (index: number) => {
+    setNotifications((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -445,22 +450,7 @@ function App() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      {/* 3번쨰 */}
-      {notifications.length > 0 && (
-        <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification, index) => (
-            <Alert key={index} status="info" variant="solid" width="auto">
-              <AlertIcon />
-              <Box flex="1">
-                <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
-              </Box>
-              <CloseButton
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
-            </Alert>
-          ))}
-        </VStack>
-      )}
+      <Notification notifications={notifications} onClose={handleNotificationClose} />
     </Box>
   );
 }
