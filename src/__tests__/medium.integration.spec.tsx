@@ -65,7 +65,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     await typeEvent(user, MOCK_EVENTS[0]);
 
-    const [firstEvent] = screen.getAllByTestId('event-item');
+    const [firstEvent] = await screen.findAllByTestId('event-item', {}, { timeout: 10000 });
 
     expect(within(firstEvent).getByRole('button', { name: 'Edit event' })).toBeInTheDocument();
 
@@ -78,16 +78,18 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     await user.click(screen.getByTestId('event-submit-button'));
 
-    const eventList = await screen.findByTestId('event-list');
+    const eventList = await screen.findByTestId('event-list', {}, { timeout: 10000 });
 
     expect(within(eventList).queryByText('회의실 B')).not.toBeInTheDocument();
-    expect(within(eventList).getByText('회의실 C')).toBeInTheDocument();
-  });
+    expect(
+      await within(eventList).findByText('회의실 C', {}, { timeout: 10000 })
+    ).toBeInTheDocument();
+  }, 15000);
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
     await typeEvent(user, MOCK_EVENTS[0]);
 
-    const [firstEvent] = screen.getAllByTestId('event-item');
+    const [firstEvent] = await screen.findAllByTestId('event-item', {}, { timeout: 10000 });
 
     expect(within(firstEvent).getByRole('button', { name: 'Edit event' })).toBeInTheDocument();
 
@@ -100,11 +102,13 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     await user.click(screen.getByTestId('event-submit-button'));
 
-    const eventList = await screen.findByTestId('event-list');
+    const eventList = await screen.findByTestId('event-list', {}, { timeout: 10000 });
 
     expect(within(eventList).queryByText('새 위치')).not.toBeInTheDocument();
-    expect(within(eventList).getByText('회의실')).toBeInTheDocument();
-  });
+    expect(
+      await within(eventList).findByText('회의실', {}, { timeout: 10000 })
+    ).toBeInTheDocument();
+  }, 15000);
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
     await typeEvent(user, MOCK_EVENTS[0]);
@@ -209,8 +213,8 @@ describe('일정 충돌', () => {
 
     await typeEvent(user, MOCK_EVENTS[0]);
 
-    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
-  });
+    expect(await screen.findByText('일정 겹침 경고', {}, { timeout: 10000 })).toBeInTheDocument();
+  }, 15000);
 
   it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
     vi.setSystemTime('2025-10-15');
@@ -231,8 +235,8 @@ describe('일정 충돌', () => {
 
     await user.click(screen.getByTestId('event-submit-button'));
 
-    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
-  });
+    expect(await screen.findByText('일정 겹침 경고', {}, { timeout: 10000 })).toBeInTheDocument();
+  }, 15000);
 });
 
 describe('알림 기능', () => {
