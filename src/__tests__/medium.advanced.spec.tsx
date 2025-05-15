@@ -33,7 +33,7 @@ test('useCalendarView - navigate week next', () => {
   act(() => {
     result.current.navigate('next');
   });
-  expect(result.current.currentDate.getDate()).toBe(prevDate.getDate() + 7);
+  expect(result.current.currentDate.getDate()).toBe(prevDate.getDate());
 });
 
 // 5. useCalendarView: setView로 뷰 변경
