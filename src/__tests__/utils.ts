@@ -10,3 +10,7 @@ export const parseHM = (timestamp: number) => {
   const m = fillZero(date.getMinutes());
   return `${h}:${m}`;
 };
+
+export const addMinutes = (date: Date, minutes: number) => {
+  return new Date(date.getTime() + minutes * 60 * 1000);
+};
