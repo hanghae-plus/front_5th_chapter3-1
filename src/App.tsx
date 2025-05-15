@@ -1,18 +1,6 @@
-import {
-  BellIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DeleteIcon,
-  EditIcon,
-} from '@chakra-ui/icons';
+import { BellIcon } from '@chakra-ui/icons';
 import {
   Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
@@ -24,7 +12,6 @@ import {
   FormLabel,
   Heading,
   HStack,
-  IconButton,
   Input,
   Select,
   Table,
@@ -45,12 +32,13 @@ import { RepeatSettingFrom } from './components/RepeatSettingFrom.tsx';
 import { ScheduleCalendar } from './components/ScheduleCalendar.tsx';
 import { SearchInput } from './components/SearchInput.tsx';
 import { WarningAlert } from './components/WarningAlert.tsx';
+import { categories, notificationOptions, weekDays } from './constant/index.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { Event, EventForm } from './types';
 import {
   formatDate,
   formatMonth,
@@ -61,18 +49,6 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
