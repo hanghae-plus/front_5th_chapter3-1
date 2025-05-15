@@ -68,7 +68,7 @@ function App() {
   );
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
-  const { view, setView, currentDate, holidays, navigate } = useCalendarView();
+  const { view, currentDate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
@@ -251,15 +251,7 @@ function App() {
           </Button>
         </VStack>
 
-        <Calendar
-          view={view}
-          setView={setView}
-          currentDate={currentDate}
-          navigate={navigate}
-          filteredEvents={filteredEvents}
-          notifiedEvents={notifiedEvents}
-          holidays={holidays}
-        />
+        <Calendar filteredEvents={filteredEvents} notifiedEvents={notifiedEvents} />
 
         <EventList
           events={events}

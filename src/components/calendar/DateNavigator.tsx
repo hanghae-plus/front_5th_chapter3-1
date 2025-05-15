@@ -1,15 +1,11 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { HStack, IconButton, Select } from '@chakra-ui/react';
 
-interface DateNavigatorProps {
-  view: 'week' | 'month';
-  // eslint-disable-next-line no-unused-vars
-  setView: (view: 'week' | 'month') => void;
-  // eslint-disable-next-line no-unused-vars
-  navigate: (direction: 'prev' | 'next') => void;
-}
+import { useCalendarView } from '../../hooks/useCalendarView';
 
-const DateNavigator = ({ view, setView, navigate }: DateNavigatorProps) => {
+const DateNavigator = () => {
+  const { view, setView, navigate } = useCalendarView();
+
   return (
     <HStack mx="auto" justifyContent="space-between">
       <IconButton
