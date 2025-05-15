@@ -1,6 +1,14 @@
 import { FormControl, FormLabel, Select } from '@chakra-ui/react';
 
-const Selector = (props) => {
+interface SelectorProps {
+  label?: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: { label: string; value: string }[];
+  defaultOption?: string;
+}
+
+const Selector = (props: SelectorProps) => {
   const { label, value, onChange, options, defaultOption } = props;
   return (
     <FormControl>
