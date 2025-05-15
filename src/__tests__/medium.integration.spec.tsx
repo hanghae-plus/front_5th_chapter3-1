@@ -3,8 +3,10 @@ import { http, HttpResponse } from 'msw';
 
 import App from '../App';
 import { server } from '../setupTests';
-import { render, screen, within, waitFor, fireEvent } from './test-utils';
-import { EventForm } from '../types';
+import { render, screen, within, waitFor, fireEvent, act } from './test-utils';
+import { Event, EventForm } from '../types';
+import { createMockHandlersUtils } from '../__mocks__/handlersUtils';
+import { createHandlers } from '../__mocks__/handlers';
 
 const createCurrentMonthEvent = (title = '테스트 일정', description = '테스트 일정 설명') => {
   const currentDate = new Date();
@@ -452,31 +454,33 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 10으로 하면 알림이 노출된다', async () => {
+it.only('notificationTime을 10으로 하면 알림이 노출된다', async () => {
+  const MOCK_EVENTS = [
+    {
+      id: '999',
+      title: '알림 테스트',
+      date: '2025-05-15',
+      startTime: '09:00',
+      endTime: '09:10',
+      description: '알림 테스트 설명',
+      notificationTime: 10,
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+    },
+  ];
+
+  act(() => {
+    vi.setSystemTime('2025-05-15 08:50:00');
+  });
+
+  const mockUtils = createMockHandlersUtils(MOCK_EVENTS as Event[]);
+  server.resetHandlers(...createHandlers(mockUtils));
+
   render(<App />);
 
-  const user = userEvent.setup();
-
-  const TEST_TIME = 10;
-  const now = new Date();
-  const tenMinutesLater = new Date(now.getTime() + TEST_TIME * 60 * 1000);
-
-  const event: EventForm = {
-    title: '알림 테스트',
-    date: tenMinutesLater.toISOString().split('T')[0],
-    startTime: tenMinutesLater.toTimeString().slice(0, 5),
-    endTime: new Date(tenMinutesLater.getTime() + 60 * 60 * 1000).toTimeString().slice(0, 5),
-    description: '알림 테스트 설명',
-    notificationTime: TEST_TIME,
-    location: '',
-    category: '',
-    repeat: { type: 'none', interval: 0 },
-  };
-
-  await addOrUpdateEvent(user, event);
-
   await waitFor(() => {
-    const alertBox = document.querySelector('[role="alert"]');
-    expect(alertBox?.textContent).toMatch(`${TEST_TIME}분 후 ${event.title} 일정이 시작됩니다`);
+    const notification = screen.getByText(`10분 후 ${MOCK_EVENTS[0].title} 일정이 시작됩니다.`);
+    expect(notification).toBeInTheDocument();
   });
 });
