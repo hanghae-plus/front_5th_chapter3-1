@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { http, HttpResponse } from 'msw';
 
 import { Event } from '../types';
@@ -14,7 +16,7 @@ export const handlers = [
 
   http.post('/api/events', async ({ request }) => {
     const newEvent = (await request.json()) as Event;
-    mockEvents.push(newEvent);
+    mockEvents.push({ ...newEvent, id: randomUUID() });
     return HttpResponse.json({ success: true }, { status: 201 });
   }),
 

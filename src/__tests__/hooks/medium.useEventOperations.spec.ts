@@ -9,7 +9,7 @@ import {
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
-import { Event } from '../../types.ts';
+import { Event, EventForm } from '../../types.ts';
 
 const MOCK_EVENTS: Event[] = [
   {
@@ -100,8 +100,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   setupMockHandlerCreation(MOCK_EVENTS);
   const { result } = renderHook(() => useEventOperations(false));
 
-  const newEvent: Event = {
-    id: (Number(events[events.length - 1].id) + 1).toString(),
+  const newEvent: EventForm = {
     title: '새로운 이벤트',
     date: '2025-01-01',
     startTime: '2025-01-01',
@@ -121,7 +120,10 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
   });
 
   await waitFor(() => {
-    expect(result.current.events[result.current.events.length - 1]).toEqual(newEvent);
+    expect(result.current.events[result.current.events.length - 1]).toEqual({
+      ...newEvent,
+      id: expect.any(String),
+    });
   });
 
   // toast
