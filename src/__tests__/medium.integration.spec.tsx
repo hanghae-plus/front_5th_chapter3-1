@@ -725,7 +725,7 @@ describe('일정 충돌', () => {
 
     // 10. 성공 토스트 메시지 확인 - 더 유연한 방식으로 확인
     await waitFor(() => {
-      const successMessages = screen.queryAllByText((content, element) => {
+      const successMessages = screen.queryAllByText((_content, element) => {
         return element?.textContent?.includes('일정이 수정되었습니다') || false;
       });
       expect(successMessages.length).toBeGreaterThan(0);
