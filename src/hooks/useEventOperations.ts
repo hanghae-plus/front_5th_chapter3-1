@@ -73,7 +73,6 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const deleteEvent = async (id: string) => {
     try {
       const response = await fetch(`/api/events/${id}`, { method: 'DELETE' });
-      console.log(response);
       if (!response.ok) {
         throw new Error('Failed to delete event');
       }
