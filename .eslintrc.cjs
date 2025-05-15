@@ -1,32 +1,27 @@
 module.exports = {
   root: true,
-  plugins: ['react', 'react-hooks', 'prettier', 'import'],
+  plugins: ['react', 'react-hooks', 'prettier'],
   extends: [
     'eslint:recommended',
-    'plugin:react/recommended',
     'plugin:react-hooks/recommended',
     'plugin:storybook/recommended',
     'plugin:prettier/recommended',
     'plugin:cypress/recommended',
     'plugin:import/warnings',
-    'prettier',
   ],
   env: {
     browser: true,
     node: true,
-    es2022: true,
   },
   ignorePatterns: ['node_modules/*', 'dist'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     tsconfigRootDir: __dirname,
     ecmaVersion: 2022,
-    sourceType: 'module',
   },
   rules: {
     'no-unused-vars': 'warn',
     'react/prop-types': 'off',
-    'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'import/order': [
       'error',
       {
