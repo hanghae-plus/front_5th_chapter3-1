@@ -2,15 +2,13 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
 
 const now = new Date('2025-05-20T09:59:00');
 
 beforeEach(() => {
-  vi.useRealTimers(); // 초기화
-  vi.useFakeTimers(); // 가짜 타이머 사용
-  vi.setSystemTime(now); // 현재 시간을 2025-05-20T09:59:00으로 설정
+  vi.useRealTimers();
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
 });
 
 afterEach(() => {
