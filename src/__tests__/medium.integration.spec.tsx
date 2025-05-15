@@ -1,21 +1,95 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
 
 import App from '../App';
-import { server } from '../setupTests';
-import { Event } from '../types';
+
+beforeEach(() => {
+  vi.setSystemTime(new Date('2025-10-13'));
+});
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const titleInput = screen.getByLabelText('제목');
+    const dateInput = screen.getByLabelText('날짜');
+    const startTimeInput = screen.getByLabelText('시작 시간');
+    const endTimeInput = screen.getByLabelText('종료 시간');
+    const descriptionInput = screen.getByLabelText('설명');
+    const locationInput = screen.getByLabelText('위치');
+    const categorySelect = screen.getByLabelText('카테고리');
+    const addButton = screen.getByRole('button', { name: '일정 추가' });
+
+    await user.type(titleInput, '새로운 회의');
+    await user.type(dateInput, '2025-10-14');
+    await user.type(startTimeInput, '09:00');
+    await user.type(endTimeInput, '10:00');
+    await user.type(descriptionInput, '새로운 팀 미팅');
+    await user.type(locationInput, '회의실 A');
+    await user.selectOptions(categorySelect, '업무');
+    await user.click(addButton);
+
+    const eventList = screen.getByTestId('event-list');
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('새로운 회의')).toBeInTheDocument();
+    });
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    const user = userEvent.setup();
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = screen.getByTestId('event-list');
+
+    const editButtons = await within(eventList).findAllByRole('button', { name: 'Edit event' });
+
+    await user.click(editButtons[0]);
+
+    const titleInput = screen.getByLabelText('제목');
+
+    await user.clear(titleInput);
+    await user.type(titleInput, '수정된 회의');
+    const saveButton = screen.getByRole('button', { name: '일정 수정' });
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      expect(within(eventList).getByText('수정된 회의')).toBeInTheDocument();
+    });
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = screen.getByTestId('event-list');
+
+    const deleteButtons = await within(eventList).findAllByRole('button', { name: 'Delete event' });
+
+    await user.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(within(eventList).queryByText('기존 회의')).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {

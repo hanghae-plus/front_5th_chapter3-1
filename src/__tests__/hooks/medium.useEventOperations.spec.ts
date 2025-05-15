@@ -2,8 +2,8 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 
 import { useEventOperations } from '../../hooks/useEventOperations.ts';
-import { Event, EventForm } from '../../types.ts';
 import { server } from '../../setupTests.ts';
+import { Event, EventForm } from '../../types.ts';
 
 const mockToast = vi.fn();
 vi.mock('@chakra-ui/react', () => ({
