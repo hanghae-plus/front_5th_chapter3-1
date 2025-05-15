@@ -1,15 +1,12 @@
-import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 import { Event, EventForm } from '../types';
+import { useToastManage } from './useToastManage'; // useToastManage 경로 맞게 수정
 
 export const useEventOperations = (editing: boolean, onSave?: () => void) => {
   const [events, setEvents] = useState<Event[]>([]);
-  const toast = useToast();
+  const { showToast } = useToastManage();
 
-  /**
-   * @description events를 fetch하고 setEvents로 이벤트를 설정합니다.
-   */
   const fetchEvents = async () => {
     try {
       const response = await fetch('/api/events');
@@ -20,12 +17,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       setEvents(events);
     } catch (error) {
       console.error('Error fetching events:', error);
-      toast({
-        title: '이벤트 로딩 실패',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast('이벤트 로딩 실패', 'error');
     }
   };
 
@@ -33,7 +25,6 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
     try {
       let response;
       if (editing) {
-        console.log(editing);
         response = await fetch(`/api/events/${(eventData as Event).id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -54,20 +45,10 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       await fetchEvents();
 
       onSave?.();
-      toast({
-        title: editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast(editing ? '일정이 수정되었습니다.' : '일정이 추가되었습니다.', 'success');
     } catch (error) {
       console.error('Error saving event:', error);
-      toast({
-        title: '일정 저장 실패',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast('일정 저장 실패', 'error');
     }
   };
 
@@ -80,30 +61,16 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
       }
 
       await fetchEvents();
-      toast({
-        title: '일정이 삭제되었습니다.',
-        status: 'info',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast('일정이 삭제되었습니다.', 'info');
     } catch (error) {
       console.error('Error deleting event:', error);
-      toast({
-        title: '일정 삭제 실패',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      showToast('일정 삭제 실패', 'error');
     }
   };
 
   async function init() {
     await fetchEvents();
-    toast({
-      title: '일정 로딩 완료!',
-      status: 'info',
-      duration: 1000,
-    });
+    showToast('일정 로딩 완료!', 'info', 1000);
   }
 
   useEffect(() => {

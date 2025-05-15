@@ -30,6 +30,7 @@ describe('useEventOperations', () => {
 
       expect(mockToast).toHaveBeenCalledWith({
         duration: 1000,
+        isClosable: true,
         status: 'info',
         title: '일정 로딩 완료!',
       });
