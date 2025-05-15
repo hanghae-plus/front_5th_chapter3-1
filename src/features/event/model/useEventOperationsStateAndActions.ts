@@ -1,6 +1,6 @@
 import { useEventOperations } from '../../../entities/event/api/useEventOperations';
-import { useNotifications } from '../../../hooks/useNotifications';
 import { Event } from '../../../types';
+import { useNotifications } from '../../notifications/model/useNotifications';
 
 export const useEventOperationsStateAndActions = (
   editingEvent: Event | null,

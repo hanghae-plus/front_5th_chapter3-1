@@ -48,6 +48,7 @@ export const EventCalendar = ({
       {view === 'week' && (
         <WeekView
           currentDate={currentDate}
+          holidays={holidays}
           filteredEvents={filteredEvents}
           notifiedEvents={notifiedEvents}
         />

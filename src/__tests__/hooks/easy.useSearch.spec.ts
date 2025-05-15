@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { formatDate } from '../../based/utils/dateUtils.ts';
-import { useSearch } from '../../hooks/useSearch.ts';
+import { useSearch } from '../../features/event/model/useSearch.ts';
 import { Event } from '../../types.ts';
 
 const MOCK_EVENTS: Event[] = [

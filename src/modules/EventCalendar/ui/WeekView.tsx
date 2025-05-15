@@ -19,10 +19,12 @@ import { Event } from '../../../types';
 
 export const WeekView = ({
   currentDate,
+  holidays,
   filteredEvents,
   notifiedEvents,
 }: {
   currentDate: Date;
+  holidays: Record<string, string>;
   filteredEvents: Event[];
   notifiedEvents: string[];
 }) => {
@@ -46,6 +48,11 @@ export const WeekView = ({
             {weekDates.map((date) => (
               <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
                 <Text fontWeight="bold">{date.getDate()}</Text>
+                {holidays[date.toISOString().slice(0, 10)] && (
+                  <Text color="red.500" fontSize="sm">
+                    {holidays[date.toISOString().slice(0, 10)]}
+                  </Text>
+                )}
                 {filteredEvents
                   .filter((event) => new Date(event.date).toDateString() === date.toDateString())
                   .map((event) => {

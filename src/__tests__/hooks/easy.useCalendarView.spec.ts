@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { formatDate } from '../../based/utils/dateUtils.ts';
-import { useCalendarView } from '../../hooks/useCalendarView.ts';
+import { useCalendarView } from '../../features/event/model/useCalendarView.ts';
 
 describe('초기 상태', () => {
   it('view의 기본값은 "month"이어야 한다', () => {

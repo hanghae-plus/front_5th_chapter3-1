@@ -1,5 +1,5 @@
-import { useCalendarView } from '../../../hooks/useCalendarView';
-import { useSearch } from '../../../hooks/useSearch';
+import { useCalendarView } from './useCalendarView';
+import { useSearch } from './useSearch';
 import { Event } from '../../../types';
 
 export const useCalendarViewStateAndActions = (events: Event[]) => {

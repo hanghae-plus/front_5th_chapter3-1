@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 
-import { getTimeErrorMessage } from '../based/utils/timeValidation';
-import { Event, RepeatType } from '../types';
+import { getTimeErrorMessage } from '../../../based/utils/timeValidation';
+import { Event, RepeatType } from '../../../types';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;
 

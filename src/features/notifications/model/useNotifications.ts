@@ -1,8 +1,11 @@
 import { useInterval } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { createNotificationMessage, getUpcomingEvents } from '../based/utils/notificationUtils';
-import { Event } from '../types';
+import {
+  createNotificationMessage,
+  getUpcomingEvents,
+} from '../../../based/utils/notificationUtils';
+import { Event } from '../../../types';
 
 export const useNotifications = (events: Event[]) => {
   const [notifications, setNotifications] = useState<{ id: string; message: string }[]>([]);

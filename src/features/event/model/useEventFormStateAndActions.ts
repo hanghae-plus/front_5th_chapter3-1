@@ -1,4 +1,4 @@
-import { useEventForm } from '../../../hooks/useEventForm';
+import { useEventForm } from './useEventForm';
 
 export const useEventFormStateAndActions = () => {
   const {

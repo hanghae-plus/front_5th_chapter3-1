@@ -424,7 +424,7 @@ describe('일정 충돌', () => {
 
     const editButtonById = screen.getByTestId(`edit-event-button-${id}`);
     await user.click(editButtonById);
-    // 두 번째 일정과 겹치는 시간으로 수정
+
     const titleInput = screen.getByLabelText(/제목/i);
     const dateInput = screen.getByLabelText(/날짜/i);
     const startTimeInput = screen.getByLabelText(/시작 시간/i);
@@ -457,16 +457,15 @@ it('notificationTime을 10으로 하면 알림이 노출된다', async () => {
 
   const user = userEvent.setup();
 
-  // 현재 시간 기준으로 10분 후 일정 생성
   const TEST_TIME = 10;
   const now = new Date();
   const tenMinutesLater = new Date(now.getTime() + TEST_TIME * 60 * 1000);
 
   const event: EventForm = {
     title: '알림 테스트',
-    date: tenMinutesLater.toISOString().split('T')[0], // YYYY-MM-DD
-    startTime: tenMinutesLater.toTimeString().slice(0, 5), // HH:mm
-    endTime: new Date(tenMinutesLater.getTime() + 60 * 60 * 1000).toTimeString().slice(0, 5), // 1시간 후
+    date: tenMinutesLater.toISOString().split('T')[0],
+    startTime: tenMinutesLater.toTimeString().slice(0, 5),
+    endTime: new Date(tenMinutesLater.getTime() + 60 * 60 * 1000).toTimeString().slice(0, 5),
     description: '알림 테스트 설명',
     notificationTime: TEST_TIME,
     location: '',

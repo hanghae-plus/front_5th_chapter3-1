@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
 import { formatDate } from '../../based/utils/dateUtils.ts';
-import { useNotifications } from '../../hooks/useNotifications.ts';
+import { useNotifications } from '../../features/notifications/model/useNotifications.ts';
 import { Event } from '../../types.ts';
 import { parseHM } from '../utils.ts';
 
