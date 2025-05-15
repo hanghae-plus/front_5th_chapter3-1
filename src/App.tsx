@@ -58,8 +58,7 @@ function App() {
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
-  const { isOverlapDialogOpen, closeOverlapDialog, openOverlapDialog, setIsOverlapDialogOpen } =
-    useOverlapDialog();
+  const { isOverlapDialogOpen, closeOverlapDialog, openOverlapDialog } = useOverlapDialog();
 
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
   const cancelRef = useRef<HTMLButtonElement>(null);

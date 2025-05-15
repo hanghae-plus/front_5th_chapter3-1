@@ -50,7 +50,7 @@ export default function OverlapDialog({
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+            <Button ref={cancelRef} onClick={closeOverlapDialog}>
               취소
             </Button>
             <Button colorScheme="red" onClick={handleContinueWithOverlap} ml={3}>
