@@ -4,8 +4,10 @@ import React from 'react';
 
 interface ViewNavigatorProps {
   view: 'week' | 'month'; // App.tsx에서 사용하는 타입과 일치시킵니다.
-  setView: (_view: 'week' | 'month') => void;
-  navigate: (_direction: 'prev' | 'next') => void;
+  // eslint-disable-next-line
+  setView: (view: 'week' | 'month') => void;
+  // eslint-disable-next-line
+  navigate: (direction: 'prev' | 'next') => void;
 }
 
 export const ViewNavigator: React.FC<ViewNavigatorProps> = ({ view, setView, navigate }) => {
