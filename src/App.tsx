@@ -427,6 +427,7 @@ function App() {
               onClick={() => navigate('prev')}
             />
             <Select
+              data-testid="view-selector"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
@@ -500,11 +501,13 @@ function App() {
                   </VStack>
                   <HStack>
                     <IconButton
+                      data-testid={`edit-event-button-${event.id}`}
                       aria-label="Edit event"
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
+                      data-testid={`delete-event-button-${event.id}`}
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}

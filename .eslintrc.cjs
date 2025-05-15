@@ -8,6 +8,8 @@ module.exports = {
     'plugin:prettier/recommended',
     'plugin:cypress/recommended',
     'plugin:import/warnings',
+    'react-app',
+    'prettier',
   ],
   env: {
     browser: true,
@@ -22,6 +24,7 @@ module.exports = {
   rules: {
     'no-unused-vars': 'warn',
     'react/prop-types': 'off',
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'import/order': [
       'error',
       {
