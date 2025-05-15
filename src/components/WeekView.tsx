@@ -12,7 +12,13 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { BellIcon } from '@chakra-ui/icons';
-import { useCalendarView, useEventOperations, useNotifications, useSearch } from '@/hooks';
+import {
+  useCalendarView,
+  useEventOperations,
+  useNotifications,
+  useSearch,
+  useWeekEvents,
+} from '@/hooks';
 import { weekDays } from '@/lib';
 import { formatWeek, getWeekDates } from '@/utils';
 
@@ -22,6 +28,7 @@ export function WeekView() {
   const weekDates = getWeekDates(currentDate);
   const { filteredEvents } = useSearch(events, currentDate, view);
   const { notifiedEvents } = useNotifications(events);
+  const { getEventsForDate } = useWeekEvents(filteredEvents, notifiedEvents);
 
   return (
     <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>
@@ -41,29 +48,24 @@ export function WeekView() {
             {weekDates.map((date) => (
               <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
                 <Text fontWeight="bold">{date.getDate()}</Text>
-                {filteredEvents
-                  .filter((event) => new Date(event.date).toDateString() === date.toDateString())
-                  .map((event) => {
-                    const isNotified = notifiedEvents.includes(event.id);
-                    return (
-                      <Box
-                        key={event.id}
-                        p={1}
-                        my={1}
-                        bg={isNotified ? 'red.100' : 'gray.100'}
-                        borderRadius="md"
-                        fontWeight={isNotified ? 'bold' : 'normal'}
-                        color={isNotified ? 'red.500' : 'inherit'}
-                      >
-                        <HStack spacing={1}>
-                          {isNotified && <BellIcon />}
-                          <Text fontSize="sm" noOfLines={1}>
-                            {event.title}
-                          </Text>
-                        </HStack>
-                      </Box>
-                    );
-                  })}
+                {getEventsForDate(date).map((event) => (
+                  <Box
+                    key={event.id}
+                    p={1}
+                    my={1}
+                    bg={event.isNotified ? 'red.100' : 'gray.100'}
+                    borderRadius="md"
+                    fontWeight={event.isNotified ? 'bold' : 'normal'}
+                    color={event.isNotified ? 'red.500' : 'inherit'}
+                  >
+                    <HStack spacing={1}>
+                      {event.isNotified && <BellIcon />}
+                      <Text fontSize="sm" noOfLines={1}>
+                        {event.title}
+                      </Text>
+                    </HStack>
+                  </Box>
+                ))}
               </Td>
             ))}
           </Tr>
