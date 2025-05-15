@@ -36,6 +36,7 @@ import { useRef, useState } from 'react';
 
 import { MonthView } from './components/MonthView.tsx';
 import { WeekView } from './components/WeekView.tsx';
+import { categories, notificationOptions } from './config/const.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -44,18 +45,6 @@ import { useSearch } from './hooks/useSearch.ts';
 import { Event, EventForm, RepeatType } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
-const categories = ['업무', '개인', '가족', '기타'];
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
-
-const notificationOptions = [
-  { value: 1, label: '1분 전' },
-  { value: 10, label: '10분 전' },
-  { value: 60, label: '1시간 전' },
-  { value: 120, label: '2시간 전' },
-  { value: 1440, label: '1일 전' },
-];
 
 function App() {
   const {
@@ -308,7 +297,6 @@ function App() {
           {view === 'week' && (
             <WeekView
               currentDate={currentDate}
-              weekDays={weekDays}
               filteredEvents={filteredEvents}
               notifiedEvents={notifiedEvents}
             />
@@ -317,7 +305,6 @@ function App() {
             <MonthView
               currentDate={currentDate}
               holidays={holidays}
-              weekDays={weekDays}
               filteredEvents={filteredEvents}
               notifiedEvents={notifiedEvents}
             />

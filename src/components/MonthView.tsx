@@ -13,13 +13,13 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { weekDays } from '../config/const';
 import { Event } from '../types';
 import { formatDate, formatMonth, getEventsForDay, getWeeksAtMonth } from '../utils/dateUtils';
 
 interface MonthViewProps {
   currentDate: Date;
   holidays: Record<string, string>;
-  weekDays: string[];
   filteredEvents: Event[];
   notifiedEvents: string[];
 }
@@ -27,7 +27,6 @@ interface MonthViewProps {
 export const MonthView = ({
   currentDate,
   holidays,
-  weekDays,
   filteredEvents,
   notifiedEvents,
 }: MonthViewProps) => {
