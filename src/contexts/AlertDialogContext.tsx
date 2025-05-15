@@ -6,6 +6,7 @@ interface AlertDialogContextValue {
   isOpen: boolean;
   overlappingEvents: Event[];
   pendingEvent: Event | EventForm | null;
+  // eslint-disable-next-line no-unused-vars
   openDialog: (pending: Event | EventForm, overlapping: Event[]) => void;
   closeDialog: () => void;
 }

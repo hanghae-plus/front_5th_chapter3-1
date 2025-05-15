@@ -4,12 +4,15 @@ import React from 'react';
 interface TimeRangeInputProps {
   startTime: string;
   endTime: string;
+  // eslint-disable-next-line no-unused-vars
   onChangeStartTime: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // eslint-disable-next-line no-unused-vars
   onChangeEndTime: (e: React.ChangeEvent<HTMLInputElement>) => void;
   startTimeTooltipLabel?: string;
   endTimeTooltipLabel?: string;
   isValidStartTime: boolean;
   isValidEndTime: boolean;
+  // eslint-disable-next-line no-unused-vars
   onBlur: (startTime: string, endTime: string) => void;
 }
 

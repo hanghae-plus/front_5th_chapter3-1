@@ -1,11 +1,11 @@
 import { Text, VStack } from '@chakra-ui/react';
 
 import ScheduleBox from './ScheduleBox';
+import { notificationOptions } from '../../constants';
 import { useEventFormContext } from '../../contexts/EventFormContext';
 import { useEventOperationsContext } from '../../contexts/EventOperationsContext';
 import { useNotificationsContext } from '../../contexts/NotificationsContext';
 import { useSearchContext } from '../../contexts/SearchContext';
-import { notificationOptions } from '../../constants';
 import LabelInput from '../../shares/ui/input/LabelInput';
 
 const ScheduleListView = () => {

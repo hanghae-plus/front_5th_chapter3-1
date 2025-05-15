@@ -3,6 +3,7 @@ import { FormControl, FormLabel, Select } from '@chakra-ui/react';
 interface SelectorProps {
   label?: string;
   value: string;
+  // eslint-disable-next-line no-unused-vars
   onChange: (value: string) => void;
   options: { label: string; value: string }[];
   defaultOption?: string;
