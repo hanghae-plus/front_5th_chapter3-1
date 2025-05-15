@@ -99,7 +99,7 @@ describe('WeekView Component', () => {
     return null;
   };
 
-  it('1. 올바른 주차 정보와 요일 헤더를 렌더링한다', () => {
+  it('올바른 주차 정보와 요일 헤더를 렌더링한다', () => {
     renderWithChakraProvider(<WeekView {...defaultProps} />);
     expect(screen.getByText(`Week of ${mockCurrentDate.toLocaleDateString()}`)).toBeInTheDocument();
     WEEK_DAYS.forEach((day) => {
@@ -107,14 +107,14 @@ describe('WeekView Component', () => {
     });
   });
 
-  it('2. 해당 주의 날짜들을 올바르게 표시한다', () => {
+  it('해당 주의 날짜들을 올바르게 표시한다', () => {
     renderWithChakraProvider(<WeekView {...defaultProps} />);
     mockWeekDates.forEach((date) => {
       expect(screen.getByText(date.getDate().toString())).toBeInTheDocument();
     });
   });
 
-  it('3. 일정이 있는 경우, 해당 날짜에 일정이 올바르게 표시된다', () => {
+  it('일정이 있는 경우, 해당 날짜에 일정이 올바르게 표시된다', () => {
     renderWithChakraProvider(<WeekView {...defaultProps} />);
     // Check for 'Weekly Sync' on Monday (July 8th)
     const dayCell8 = findDayCellByDateText('8');
@@ -132,7 +132,7 @@ describe('WeekView Component', () => {
     }
   });
 
-  it('4. 알림이 있는 일정이 시각적으로 구분되어 렌더링된다 (BellIcon)', () => {
+  it('알림이 있는 일정이 시각적으로 구분되어 렌더링된다 (BellIcon)', () => {
     // First, ensure BellIcon in WeekView.tsx has aria-label
     // For now, we assume it will be added if test fails for this reason.
     renderWithChakraProvider(<WeekView {...defaultProps} />);
@@ -161,7 +161,7 @@ describe('WeekView Component', () => {
     }
   });
 
-  it('5. 일정이 없는 날짜에는 일정이 표시되지 않는다', () => {
+  it('일정이 없는 날짜에는 일정이 표시되지 않는다', () => {
     renderWithChakraProvider(<WeekView {...defaultProps} />);
     // July 9th (Tuesday) has no events in mockEvents
     const dayCell9 = findDayCellByDateText('9');

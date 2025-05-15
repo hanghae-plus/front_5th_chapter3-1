@@ -37,7 +37,7 @@ import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
+import { RepeatType } from './types';
 import {
   formatDate,
   formatMonth,
@@ -48,6 +48,7 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+import { createEventData } from './utils/eventDataUtils';
 
 function App() {
   const {
@@ -122,8 +123,8 @@ function App() {
       return;
     }
 
-    const eventData: Event | EventForm = {
-      id: editingEvent ? editingEvent.id : undefined,
+    const eventData = createEventData({
+      editingEvent,
       title,
       date,
       startTime,
@@ -131,13 +132,12 @@ function App() {
       description,
       location,
       category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
+      isRepeating,
+      repeatType,
+      repeatInterval,
+      repeatEndDate,
       notificationTime,
-    };
+    });
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
@@ -418,22 +418,23 @@ function App() {
                 colorScheme="red"
                 onClick={() => {
                   closeOverlapDialog();
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
+                  saveEvent(
+                    createEventData({
+                      editingEvent,
+                      title,
+                      date,
+                      startTime,
+                      endTime,
+                      description,
+                      location,
+                      category,
+                      isRepeating,
+                      repeatType,
+                      repeatInterval,
+                      repeatEndDate,
+                      notificationTime,
+                    })
+                  );
                 }}
                 ml={3}
               >
