@@ -2,14 +2,54 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
 import ScheduleCategorySelectForm from '../../../features/schedule/ui/ScheduleCategorySelectForm';
-
+import { ScheduleFormProvider } from '../../../modules/schedule/model/ScheduleFormContext';
+import * as ScheduleFormContext from '../../../modules/schedule/model/ScheduleFormContext';
 describe('카테고리 선택 입력 폼 (ScheduleCategorySelectForm)', () => {
   const mockSetCategory = vi.fn();
 
-  const renderScheduleCategorySelectForm = (category: string = '') => {
+  beforeEach(() => {
+    vi.spyOn(ScheduleFormContext, 'useScheduleFormContext').mockReturnValue({
+      category: '',
+      setCategory: mockSetCategory,
+      title: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      description: '',
+      location: '',
+      isRepeating: false,
+      repeatType: 'none',
+      repeatInterval: 0,
+      repeatEndDate: '',
+      notificationTime: 0,
+      startTimeError: null,
+      endTimeError: null,
+      editingEvent: null,
+      setTitle: vi.fn(),
+      setDate: vi.fn(),
+      setStartTime: vi.fn(),
+      setEndTime: vi.fn(),
+      setDescription: vi.fn(),
+      setLocation: vi.fn(),
+      setIsRepeating: vi.fn(),
+      setRepeatType: vi.fn(),
+      setRepeatInterval: vi.fn(),
+      setRepeatEndDate: vi.fn(),
+      setNotificationTime: vi.fn(),
+      setEditingEvent: vi.fn(),
+      handleStartTimeChange: vi.fn(),
+      handleEndTimeChange: vi.fn(),
+      resetForm: vi.fn(),
+      editEvent: vi.fn(),
+    });
+  });
+
+  const renderScheduleCategorySelectForm = () => {
     return render(
       <ChakraProvider>
-        <ScheduleCategorySelectForm category={category} setCategory={mockSetCategory} />
+        <ScheduleFormProvider>
+          <ScheduleCategorySelectForm />
+        </ScheduleFormProvider>
       </ChakraProvider>
     );
   };
@@ -43,5 +83,6 @@ describe('카테고리 선택 입력 폼 (ScheduleCategorySelectForm)', () => {
     fireEvent.change(select, { target: { value: newCategory } });
 
     expect(mockSetCategory).toHaveBeenCalledWith(newCategory);
+    expect(mockSetCategory).toHaveBeenCalledTimes(1);
   });
 });

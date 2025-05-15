@@ -1,27 +1,54 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { fireEvent, render, screen } from '@testing-library/react';
 
+import * as ScheduleFormContext from '../../../modules/schedule/model/ScheduleFormContext';
 import ScheduleRepeatAlarmForm from '../../../modules/schedule/ui/ScheduleRepeatAlarmForm';
-import { RepeatType } from '../../../types';
-
 describe('일정 반복 작성 양식 (ScheduleRepeatAlarmForm)', () => {
   const mockSetRepeatType = vi.fn();
   const mockSetRepeatInterval = vi.fn();
   const mockSetRepeatEndDate = vi.fn();
 
-  const defaultProps = {
-    repeatType: 'daily' as RepeatType,
-    repeatInterval: 1,
-    repeatEndDate: '2025-10-01',
-    setRepeatType: mockSetRepeatType,
-    setRepeatInterval: mockSetRepeatInterval,
-    setRepeatEndDate: mockSetRepeatEndDate,
-  };
+  beforeEach(() => {
+    vi.spyOn(ScheduleFormContext, 'useScheduleFormContext').mockReturnValue({
+      category: '',
+      title: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      description: '',
+      location: '',
+      isRepeating: false,
+      repeatType: 'none',
+      repeatInterval: 0,
+      repeatEndDate: '',
+      notificationTime: 0,
+      startTimeError: null,
+      endTimeError: null,
+      editingEvent: null,
+      setCategory: vi.fn(),
+      setTitle: vi.fn(),
+      setDate: vi.fn(),
+      setStartTime: vi.fn(),
+      setEndTime: vi.fn(),
+      setDescription: vi.fn(),
+      setLocation: vi.fn(),
+      setIsRepeating: vi.fn(),
+      setRepeatType: mockSetRepeatType,
+      setRepeatInterval: mockSetRepeatInterval,
+      setRepeatEndDate: mockSetRepeatEndDate,
+      setNotificationTime: vi.fn(),
+      setEditingEvent: vi.fn(),
+      handleStartTimeChange: vi.fn(),
+      handleEndTimeChange: vi.fn(),
+      resetForm: vi.fn(),
+      editEvent: vi.fn(),
+    });
+  });
 
-  const renderScheduleRepeatAlarmForm = (props = defaultProps) => {
+  const renderScheduleRepeatAlarmForm = () => {
     return render(
       <ChakraProvider>
-        <ScheduleRepeatAlarmForm {...props} />
+        <ScheduleRepeatAlarmForm />
       </ChakraProvider>
     );
   };

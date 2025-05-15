@@ -1,7 +1,6 @@
 import { Event } from '../../types';
 import { getFilteredEvents } from '../../utils/eventUtils';
 
-// TODO: 다른 함수들도 테스트 해야할것 같음 일단 미루고 나중에
 describe('getFilteredEvents', () => {
   let mockEvents: Event[];
 

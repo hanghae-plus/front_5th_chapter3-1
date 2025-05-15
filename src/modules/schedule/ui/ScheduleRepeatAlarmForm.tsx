@@ -1,24 +1,18 @@
 import { FormControl, FormLabel, HStack, Input, Select, VStack } from '@chakra-ui/react';
 
+import { useScheduleFormContext } from '../../../modules/schedule/model/ScheduleFormContext';
 import { RepeatType } from '../../../types';
 
-interface ScheduleRepeatAlarmFormProps {
-  repeatType: RepeatType;
-  repeatInterval: number;
-  repeatEndDate: string;
-  setRepeatType: (repeatType: RepeatType) => void;
-  setRepeatInterval: (repeatInterval: number) => void;
-  setRepeatEndDate: (repeatEndDate: string) => void;
-}
+const ScheduleRepeatAlarmForm = () => {
+  const {
+    repeatType,
+    repeatInterval,
+    repeatEndDate,
+    setRepeatType,
+    setRepeatInterval,
+    setRepeatEndDate,
+  } = useScheduleFormContext();
 
-const ScheduleRepeatAlarmForm = ({
-  repeatType,
-  repeatInterval,
-  repeatEndDate,
-  setRepeatType,
-  setRepeatInterval,
-  setRepeatEndDate,
-}: ScheduleRepeatAlarmFormProps) => {
   return (
     <VStack width="100%">
       <FormControl>

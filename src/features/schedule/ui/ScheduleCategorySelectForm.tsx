@@ -1,13 +1,11 @@
 import { FormControl, FormLabel, Select } from '@chakra-ui/react';
 
 import { categories } from '../../../base/lib/categorie.constants';
+import { useScheduleFormContext } from '../../../modules/schedule/model/ScheduleFormContext';
 
-interface ScheduleCategorySelectFormProps {
-  category: string;
-  setCategory: (category: string) => void;
-}
+const ScheduleCategorySelectForm = () => {
+  const { category, setCategory } = useScheduleFormContext();
 
-const ScheduleCategorySelectForm = ({ category, setCategory }: ScheduleCategorySelectFormProps) => {
   return (
     <FormControl>
       <FormLabel>카테고리</FormLabel>
