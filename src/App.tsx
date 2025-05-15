@@ -56,6 +56,7 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
+import { WeekView } from './components/Calendar/WeekView.tsx';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -165,58 +166,7 @@ function App() {
     }
   };
 
-  const renderWeekView = () => {
-    const weekDates = getWeekDates(currentDate);
-    return (
-      <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>
-        <Heading size="md">{formatWeek(currentDate)}</Heading>
-        <Table variant="simple" w="full">
-          <Thead>
-            <Tr>
-              {weekDays.map((day) => (
-                <Th key={day} width="14.28%">
-                  {day}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              {weekDates.map((date) => (
-                <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
-                  <Text fontWeight="bold">{date.getDate()}</Text>
-                  {filteredEvents
-                    .filter((event) => new Date(event.date).toDateString() === date.toDateString())
-                    .map((event) => {
-                      const isNotified = notifiedEvents.includes(event.id);
-                      return (
-                        <Box
-                          key={event.id}
-                          p={1}
-                          my={1}
-                          bg={isNotified ? 'red.100' : 'gray.100'}
-                          borderRadius="md"
-                          fontWeight={isNotified ? 'bold' : 'normal'}
-                          color={isNotified ? 'red.500' : 'inherit'}
-                        >
-                          <HStack spacing={1}>
-                            {isNotified && <BellIcon />}
-                            <Text fontSize="sm" noOfLines={1}>
-                              {event.title}
-                            </Text>
-                          </HStack>
-                        </Box>
-                      );
-                    })}
-                </Td>
-              ))}
-            </Tr>
-          </Tbody>
-        </Table>
-      </VStack>
-    );
-  };
-
+  // 2번쨰 쪼갬
   const renderMonthView = () => {
     const weeks = getWeeksAtMonth(currentDate);
 
@@ -441,7 +391,13 @@ function App() {
             />
           </HStack>
 
-          {view === 'week' && renderWeekView()}
+          {view === 'week' && (
+            <WeekView
+              currentDate={currentDate}
+              events={filteredEvents}
+              notifiedEvents={notifiedEvents}
+            />
+          )}
           {view === 'month' && renderMonthView()}
         </VStack>
 
@@ -454,7 +410,7 @@ function App() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </FormControl>
-
+          {/* 5번째 */}
           {filteredEvents.length === 0 ? (
             <Text>검색 결과가 없습니다.</Text>
           ) : (
@@ -516,7 +472,7 @@ function App() {
           )}
         </VStack>
       </Flex>
-
+      {/* 4번째 */}
       <AlertDialog
         isOpen={isOverlapDialogOpen}
         leastDestructiveRef={cancelRef}
@@ -571,7 +527,7 @@ function App() {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-
+      {/* 3번쨰 */}
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
           {notifications.map((notification, index) => (
