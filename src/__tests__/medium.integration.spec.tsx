@@ -1,47 +1,743 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
-import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
+import { render, screen, within } from '@testing-library/react';
+import { userEvent } from '@testing-library/user-event';
+import React from 'react';
 
+import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { server } from '../setupTests';
+import OverlapAlertDialog from '../component/widget/OverlapAlertDialog';
 import { Event } from '../types';
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
+    // 오늘 날짜로 맞추기
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    const newEvent: Event = {
+      id: '1',
+      title: '테스트 일정',
+      date: todayStr,
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '테스트 설명',
+      location: '테스트 장소',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 각 입력 필드에 값 입력
+    await userEvent.type(screen.getByLabelText('제목'), newEvent.title);
+    await userEvent.type(screen.getByLabelText('날짜'), newEvent.date);
+    await userEvent.type(screen.getByLabelText('시작 시간'), newEvent.startTime);
+    await userEvent.type(screen.getByLabelText('종료 시간'), newEvent.endTime);
+    await userEvent.type(screen.getByLabelText('설명'), newEvent.description);
+    await userEvent.type(screen.getByLabelText('위치'), newEvent.location);
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), newEvent.category);
+    await userEvent.selectOptions(
+      screen.getByLabelText('알림 설정'),
+      String(newEvent.notificationTime)
+    );
+
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+    const eventList = screen.getByTestId('event-list');
+
+    expect(within(eventList).getByText('테스트 일정')).toBeInTheDocument();
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {});
+  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    // 1. 초기 데이터 세팅
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '기존 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 2. 월별 뷰로 전환
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 3. 검색어가 비어있는지 확인
+    expect(screen.getByLabelText('일정 검색')).toHaveValue('');
+
+    // 4. 기존 일정이 리스트에 보이는지 확인
+    const eventList = screen.getByTestId('event-list');
+
+    expect(
+      await within(eventList).findByText((content) => content.includes('기존 회의'))
+    ).toBeInTheDocument();
+
+    // 5. 수정 버튼 클릭 (aria-label="Edit event" 사용)
+    await userEvent.click(within(eventList).getByRole('button', { name: /edit/i }));
+
+    // 6. 입력값 변경
+    const newTitle = '수정된 회의';
+    const newDesc = '수정된 설명';
+    await userEvent.clear(screen.getByLabelText('제목'));
+    await userEvent.type(screen.getByLabelText('제목'), newTitle);
+    await userEvent.clear(screen.getByLabelText('설명'));
+    await userEvent.type(screen.getByLabelText('설명'), newDesc);
+
+    // 7. 저장 버튼 클릭
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    // 8. 리스트에 수정된 값이 반영됐는지 확인
+    expect(
+      await within(eventList).findByText((content) => content.includes(newTitle))
+    ).toBeInTheDocument();
+    expect(within(eventList).getByText(newDesc)).toBeInTheDocument();
+  });
+
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '기존 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    const eventList = await screen.findByTestId('event-list');
+
+    // 일정이 존재하는지 확인
+    expect(
+      await within(eventList).findByText((content) => content.includes('기존 회의'))
+    ).toBeInTheDocument();
+
+    await userEvent.click(within(eventList).getByRole('button', { name: /delete event/i }));
+
+    expect(screen.getByText('일정이 삭제되었습니다.')).toBeInTheDocument();
+
+    // 일정이 삭제되었는지 확인
+    expect(
+      await within(eventList).queryByText((content) => content.includes('기존 회의'))
+    ).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  beforeEach(() => {
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '기존 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+  });
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'week');
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    // 다음주 선택
+    await userEvent.click(screen.getByRole('button', { name: /next/i }));
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    // 일정이 없는지 확인
+    expect(screen.queryByText('기존 회의')).not.toBeInTheDocument();
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // 해당 일자에 일정이 존재하는지 확인
+    const eventList = await screen.findByTestId('event-list');
+    expect(
+      await within(eventList).findByText((content) => content.includes('기존 회의'))
+    ).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 다음월 선택
+    await userEvent.click(screen.getByRole('button', { name: /next/i }));
+
+    expect(screen.queryByText('기존 회의')).not.toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 해당 월에 일정이 존재하는지 확인
+    const eventList = await screen.findByTestId('event-list');
+    expect(
+      await within(eventList).findByText((content) => content.includes('기존 회의'))
+    ).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 월별 뷰로 전환
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 1월이 보일 때까지 'Previous' 버튼 클릭 (최대 24번)
+    let maxTries = 24;
+    while (!screen.queryByText(/\d{4}년 1월/) && maxTries-- > 0) {
+      await userEvent.click(screen.getByRole('button', { name: /previous/i }));
+    }
+
+    // 1월 1일 셀에서 '신정' 텍스트가 있는지 확인
+    const monthView = await screen.findByTestId('month-view');
+    expect(await within(monthView).findByText(/신정/)).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    // 1. "팀 회의" 일정 포함 데이터로 초기화
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      // 필요하다면 다른 일정도 추가
+    ]);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    // 2. 월별 뷰로 전환
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 3. 검색어 입력
+    await userEvent.type(screen.getByLabelText('일정 검색'), '팀 회의');
+
+    // 4. 리스트에서 "팀 회의"가 보이는지 검증
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList as HTMLElement).findByText('팀 회의')).toBeInTheDocument();
+  });
+
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+    // 검색어를 일부러 존재하지 않는 값으로 입력
+    await userEvent.type(screen.getByLabelText('일정 검색'), '없는 일정');
+
+    // 비동기 렌더링을 안전하게 처리
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    // 1. "팀 회의" 일정 포함 데이터로 초기화
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '팀 회의',
+        date: new Date().toISOString().split('T')[0],
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      // 필요하다면 다른 일정도 추가
+    ]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 2. 월별 뷰로 전환
+    await userEvent.selectOptions(screen.getByLabelText('view'), 'month');
+
+    // 3. 검색어 입력
+    await userEvent.type(screen.getByLabelText('일정 검색'), '팀 회의');
+
+    // 4. 리스트에서 "팀 회의"가 보이는지 검증
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList as HTMLElement).findByText('팀 회의')).toBeInTheDocument();
+
+    // 5. 검색어를 지우면 모든 일정이 다시 표시되어야 한다
+    await userEvent.clear(screen.getByLabelText('일정 검색'));
+
+    // 다시 나타나는지 기다림
+    expect(await within(eventList as HTMLElement).findByText('팀 회의')).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    // 1. 기존 일정 추가 (14:00~15:00)
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    setupMockHandlerCreation([
+      {
+        id: '1',
+        title: '기존 회의',
+        date: todayStr,
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '기존 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 2. 겹치는 새 일정 입력 (14:30~15:30)
+    await userEvent.type(screen.getByLabelText('제목'), '겹치는 일정');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '14:30');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '15:30');
+    await userEvent.type(screen.getByLabelText('설명'), '겹치는 설명');
+    await userEvent.type(screen.getByLabelText('위치'), '회의실 B');
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await userEvent.selectOptions(screen.getByLabelText('알림 설정'), '10');
+
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    // 3. 경고 다이얼로그가 뜨는지 확인
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes('다음 일정과 겹칩니다'))
+    ).toBeInTheDocument();
+    // 기존 일정 정보가 노출되는지 (함수 매처로 변경)
+    const eventInfo = `기존 회의 (${todayStr} 14:00-15:00)`;
+    expect(screen.getByText((content) => content.includes(eventInfo))).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '계속 진행' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    // 1. 기존 일정 2개 준비: A(14:00~15:00), B(15:30~16:00)
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    setupMockHandlerCreation([
+      {
+        id: 'A',
+        title: '기존 회의 A',
+        date: todayStr,
+        startTime: '14:00',
+        endTime: '15:00',
+        description: 'A 설명',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: 'B',
+        title: '기존 회의 B',
+        date: todayStr,
+        startTime: '15:30',
+        endTime: '16:00',
+        description: 'B 설명',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+    ]);
+
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 2. eventList에서 모든 일정 카드(Box)를 찾고, "기존 회의 B"가 포함된 카드에서만 수정 버튼 클릭
+    const eventList = await screen.findByTestId('event-list');
+    const allBoxes = eventList.querySelectorAll('div[role="group"], div'); // Box가 div일 확률이 높음
+    let editButton: HTMLElement | null = null;
+    for (const box of Array.from(allBoxes)) {
+      const htmlBox = box as HTMLElement;
+      if (htmlBox.textContent && htmlBox.textContent.includes('기존 회의 B')) {
+        editButton = within(htmlBox).getByRole('button', { name: /edit/i });
+        break;
+      }
+    }
+    expect(editButton).not.toBeNull();
+    await userEvent.click(editButton!);
+
+    // 3. 시작시간을 14:30으로 변경(겹치게)
+    await userEvent.clear(screen.getByLabelText('시작 시간'));
+    await userEvent.type(screen.getByLabelText('시작 시간'), '14:30');
+    // 저장
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    // 4. 경고 다이얼로그 확인
+    expect(await screen.findByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes('다음 일정과 겹칩니다'))
+    ).toBeInTheDocument();
+    const eventInfo = `기존 회의 A (${todayStr} 14:00-15:00)`;
+    expect(screen.getByText((content) => content.includes(eventInfo))).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '계속 진행' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  setupMockHandlerCreation([
+    {
+      id: '1',
+      title: '팀 회의',
+      date: new Date().toISOString().split('T')[0],
+      startTime: '14:00',
+      endTime: '15:00',
+      description: '주간 팀 미팅',
+      location: '회의실 A',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ]);
+
+  render(
+    <ChakraProvider>
+      <App />
+    </ChakraProvider>
+  );
+
+  const eventList = await screen.findByTestId('event-list');
+  expect(await within(eventList as HTMLElement).findByText('팀 회의')).toBeInTheDocument();
+
+  // 실제 UI는 '알림: 10분 전' 형태로 표시함
+  expect(await within(eventList as HTMLElement).findByText(/알림: 10분 전/)).toBeInTheDocument();
+});
+
+describe('AddEventWidget 통합', () => {
+  beforeEach(() => {
+    setupMockHandlerCreation([]); // 초기 이벤트 없음
+  });
+
+  it('새 일정을 정상적으로 추가하면 리스트에 반영된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 오늘 날짜
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 입력
+    await userEvent.type(screen.getByLabelText('제목'), '통합테스트 일정');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '09:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.type(screen.getByLabelText('설명'), '설명입니다');
+    await userEvent.type(screen.getByLabelText('위치'), '회의실');
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await userEvent.selectOptions(screen.getByLabelText('알림 설정'), '10');
+
+    // 저장
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    // 리스트에 반영됐는지 확인
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList).findByText('통합테스트 일정')).toBeInTheDocument();
+    expect(within(eventList).getByText('설명입니다')).toBeInTheDocument();
+    expect(within(eventList).getByText('회의실')).toBeInTheDocument();
+    expect(within(eventList).getByText(/09:00/)).toBeInTheDocument();
+    expect(within(eventList).getByText(/10:00/)).toBeInTheDocument();
+  });
+
+  it('필수값을 입력하지 않고 저장하면 에러 토스트가 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+    expect(await screen.findByText('필수 정보를 모두 입력해주세요.')).toBeInTheDocument();
+  });
+
+  it('시작 시간이 종료 시간보다 늦으면 에러 토스트가 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+
+    // 오늘 날짜
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    await userEvent.type(screen.getByLabelText('제목'), '시간오류 테스트');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '11:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+
+    expect(await screen.findByText('시간 설정을 확인해주세요.')).toBeInTheDocument();
+  });
+
+  it('카테고리 선택 시 올바른 옵션이 노출된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const select = await screen.findByLabelText('카테고리');
+    await userEvent.click(select);
+    expect(screen.getByRole('option', { name: '업무' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '개인' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '가족' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '기타' })).toBeInTheDocument();
+  });
+
+  it('알림 옵션이 올바르게 렌더링된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const select = await screen.findByLabelText('알림 설정');
+    await userEvent.click(select);
+    expect(screen.getByRole('option', { name: '1분 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '10분 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '1시간 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '2시간 전' })).toBeInTheDocument();
+    expect(screen.getByRole('option', { name: '1일 전' })).toBeInTheDocument();
+  });
+
+  it('입력값을 모두 지우고 다시 입력해도 정상적으로 저장된다', async () => {
+    render(
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    );
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    // 입력
+    await userEvent.type(screen.getByLabelText('제목'), '초기 입력');
+    await userEvent.type(screen.getByLabelText('날짜'), todayStr);
+    await userEvent.type(screen.getByLabelText('시작 시간'), '09:00');
+    await userEvent.type(screen.getByLabelText('종료 시간'), '10:00');
+    await userEvent.type(screen.getByLabelText('설명'), '설명1');
+    await userEvent.type(screen.getByLabelText('위치'), '장소1');
+    await userEvent.selectOptions(screen.getByLabelText('카테고리'), '업무');
+    await userEvent.selectOptions(screen.getByLabelText('알림 설정'), '10');
+    // 모두 지우기
+    await userEvent.clear(screen.getByLabelText('제목'));
+    await userEvent.clear(screen.getByLabelText('설명'));
+    await userEvent.clear(screen.getByLabelText('위치'));
+    // 다시 입력
+    await userEvent.type(screen.getByLabelText('제목'), '다시 입력');
+    await userEvent.type(screen.getByLabelText('설명'), '설명2');
+    await userEvent.type(screen.getByLabelText('위치'), '장소2');
+    await userEvent.click(screen.getByTestId('event-submit-button'));
+    const eventList = await screen.findByTestId('event-list');
+    expect(await within(eventList).findByText('다시 입력')).toBeInTheDocument();
+    expect(within(eventList).getByText('설명2')).toBeInTheDocument();
+    expect(within(eventList).getByText('장소2')).toBeInTheDocument();
+  });
+});
+
+describe('OverlapAlertDialog', () => {
+  const overlappingEvents: Event[] = [
+    {
+      id: '1',
+      title: '겹침1',
+      date: '2024-06-01',
+      startTime: '10:00',
+      endTime: '11:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+    {
+      id: '2',
+      title: '겹침2',
+      date: '2024-06-01',
+      startTime: '11:00',
+      endTime: '12:00',
+      description: '',
+      location: '',
+      category: '',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    },
+  ];
+
+  it('겹치는 일정 정보와 버튼이 정상적으로 노출된다', () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={true}
+          onClose={vi.fn()}
+          onConfirm={vi.fn()}
+          overlappingEvents={overlappingEvents}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(screen.getByText('겹침1 (2024-06-01 10:00-11:00)')).toBeInTheDocument();
+    expect(screen.getByText('겹침2 (2024-06-01 11:00-12:00)')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '취소' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '계속 진행' })).toBeInTheDocument();
+  });
+
+  it('취소/계속 진행 버튼 클릭 시 콜백이 호출된다', async () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    const onClose = vi.fn();
+    const onConfirm = vi.fn();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={true}
+          onClose={onClose}
+          onConfirm={onConfirm}
+          overlappingEvents={[overlappingEvents[0]]}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    await userEvent.click(screen.getByRole('button', { name: '취소' }));
+    expect(onClose).toHaveBeenCalled();
+
+    await userEvent.click(screen.getByRole('button', { name: '계속 진행' }));
+    expect(onConfirm).toHaveBeenCalled();
+  });
+
+  it('isOpen이 false면 다이얼로그가 렌더링되지 않는다', () => {
+    const cancelRef = React.createRef<HTMLButtonElement>();
+    render(
+      <ChakraProvider>
+        <OverlapAlertDialog
+          isOpen={false}
+          onClose={vi.fn()}
+          onConfirm={vi.fn()}
+          overlappingEvents={overlappingEvents}
+          cancelRef={cancelRef}
+        />
+      </ChakraProvider>
+    );
+    expect(screen.queryByText('일정 겹침 경고')).not.toBeInTheDocument();
+  });
+});

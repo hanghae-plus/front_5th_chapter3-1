@@ -7,17 +7,9 @@ import {
 } from '@chakra-ui/icons';
 import {
   Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
   AlertIcon,
   AlertTitle,
   Box,
-  Button,
-  Checkbox,
   CloseButton,
   Flex,
   FormControl,
@@ -27,35 +19,23 @@ import {
   IconButton,
   Input,
   Select,
-  Table,
-  Tbody,
-  Td,
   Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
   useToast,
   VStack,
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
+import MonthView from './component/calendar/MonthView.tsx';
+import WeekView from './component/calendar/WeekView.tsx';
+import AddEventWidget from './component/widget/AddEventWidget.tsx';
+import OverlapAlertDialog from './component/widget/OverlapAlertDialog';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
-import { Event, EventForm, RepeatType } from './types';
-import {
-  formatDate,
-  formatMonth,
-  formatWeek,
-  getEventsForDay,
-  getWeekDates,
-  getWeeksAtMonth,
-} from './utils/dateUtils';
+import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
-import { getTimeErrorMessage } from './utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -70,38 +50,27 @@ const notificationOptions = [
 ];
 
 function App() {
+  const form = useEventForm();
   const {
     title,
-    setTitle,
     date,
-    setDate,
     startTime,
     endTime,
     description,
-    setDescription,
     location,
-    setLocation,
     category,
-    setCategory,
     isRepeating,
-    setIsRepeating,
     repeatType,
-    setRepeatType,
     repeatInterval,
-    setRepeatInterval,
     repeatEndDate,
-    setRepeatEndDate,
     notificationTime,
-    setNotificationTime,
     startTimeError,
     endTimeError,
     editingEvent,
     setEditingEvent,
-    handleStartTimeChange,
-    handleEndTimeChange,
     resetForm,
     editEvent,
-  } = useEventForm();
+  } = form;
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
@@ -165,257 +134,15 @@ function App() {
     }
   };
 
-  const renderWeekView = () => {
-    const weekDates = getWeekDates(currentDate);
-    return (
-      <VStack data-testid="week-view" align="stretch" w="full" spacing={4}>
-        <Heading size="md">{formatWeek(currentDate)}</Heading>
-        <Table variant="simple" w="full">
-          <Thead>
-            <Tr>
-              {weekDays.map((day) => (
-                <Th key={day} width="14.28%">
-                  {day}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            <Tr>
-              {weekDates.map((date) => (
-                <Td key={date.toISOString()} height="100px" verticalAlign="top" width="14.28%">
-                  <Text fontWeight="bold">{date.getDate()}</Text>
-                  {filteredEvents
-                    .filter((event) => new Date(event.date).toDateString() === date.toDateString())
-                    .map((event) => {
-                      const isNotified = notifiedEvents.includes(event.id);
-                      return (
-                        <Box
-                          key={event.id}
-                          p={1}
-                          my={1}
-                          bg={isNotified ? 'red.100' : 'gray.100'}
-                          borderRadius="md"
-                          fontWeight={isNotified ? 'bold' : 'normal'}
-                          color={isNotified ? 'red.500' : 'inherit'}
-                        >
-                          <HStack spacing={1}>
-                            {isNotified && <BellIcon />}
-                            <Text fontSize="sm" noOfLines={1}>
-                              {event.title}
-                            </Text>
-                          </HStack>
-                        </Box>
-                      );
-                    })}
-                </Td>
-              ))}
-            </Tr>
-          </Tbody>
-        </Table>
-      </VStack>
-    );
-  };
-
-  const renderMonthView = () => {
-    const weeks = getWeeksAtMonth(currentDate);
-
-    return (
-      <VStack data-testid="month-view" align="stretch" w="full" spacing={4}>
-        <Heading size="md">{formatMonth(currentDate)}</Heading>
-        <Table variant="simple" w="full">
-          <Thead>
-            <Tr>
-              {weekDays.map((day) => (
-                <Th key={day} width="14.28%">
-                  {day}
-                </Th>
-              ))}
-            </Tr>
-          </Thead>
-          <Tbody>
-            {weeks.map((week, weekIndex) => (
-              <Tr key={weekIndex}>
-                {week.map((day, dayIndex) => {
-                  const dateString = day ? formatDate(currentDate, day) : '';
-                  const holiday = holidays[dateString];
-
-                  return (
-                    <Td
-                      key={dayIndex}
-                      height="100px"
-                      verticalAlign="top"
-                      width="14.28%"
-                      position="relative"
-                    >
-                      {day && (
-                        <>
-                          <Text fontWeight="bold">{day}</Text>
-                          {holiday && (
-                            <Text color="red.500" fontSize="sm">
-                              {holiday}
-                            </Text>
-                          )}
-                          {getEventsForDay(filteredEvents, day).map((event) => {
-                            const isNotified = notifiedEvents.includes(event.id);
-                            return (
-                              <Box
-                                key={event.id}
-                                p={1}
-                                my={1}
-                                bg={isNotified ? 'red.100' : 'gray.100'}
-                                borderRadius="md"
-                                fontWeight={isNotified ? 'bold' : 'normal'}
-                                color={isNotified ? 'red.500' : 'inherit'}
-                              >
-                                <HStack spacing={1}>
-                                  {isNotified && <BellIcon />}
-                                  <Text fontSize="sm" noOfLines={1}>
-                                    {event.title}
-                                  </Text>
-                                </HStack>
-                              </Box>
-                            );
-                          })}
-                        </>
-                      )}
-                    </Td>
-                  );
-                })}
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </VStack>
-    );
-  };
-
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
-        <VStack w="400px" spacing={5} align="stretch">
-          <Heading>{editingEvent ? '일정 수정' : '일정 추가'}</Heading>
-
-          <FormControl>
-            <FormLabel>제목</FormLabel>
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>날짜</FormLabel>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          </FormControl>
-
-          <HStack width="100%">
-            <FormControl>
-              <FormLabel>시작 시간</FormLabel>
-              <Tooltip label={startTimeError} isOpen={!!startTimeError} placement="top">
-                <Input
-                  type="time"
-                  value={startTime}
-                  onChange={handleStartTimeChange}
-                  onBlur={() => getTimeErrorMessage(startTime, endTime)}
-                  isInvalid={!!startTimeError}
-                />
-              </Tooltip>
-            </FormControl>
-            <FormControl>
-              <FormLabel>종료 시간</FormLabel>
-              <Tooltip label={endTimeError} isOpen={!!endTimeError} placement="top">
-                <Input
-                  type="time"
-                  value={endTime}
-                  onChange={handleEndTimeChange}
-                  onBlur={() => getTimeErrorMessage(startTime, endTime)}
-                  isInvalid={!!endTimeError}
-                />
-              </Tooltip>
-            </FormControl>
-          </HStack>
-
-          <FormControl>
-            <FormLabel>설명</FormLabel>
-            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>위치</FormLabel>
-            <Input value={location} onChange={(e) => setLocation(e.target.value)} />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>카테고리</FormLabel>
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="">카테고리 선택</option>
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>반복 설정</FormLabel>
-            <Checkbox isChecked={isRepeating} onChange={(e) => setIsRepeating(e.target.checked)}>
-              반복 일정
-            </Checkbox>
-          </FormControl>
-
-          <FormControl>
-            <FormLabel>알림 설정</FormLabel>
-            <Select
-              value={notificationTime}
-              onChange={(e) => setNotificationTime(Number(e.target.value))}
-            >
-              {notificationOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </Select>
-          </FormControl>
-
-          {isRepeating && (
-            <VStack width="100%">
-              <FormControl>
-                <FormLabel>반복 유형</FormLabel>
-                <Select
-                  value={repeatType}
-                  onChange={(e) => setRepeatType(e.target.value as RepeatType)}
-                >
-                  <option value="daily">매일</option>
-                  <option value="weekly">매주</option>
-                  <option value="monthly">매월</option>
-                  <option value="yearly">매년</option>
-                </Select>
-              </FormControl>
-              <HStack width="100%">
-                <FormControl>
-                  <FormLabel>반복 간격</FormLabel>
-                  <Input
-                    type="number"
-                    value={repeatInterval}
-                    onChange={(e) => setRepeatInterval(Number(e.target.value))}
-                    min={1}
-                  />
-                </FormControl>
-                <FormControl>
-                  <FormLabel>반복 종료일</FormLabel>
-                  <Input
-                    type="date"
-                    value={repeatEndDate}
-                    onChange={(e) => setRepeatEndDate(e.target.value)}
-                  />
-                </FormControl>
-              </HStack>
-            </VStack>
-          )}
-
-          <Button data-testid="event-submit-button" onClick={addOrUpdateEvent} colorScheme="blue">
-            {editingEvent ? '일정 수정' : '일정 추가'}
-          </Button>
-        </VStack>
+        <AddEventWidget
+          categories={categories}
+          notificationOptions={notificationOptions}
+          addOrUpdateEvent={addOrUpdateEvent}
+          {...form}
+        />
 
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
@@ -441,8 +168,22 @@ function App() {
             />
           </HStack>
 
-          {view === 'week' && renderWeekView()}
-          {view === 'month' && renderMonthView()}
+          {view === 'week' ? (
+            <WeekView
+              currentDate={currentDate}
+              filteredEvents={filteredEvents}
+              notifiedEvents={notifiedEvents}
+              weekDays={weekDays}
+            />
+          ) : (
+            <MonthView
+              currentDate={currentDate}
+              filteredEvents={filteredEvents}
+              notifiedEvents={notifiedEvents}
+              weekDays={weekDays}
+              holidays={holidays}
+            />
+          )}
         </VStack>
 
         <VStack data-testid="event-list" w="500px" h="full" overflowY="auto">
@@ -517,60 +258,31 @@ function App() {
         </VStack>
       </Flex>
 
-      <AlertDialog
+      <OverlapAlertDialog
         isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
         onClose={() => setIsOverlapDialogOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              일정 겹침 경고
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              다음 일정과 겹칩니다:
-              {overlappingEvents.map((event) => (
-                <Text key={event.id}>
-                  {event.title} ({event.date} {event.startTime}-{event.endTime})
-                </Text>
-              ))}
-              계속 진행하시겠습니까?
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
-                취소
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setIsOverlapDialogOpen(false);
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
-                }}
-                ml={3}
-              >
-                계속 진행
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+        onConfirm={() => {
+          setIsOverlapDialogOpen(false);
+          saveEvent({
+            id: editingEvent ? editingEvent.id : undefined,
+            title,
+            date,
+            startTime,
+            endTime,
+            description,
+            location,
+            category,
+            repeat: {
+              type: isRepeating ? repeatType : 'none',
+              interval: repeatInterval,
+              endDate: repeatEndDate || undefined,
+            },
+            notificationTime,
+          });
+        }}
+        overlappingEvents={overlappingEvents}
+        cancelRef={cancelRef}
+      />
 
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
