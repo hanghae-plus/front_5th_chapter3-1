@@ -98,6 +98,7 @@ export function fillZero(value: number, size = 2) {
   return String(value).padStart(size, '0');
 }
 
+// return format: YYYY-MM-DD
 export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),

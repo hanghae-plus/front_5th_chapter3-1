@@ -1,4 +1,4 @@
-import { fetchHolidays } from '../../apis/fetchHolidays';
+import { fetchHolidays } from '../../entities/holiday/api/fetchHolidays';
 
 describe('fetchHolidays', () => {
   // 하드 코딩해도 되나 ?
