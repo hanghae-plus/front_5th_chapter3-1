@@ -1,15 +1,16 @@
-import App from '../App';
-import {
-  setupMockHandlerCreation,
-  setupMockHandlerDeletion,
-  setupMockHandlerUpdating,
-} from '../__mocks__/handlersUtils';
-import { events } from '../__mocks__/response/events.json';
-import { Event } from '../types';
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
+
+import {
+  setupMockHandlerCreation,
+  setupMockHandlerDeletion,
+  setupMockHandlerUpdating,
+} from '@/__mocks__/handlersUtils';
+import { events } from '@/__mocks__/response/events.json';
+import App from '@/App';
+import type { Event } from '@/types';
 
 const setup = (element: ReactElement) => {
   const user = userEvent.setup();
