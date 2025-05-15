@@ -157,7 +157,7 @@ function App() {
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
+      setOverlappingEvents(overlapping as Event[]);
       setIsOverlapDialogOpen(true);
     } else {
       await saveEvent(eventData);
