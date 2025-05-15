@@ -1,19 +1,6 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  CloseButton,
-  Flex,
-  Heading,
-  HStack,
-  IconButton,
-  Select,
-  useToast,
-  VStack,
-} from '@chakra-ui/react';
+import { Box, Flex, Heading, useToast, VStack } from '@chakra-ui/react';
 
+import { CalendarViewController } from './components/CalendarViewController.tsx';
 import { EventForm } from './components/EventForm.tsx';
 import { EventList } from './components/EventList.tsx';
 import { MonthView } from './components/MonthView.tsx';
@@ -135,26 +122,12 @@ function App() {
         <VStack flex={1} spacing={5} align="stretch">
           <Heading>일정 보기</Heading>
 
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
+          <CalendarViewController
+            view={view}
+            onViewChange={setView}
+            onPrevClick={() => navigate('prev')}
+            onNextClick={() => navigate('next')}
+          />
 
           {view === 'week' && (
             <WeekView
