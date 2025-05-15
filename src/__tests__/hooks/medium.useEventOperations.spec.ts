@@ -28,7 +28,7 @@ describe('useEventOperations hook 테스트', () => {
     setupMockHandlerCreation(events as Event[]);
   });
 
-  it('저장되어있는 초기 이벤트 데이터를 적절하게 불러온다', async () => {
+  it('저장되어있는 초기 이벤트 데이터를 불러온다', async () => {
     const { result } = renderHook(() => useEventOperations(false));
     expect(result.current.events).toEqual([]);
 
@@ -39,7 +39,7 @@ describe('useEventOperations hook 테스트', () => {
     expect(result.current.events).toEqual(events);
   });
 
-  it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', async () => {
+  it('새로운 이벤트가 저장이 된다', async () => {
     const addEventData: Event = {
       id: '2',
       title: '점심 약속',
