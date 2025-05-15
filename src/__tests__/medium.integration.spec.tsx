@@ -335,7 +335,7 @@ describe('검색 기능', () => {
   });
 });
 
-describe.only('일정 충돌', () => {
+describe('일정 충돌', () => {
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const user = userEvent.setup();
 
