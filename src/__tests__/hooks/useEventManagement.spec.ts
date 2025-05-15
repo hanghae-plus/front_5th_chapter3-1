@@ -37,8 +37,8 @@ describe('useEventManagement', () => {
     endTimeError: null,
     editingEvent: null,
     events: [],
-    resetForm: vi.fn(),
-    saveEvent: vi.fn().mockResolvedValue(undefined),
+    onResetForm: vi.fn(),
+    onSave: vi.fn().mockResolvedValue(undefined),
   };
 
   beforeEach(() => {
@@ -67,7 +67,7 @@ describe('useEventManagement', () => {
       })
     );
 
-    expect(invalidProps.saveEvent).not.toHaveBeenCalled();
+    expect(invalidProps.onSave).not.toHaveBeenCalled();
   });
 
   it('시간 오류가 있을 때 유효성 검사 오류가 발생해야 한다', async () => {
@@ -90,7 +90,7 @@ describe('useEventManagement', () => {
       })
     );
 
-    expect(propsWithTimeError.saveEvent).not.toHaveBeenCalled();
+    expect(propsWithTimeError.onSave).not.toHaveBeenCalled();
   });
 
   it('겹치는 이벤트가 없을 때 바로 저장이 진행되어야 한다', async () => {
@@ -103,8 +103,8 @@ describe('useEventManagement', () => {
     });
 
     expect(findOverlappingEventsSpy).toHaveBeenCalled();
-    expect(mockProps.saveEvent).toHaveBeenCalled();
-    expect(mockProps.resetForm).toHaveBeenCalled();
+    expect(mockProps.onSave).toHaveBeenCalled();
+    expect(mockProps.onResetForm).toHaveBeenCalled();
     expect(result.current.isOverlapDialogOpen).toBe(false);
   });
 
@@ -133,7 +133,7 @@ describe('useEventManagement', () => {
     expect(findOverlappingEventsSpy).toHaveBeenCalled();
     expect(result.current.isOverlapDialogOpen).toBe(true);
     expect(result.current.overlappingEvents).toEqual([overlappingEvent]);
-    expect(mockProps.saveEvent).not.toHaveBeenCalled();
+    expect(mockProps.onSave).not.toHaveBeenCalled();
   });
 
   it('겹침 경고 후 계속 진행을 선택하면 이벤트가 저장되어야 한다', async () => {
@@ -167,8 +167,8 @@ describe('useEventManagement', () => {
     });
 
     expect(result.current.isOverlapDialogOpen).toBe(false);
-    expect(mockProps.saveEvent).toHaveBeenCalled();
-    expect(mockProps.resetForm).toHaveBeenCalled();
+    expect(mockProps.onSave).toHaveBeenCalled();
+    expect(mockProps.onResetForm).toHaveBeenCalled();
   });
 
   it('반복 일정 설정이 이벤트 데이터에 올바르게 포함되어야 한다', async () => {
@@ -186,7 +186,7 @@ describe('useEventManagement', () => {
       await result.current.handleSubmitEvent();
     });
 
-    expect(repeatingProps.saveEvent).toHaveBeenCalledWith(
+    expect(repeatingProps.onSave).toHaveBeenCalledWith(
       expect.objectContaining({
         repeat: {
           type: 'weekly',
