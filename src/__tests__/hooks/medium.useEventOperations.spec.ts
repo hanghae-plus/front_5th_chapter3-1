@@ -1,14 +1,15 @@
+import { act, renderHook, waitFor } from '@testing-library/react';
+import { http, HttpResponse } from 'msw';
+
 import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
-} from '../../__mocks__/handlersUtils.ts';
-import { events } from '../../__mocks__/response/events.json';
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
-import { server } from '../../setupTests.ts';
-import { Event } from '../../types.ts';
-import { act, renderHook, waitFor } from '@testing-library/react';
-import { http, HttpResponse } from 'msw';
+} from '@/__mocks__/handlersUtils.ts';
+import { events } from '@/__mocks__/response/events.json';
+import { useEventOperations } from '@/hooks/useEventOperations.ts';
+import { server } from '@/setupTests.ts';
+import { Event } from '@/types.ts';
 
 // ? Medium: 아래 toastFn과 mock과 이 fn은 무엇을 해줄까요?
 // toastFn은 가짜 함수

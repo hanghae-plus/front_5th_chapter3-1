@@ -1,7 +1,8 @@
-import realEvents from '../../__mocks__/response/realEvents.json';
-import { useSearch } from '../../hooks/useSearch.ts';
-import type { Event } from '../../types.ts';
 import { act, renderHook } from '@testing-library/react';
+
+import realEvents from '@/__mocks__/response/realEvents.json';
+import { useSearch } from '@/hooks/useSearch.ts';
+import type { Event } from '@/types.ts';
 
 it('월간 뷰에서 검색어가 비어있을 때 현재 월의 모든 이벤트를 반환해야 한다 (현재 날짜는 2025-05-15)', () => {
   const { result } = renderHook(() =>
