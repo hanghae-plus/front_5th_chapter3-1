@@ -51,7 +51,7 @@ module.exports = {
         './src/setupTests.ts',
       ],
       plugins: ['vitest'],
-      extends: ['plugin:vitest/recommended'],
+      extends: ['plugin:vitest/recommended', 'prettier'],
       rules: {
         'vitest/expect-expect': 'off',
       },
