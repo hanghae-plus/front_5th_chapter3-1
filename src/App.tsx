@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, AlertTitle, Box, CloseButton, Flex, VStack } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 
 import { useCalendarView } from './hooks/useCalendarView.ts';
@@ -10,6 +10,7 @@ import { EventForm } from './components/EventForm.tsx';
 import { CalendarView } from './components/CalendarView.tsx';
 import { SearchView } from './components/SearchView.tsx';
 import { OverlapAlertDialog } from './components/OverlapAlertDialog.tsx';
+import { NotificationAlertDialog } from './components/NotificationAlertDialog.tsx';
 
 function App() {
   const {
@@ -131,21 +132,7 @@ function App() {
         editingEvent={editingEvent}
       />
 
-      {notifications.length > 0 && (
-        <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification, index) => (
-            <Alert key={index} status="info" variant="solid" width="auto">
-              <AlertIcon />
-              <Box flex="1">
-                <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
-              </Box>
-              <CloseButton
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
-            </Alert>
-          ))}
-        </VStack>
-      )}
+      <NotificationAlertDialog notifications={notifications} setNotifications={setNotifications} />
     </Box>
   );
 }
