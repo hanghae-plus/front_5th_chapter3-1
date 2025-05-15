@@ -1,7 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
+import { vi } from 'vitest';
+
 import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
-import { vi } from 'vitest';
 
 describe('useCalendarView', () => {
   const TODAY_DATE = new Date('2025-10-01T00:00:00Z');

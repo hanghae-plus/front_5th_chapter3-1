@@ -1,4 +1,5 @@
 import { act, renderHook } from '@testing-library/react';
+
 import { useSearch } from '../../hooks/useSearch.ts';
 import { mockEvents } from '../utils/mockEvent.ts';
 

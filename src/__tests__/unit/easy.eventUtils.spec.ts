@@ -1,5 +1,5 @@
-import { getFilteredEvents } from '../../utils/eventUtils';
 import type { Event } from '../../types';
+import { getFilteredEvents } from '../../utils/eventUtils';
 
 describe('getFilteredEvents', () => {
   const makeUTCDate = (dateStr: string) => new Date(`${dateStr}T00:00:00Z`);

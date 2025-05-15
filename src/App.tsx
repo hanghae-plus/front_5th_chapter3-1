@@ -523,7 +523,7 @@ function App() {
         onClose={() => setIsOverlapDialogOpen(false)}
       >
         <AlertDialogOverlay>
-          <AlertDialogContent>
+          <AlertDialogContent data-testid="overlap-dialog">
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
               일정 겹침 경고
             </AlertDialogHeader>

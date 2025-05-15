@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+
 import { Event, RepeatType } from '../types';
 import eventsJson from './response/events.json' assert { type: 'json' };
 

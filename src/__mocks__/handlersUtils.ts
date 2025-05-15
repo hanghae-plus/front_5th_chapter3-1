@@ -1,6 +1,7 @@
 import { http, HttpResponse } from 'msw';
-import { Event } from '../types';
+
 import { server } from '../setupTests';
+import { Event } from '../types';
 
 export const createMockHandlers = (initEvents: Event[] = []) => {
   // 클로저로 테스트 독립 상태 유지
