@@ -1,12 +1,12 @@
-import { ChangeEvent } from 'react';
 import { act, renderHook } from '@testing-library/react';
+import { ChangeEvent } from 'react';
 
 import { useEventTime } from '../../hooks/useEventTime';
 
 const createChangeEvent = (value: string): ChangeEvent<HTMLInputElement> =>
   ({
     target: { value },
-  } as ChangeEvent<HTMLInputElement>);
+  }) as ChangeEvent<HTMLInputElement>;
 
 it('초기 상태에서는 시작 시간과 종료 시간이 설정되어 있지 않다.', () => {
   const { result } = renderHook(() => useEventTime());
