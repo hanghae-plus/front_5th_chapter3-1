@@ -11,6 +11,54 @@ import {
   isDateInRange,
 } from '../../utils/dateUtils';
 
+const MOCK_EVENTS: Event[] = [
+  {
+    id: '1',
+    title: '1번 이벤트',
+    date: '2025-05-01',
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '1번 이벤트 설명',
+    location: '1번 이벤트 장소',
+    category: '1번 이벤트 카테고리',
+    repeat: {
+      type: 'none',
+      interval: 0,
+    },
+    notificationTime: 0,
+  },
+  {
+    id: '2',
+    title: '2번 이벤트',
+    date: '2025-05-16',
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '2번 이벤트 설명',
+    location: '2번 이벤트 장소',
+    category: '2번 이벤트 카테고리',
+    repeat: {
+      type: 'none',
+      interval: 0,
+    },
+    notificationTime: 0,
+  },
+  {
+    id: '3',
+    title: '3번 이벤트',
+    date: '2025-05-17',
+    startTime: '10:00',
+    endTime: '11:00',
+    description: '3번 이벤트 설명',
+    location: '3번 이벤트 장소',
+    category: '3번 이벤트 카테고리',
+    repeat: {
+      type: 'none',
+      interval: 0,
+    },
+    notificationTime: 0,
+  },
+];
+
 describe('getDaysInMonth', () => {
   it('1월은 31일 수를 반환한다', () => {
     const days = getDaysInMonth(2025, 1);
@@ -156,54 +204,6 @@ describe('getWeeksAtMonth', () => {
     ]);
   });
 });
-
-const MOCK_EVENTS: Event[] = [
-  {
-    id: '1',
-    title: '1번 이벤트',
-    date: '2025-05-01',
-    startTime: '10:00',
-    endTime: '11:00',
-    description: '1번 이벤트 설명',
-    location: '1번 이벤트 장소',
-    category: '1번 이벤트 카테고리',
-    repeat: {
-      type: 'none',
-      interval: 0,
-    },
-    notificationTime: 0,
-  },
-  {
-    id: '2',
-    title: '2번 이벤트',
-    date: '2025-05-16',
-    startTime: '10:00',
-    endTime: '11:00',
-    description: '2번 이벤트 설명',
-    location: '2번 이벤트 장소',
-    category: '2번 이벤트 카테고리',
-    repeat: {
-      type: 'none',
-      interval: 0,
-    },
-    notificationTime: 0,
-  },
-  {
-    id: '3',
-    title: '3번 이벤트',
-    date: '2025-05-17',
-    startTime: '10:00',
-    endTime: '11:00',
-    description: '3번 이벤트 설명',
-    location: '3번 이벤트 장소',
-    category: '3번 이벤트 카테고리',
-    repeat: {
-      type: 'none',
-      interval: 0,
-    },
-    notificationTime: 0,
-  },
-];
 
 describe('getEventsForDay', () => {
   it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
