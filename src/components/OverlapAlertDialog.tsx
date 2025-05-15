@@ -65,10 +65,11 @@ const OverlapAlertDialog = ({
           </AlertDialogBody>
 
           <AlertDialogFooter>
-            <Button ref={cancelRef} onClick={onClose}>
+            <Button ref={cancelRef} onClick={onClose} data-testid="cancel-button">
               취소
             </Button>
             <Button
+              data-testid="continue-button"
               colorScheme="red"
               onClick={() => {
                 onClose();
