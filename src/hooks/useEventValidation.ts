@@ -1,7 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { useToast } from '@chakra-ui/react';
 
 import { Event, EventForm } from '../types';
-import { findOverlappingEvents } from '../utils/eventOverlap';
+import { validateEventFields, validateEventTime } from '../utils/eventValidation';
 
 interface UseEventValidationProps {
   events: Event[];
@@ -19,9 +20,10 @@ export const useEventValidation = ({
   const toast = useToast();
 
   const validateAndSaveEvent = async (eventData: Event | EventForm) => {
-    if (!eventData.title || !eventData.date || !eventData.startTime || !eventData.endTime) {
+    const fieldsValidation = validateEventFields(eventData);
+    if (!fieldsValidation.isValid) {
       toast({
-        title: '필수 정보를 모두 입력해주세요.',
+        title: fieldsValidation.errorMessage,
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -29,13 +31,23 @@ export const useEventValidation = ({
       return;
     }
 
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      openOverlapDialog(overlapping, eventData);
-    } else {
-      await onSave(eventData);
-      onReset();
+    const timeValidation = validateEventTime(eventData, events);
+    if (!timeValidation.isValid) {
+      if (timeValidation.overlappingEvents) {
+        openOverlapDialog(timeValidation.overlappingEvents, eventData);
+      } else {
+        toast({
+          title: timeValidation.errorMessage,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+      return;
     }
+
+    await onSave(eventData);
+    onReset();
   };
 
   return { validateAndSaveEvent };
