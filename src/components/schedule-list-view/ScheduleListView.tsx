@@ -5,7 +5,7 @@ import { useEventFormContext } from '../../contexts/EventFormContext';
 import { useEventOperationsContext } from '../../contexts/EventOperationsContext';
 import { useNotificationsContext } from '../../contexts/NotificationsContext';
 import { useSearchContext } from '../../contexts/SearchContext';
-import { notificationOptions } from '../../libs/constants';
+import { notificationOptions } from '../../constants';
 import LabelInput from '../../shares/ui/input/LabelInput';
 
 const ScheduleListView = () => {

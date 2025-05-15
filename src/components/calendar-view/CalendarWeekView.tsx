@@ -13,7 +13,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { weekDays } from '../../libs/constants';
+import { weekDays } from '../../constants';
 import { Event } from '../../types';
 import { formatWeek, getWeekDates } from '../../utils/dateUtils';
 

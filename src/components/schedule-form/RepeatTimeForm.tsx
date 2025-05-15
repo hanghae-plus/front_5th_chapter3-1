@@ -1,7 +1,7 @@
 import { FormControl, HStack, VStack } from '@chakra-ui/react';
 
 import { useEventFormContext } from '../../contexts/EventFormContext';
-import { repeatOptions } from '../../libs/constants';
+import { repeatOptions } from '../../constants';
 import LabelInput from '../../shares/ui/input/LabelInput';
 import Selector from '../../shares/ui/Selector';
 import { RepeatType } from '../../types';

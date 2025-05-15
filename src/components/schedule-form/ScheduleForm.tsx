@@ -2,7 +2,7 @@ import { Button, Heading, VStack } from '@chakra-ui/react';
 
 import RepeatTimeForm from './RepeatTimeForm';
 import { useEventFormContext } from '../../contexts/EventFormContext';
-import { notificationOptions, categories } from '../../libs/constants';
+import { notificationOptions, categories } from '../../constants';
 import CheckInput from '../../shares/ui/input/CheckInput';
 import LabelInput from '../../shares/ui/input/LabelInput';
 import TimeRangeInput from '../../shares/ui/input/TimeRangeInput';
