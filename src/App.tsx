@@ -500,11 +500,13 @@ function App() {
                   </VStack>
                   <HStack>
                     <IconButton
+                      data-testid="edit-event-button"
                       aria-label="Edit event"
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
+                      data-testid="delete-event-button"
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
