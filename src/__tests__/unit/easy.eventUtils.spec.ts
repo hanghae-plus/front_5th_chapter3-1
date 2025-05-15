@@ -87,7 +87,6 @@ describe('getFilteredEvents', () => {
     const currentDate = new Date('2025-07-15');
     const view = 'month';
     const lowerCaseResults = getFilteredEvents(mockEvents, lowerCaseSearch, currentDate, view);
-    console.log('lowerCaseResults:', lowerCaseResults);
     expect(lowerCaseResults.length).toBe(2);
 
     // 대문자 일때

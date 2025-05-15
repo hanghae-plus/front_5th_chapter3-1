@@ -58,8 +58,6 @@ describe('getUpcomingEvents', () => {
     const now = new Date('2025-10-15T09:40:00');
     const notifiedEvents: string[] = [];
     const upcomingEvents = getUpcomingEvents(mockEvents, now, notifiedEvents);
-    console.log('upcomingEvents:', upcomingEvents);
-    // 함수 로직에 따라 알림 시간과 현재 시간의 차이가 notificationTime보다 크면 반환하지 않음
     expect(upcomingEvents.length).toBe(1);
   });
 });
