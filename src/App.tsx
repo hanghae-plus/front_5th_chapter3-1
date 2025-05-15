@@ -9,6 +9,7 @@ import { NotificationList } from './components/NotificationList';
 import { OverlapDialog } from './components/OverlapDialog';
 import { useCalendarView } from './hooks/useCalendarView';
 import { useEventForm } from './hooks/useEventForm';
+import { useEventManagement } from './hooks/useEventManagement';
 import { useEventOperations } from './hooks/useEventOperations';
 import { useNotifications } from './hooks/useNotifications';
 import { useSearch } from './hooks/useSearch';
@@ -49,89 +50,42 @@ function App() {
     editEvent,
   } = useEventForm();
 
-  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
-    setEditingEvent(null)
-  );
+  const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () => {
+    resetForm();
+    setEditingEvent(null);
+  });
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
-
-  const toast = useToast();
-
-  const addOrUpdateEvent = async () => {
-    if (!title || !date || !startTime || !endTime) {
-      toast({
-        title: '필수 정보를 모두 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (startTimeError || endTimeError) {
-      toast({
-        title: '시간 설정을 확인해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    const eventData: Event | EventFormType = {
-      id: editingEvent ? editingEvent.id : undefined,
-      title,
-      date,
-      startTime,
-      endTime,
-      description,
-      location,
-      category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
-      notificationTime,
-    };
-
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
-    } else {
-      await saveEvent(eventData);
-      resetForm();
-    }
-  };
-
-  const handleContinueSaveEvent = async () => {
-    setIsOverlapDialogOpen(false);
-    const eventData = {
-      id: editingEvent ? editingEvent.id : undefined,
-      title,
-      date,
-      startTime,
-      endTime,
-      description,
-      location,
-      category,
-      repeat: {
-        type: isRepeating ? repeatType : 'none',
-        interval: repeatInterval,
-        endDate: repeatEndDate || undefined,
-      },
-      notificationTime,
-    };
-    await saveEvent(eventData);
-    resetForm();
-  };
+  const {
+    handleSubmitEvent,
+    handleContinueSaveAfterOverlap,
+    isOverlapDialogOpen,
+    setIsOverlapDialogOpen, // OverlapDialog를 직접 제어하기 위해 필요
+    overlappingEvents,
+    cancelRef,
+  } = useEventManagement({
+    title,
+    date,
+    startTime,
+    endTime,
+    description,
+    location,
+    category,
+    isRepeating,
+    repeatType,
+    repeatInterval,
+    repeatEndDate,
+    notificationTime,
+    startTimeError,
+    endTimeError,
+    editingEvent,
+    events,
+    resetForm,
+    saveEvent,
+  });
 
   const eventFormSection = (
     <EventForm
@@ -161,7 +115,7 @@ function App() {
       endTimeError={endTimeError}
       handleStartTimeChange={handleStartTimeChange}
       handleEndTimeChange={handleEndTimeChange}
-      addOrUpdateEvent={addOrUpdateEvent}
+      addOrUpdateEvent={handleSubmitEvent}
       editingEvent={editingEvent}
     />
   );
@@ -201,7 +155,7 @@ function App() {
         isOpen={isOverlapDialogOpen}
         onClose={() => setIsOverlapDialogOpen(false)}
         overlappingEvents={overlappingEvents}
-        onContinue={handleContinueSaveEvent}
+        onContinue={handleContinueSaveAfterOverlap}
         cancelRef={cancelRef}
       />
 
