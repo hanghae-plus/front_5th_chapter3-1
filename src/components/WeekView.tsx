@@ -13,6 +13,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { weekDays } from '../lib/constants';
 import { Event } from '../types';
 import { formatWeek, getWeekDates } from '../utils/dateUtils';
 
@@ -21,8 +22,6 @@ interface WeekViewProps {
   filteredEvents: Event[];
   notifiedEvents: string[];
 }
-
-const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
 export function WeekView({ currentDate, filteredEvents, notifiedEvents }: WeekViewProps) {
   const weekDates = getWeekDates(currentDate);

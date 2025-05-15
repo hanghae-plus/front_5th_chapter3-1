@@ -1,6 +1,6 @@
-import { ChangeEvent, createContext, ReactNode, useContext, useState } from 'react';
+import { ChangeEvent, createContext, ReactNode, useContext } from 'react';
 
-import { useEventForm } from '../hooks/useEventForm';
+import { useEventForm } from '../hooks';
 import { Event, RepeatType } from '../types';
 
 type EventFormContextType = {

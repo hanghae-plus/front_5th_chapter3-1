@@ -12,7 +12,7 @@ import {
 import React from 'react';
 
 import { useEventFormContext } from '../contexts/EventFormContext';
-import { useEventOperations } from '../hooks/useEventOperations';
+import { useEventOperations } from '../hooks';
 import { notificationOptions } from '../lib/configs';
 import { Event } from '../types';
 

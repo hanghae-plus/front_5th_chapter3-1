@@ -14,8 +14,7 @@ import {
 
 import { useEvents } from '../contexts/EventContext';
 import { useEventFormContext } from '../contexts/EventFormContext';
-import { useEventOperations } from '../hooks/useEventOperations';
-import { useOverlapDialog } from '../hooks/useOverlapDialog';
+import { useEventOperations, useOverlapDialog } from '../hooks';
 import { notificationOptions } from '../lib/configs';
 import { categories } from '../lib/constants';
 import { RepeatType, EventForm as EventFormType, Event } from '../types';

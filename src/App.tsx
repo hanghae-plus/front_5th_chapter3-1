@@ -1,15 +1,15 @@
 import { Box, Flex, Heading, VStack } from '@chakra-ui/react';
 
-import { CalendarViewController } from './components/CalendarViewController.tsx';
-import { EventForm } from './components/EventForm.tsx';
-import { EventList } from './components/EventList.tsx';
-import { MonthView } from './components/MonthView.tsx';
-import { Notifications } from './components/Notifications.tsx';
-import { WeekView } from './components/WeekView.tsx';
+import {
+  CalendarViewController,
+  EventForm,
+  EventList,
+  MonthView,
+  Notifications,
+  WeekView,
+} from './components';
 import { useEvents } from './contexts/EventContext.tsx';
-import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useNotifications } from './hooks/useNotifications.ts';
-import { useSearch } from './hooks/useSearch.ts';
+import { useCalendarView, useNotifications, useSearch } from './hooks';
 
 function App() {
   const { events } = useEvents();

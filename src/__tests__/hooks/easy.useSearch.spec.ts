@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useSearch } from '../../hooks/useSearch.ts';
+import { useSearch } from '../../hooks';
 import { createEvent, getTestEvents } from '../fixtures/eventFactory.ts';
 
 describe('useSearch hook', () => {

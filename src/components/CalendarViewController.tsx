@@ -1,7 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { HStack, IconButton, Select } from '@chakra-ui/react';
 
-import { View, viewOptions } from '../hooks/useCalendarView';
+import { View, viewOptions } from '../hooks';
 
 interface CalendarViewControllerProps {
   view: View;

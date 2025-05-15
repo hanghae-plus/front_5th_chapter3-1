@@ -10,7 +10,7 @@ import {
 } from '../../__mocks__/handlersUtils.ts';
 import { EventProvider, useEvents } from '../../contexts/EventContext.tsx';
 import { EventFormProvider } from '../../contexts/EventFormContext.tsx';
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
+import { useEventOperations } from '../../hooks';
 import { server } from '../../setupTests.ts';
 import { Event } from '../../types.ts';
 import { getTestEvents } from '../fixtures/eventFactory.ts';
