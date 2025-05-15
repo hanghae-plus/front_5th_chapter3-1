@@ -1,9 +1,9 @@
 import { userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
-import App from '../App';
 import { createHandlers } from '../__mocks__/handlers';
 import { createMockHandlersUtils } from '../__mocks__/handlersUtils';
+import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
 import { render, screen, within, waitFor, fireEvent, act } from './test-utils';
