@@ -7,27 +7,26 @@ import {
 } from '../../utils/eventOverlap';
 
 describe('parseDateTime', () => {
-  it('2025-07-01 14:30을 정확한 Date 객체로 변환한다', () => {
+  it('날짜와 시간을 파싱하여 Date 객체로 변환한다', () => {
     expect(parseDateTime('2025-07-01', '14:30')).toEqual(new Date('2025-07-01 14:30'));
   });
 
-  it('잘못된 날짜 형식에 대해 Invalid Date를 반환한다', () => {
+  it('유효하지 않은 날짜 형식 입력 시 Invalid Date를 반환한다', () => {
     expect(parseDateTime('2025-05-00', '14:30')).toBe('Invalid Date');
     expect(parseDateTime('2025-05-32', '14:30')).toBe('Invalid Date');
   });
 
-  it('잘못된 시간 형식에 대해 Invalid Date를 반환한다', () => {
+  it('유효하지 않은 시간 형식 입력 시 Invalid Date를 반환한다', () => {
     expect(parseDateTime('2025-05-13', '25:00')).toBe('Invalid Date');
     expect(parseDateTime('2025-05-13', '-01:00')).toBe('Invalid Date');
   });
 
-  it('날짜 문자열이 비어있을 때 Invalid Date를 반환한다', () => {
+  it('날짜 문자열이 비어있을 경우 Invalid Date를 반환한다', () => {
     expect(parseDateTime('', '12:00')).toBe('Invalid Date');
   });
 });
 
 describe('convertEventToDateRange', () => {
-  // 일반적인, 올바른 수정 필요
   it('일반적인 이벤트를 올바른 시작 및 종료 시간을 가진 객체로 변환한다', () => {
     const mockEvents: Event = {
       id: '1',
@@ -90,8 +89,7 @@ describe('convertEventToDateRange', () => {
 });
 
 describe('isOverlapping', () => {
-  // 일자랑 시간이 겹치는 경우만 체크가 됨!
-  it('두 이벤트가 겹치는 경우 true를 반환한다', () => {
+  it('두 이벤트가 날짜와 시간이 겹치는 경우 true를 반환한다', () => {
     const mockEvents: Event[] = [
       {
         id: '1',
@@ -122,7 +120,7 @@ describe('isOverlapping', () => {
     expect(isOverlapping(mockEvents[0], mockEvents[1])).toBe(true);
   });
 
-  it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
+  it('두 이벤트가 동일한 날짜지만 시간이 겹치지 않는 경우 false를 반환한다', () => {
     const mockEvents: Event[] = [
       {
         id: '1',
@@ -182,7 +180,7 @@ describe('findOverlappingEvents', () => {
     },
   ];
 
-  it('새 이벤트와 겹치는 모든 이벤트를 반환한다', () => {
+  it('새로운 이벤트와 시간대가 겹치는 모든 기존 이벤트를 반환한다', () => {
     const newEvent: Event = {
       id: '3',
       title: '겹치는 회의',
@@ -200,7 +198,7 @@ describe('findOverlappingEvents', () => {
     expect(findEvents.map((event) => event.id)).toEqual(['1', '2']);
   });
 
-  it('겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
+  it('시간이 겹치는 이벤트가 없으면 빈 배열을 반환한다', () => {
     const newEvent: Event = {
       id: '3',
       title: '비어 있는 시간',
