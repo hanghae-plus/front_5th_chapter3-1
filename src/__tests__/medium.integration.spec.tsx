@@ -11,6 +11,14 @@ import {
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
+import {
+  CalendarProvider,
+  EventProvider,
+  EventOperationProvider,
+  NotificationProvider,
+  OverlapDialogProvider,
+  SearchProvider,
+} from '../context';
 
 beforeAll(() => {
   vi.useFakeTimers({ toFake: ['Date'] });
@@ -20,16 +28,32 @@ afterAll(() => {
   vi.useRealTimers();
 });
 
+const renderApp = () => {
+  return render(
+    <ChakraProvider>
+      <CalendarProvider>
+        <OverlapDialogProvider>
+          <EventProvider>
+            <EventOperationProvider>
+              <NotificationProvider>
+                <SearchProvider>
+                  <App />
+                </SearchProvider>
+              </NotificationProvider>
+            </EventOperationProvider>
+          </EventProvider>
+        </OverlapDialogProvider>
+      </CalendarProvider>
+    </ChakraProvider>
+  );
+};
+
 describe('일정 CRUD 및 기본 기능', () => {
   const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
   beforeEach(() => {
     server.use(...handlers);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
   });
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
@@ -120,11 +144,7 @@ describe('일정 view', () => {
   it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
     const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
     server.use(...handlers);
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
@@ -147,11 +167,7 @@ describe('일정 view', () => {
     const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
     server.use(...handlers);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
@@ -172,11 +188,7 @@ describe('일정 view', () => {
       server.use(...handlers);
     });
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
@@ -196,11 +208,7 @@ describe('일정 view', () => {
     const { handlers } = setupMockHandlerCreation(mockTestDataList as Event[]);
     server.use(...handlers);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
@@ -223,11 +231,7 @@ describe('일정 view', () => {
       server.use(...handlers);
     });
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
 
@@ -246,11 +250,7 @@ describe('검색 기능', () => {
   beforeEach(() => {
     server.use(...handlers);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
   });
 
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
@@ -297,11 +297,7 @@ describe('일정 충돌', () => {
     // ← async 추가
     server.use(...handlers);
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    renderApp();
 
     const eventList = await screen.findByTestId('event-list');
 
@@ -373,11 +369,7 @@ it('notificationTime을 20으로 하면 지정 시간 20분 전 알람 텍스트
     server.use(...handlers);
   });
 
-  render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  );
+  renderApp();
 
   const notification = await screen.findByText('20분 후 Event D 일정이 시작됩니다.');
 
