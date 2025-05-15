@@ -3,7 +3,7 @@ import { createContext, useContext, ReactNode } from 'react';
 import { useEventOperationsContext } from './EventOperationsContext';
 import { useNotifications, UseNotificationsReturn } from '../hooks/useNotifications';
 
-const NotificationsContext = createContext<UseNotificationsReturn | undefined>(undefined);
+export const NotificationsContext = createContext<UseNotificationsReturn | undefined>(undefined);
 
 export const NotificationsProvider = ({ children }: { children: ReactNode }) => {
   const { events } = useEventOperationsContext();
