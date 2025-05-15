@@ -40,12 +40,12 @@ import {
 } from '@chakra-ui/react';
 import { useState, useRef } from 'react';
 
+import { Event, EventForm, RepeatType } from '../../../entities/event';
 import { useCalendarView } from '../../../hooks/useCalendarView';
 import { useEventForm } from '../../../hooks/useEventForm';
 import { useEventOperations } from '../../../hooks/useEventOperations';
 import { useNotifications } from '../../../hooks/useNotifications';
 import { useSearch } from '../../../hooks/useSearch';
-import { Event, EventForm, RepeatType } from '../../../types';
 import {
   getWeekDates,
   formatWeek,

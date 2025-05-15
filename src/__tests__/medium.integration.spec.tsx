@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event';
 
 import { setupMockHandlerCreation } from '../__mocks__/handlersUtils';
 import { App } from '../app';
-import { Event } from '../types';
+import { Event } from '../entities/event';
 
 describe('일정 CRUD 및 기본 기능', () => {
   beforeEach(() => {

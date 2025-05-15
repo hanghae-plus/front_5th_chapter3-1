@@ -1,4 +1,4 @@
-import { Event } from '../../types';
+import { Event } from '../../entities/event';
 import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
 
 describe('getUpcomingEvents', () => {

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { Event } from '../../entities/event';
 import { useNotifications } from '../../hooks/useNotifications.ts';
-import { Event } from '../../types.ts';
 
 beforeEach(() => {
   vi.useFakeTimers();

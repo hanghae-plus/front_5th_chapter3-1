@@ -1,4 +1,4 @@
-import { Event } from '../types';
+import { Event } from '../entities/event';
 
 // ! Hard
 // ! 이벤트는 생성, 수정 되면 fetch를 다시 해 상태를 업데이트 합니다. 이를 위한 제어가 필요할 것 같은데요. 어떻게 작성해야 테스트가 병렬로 돌아도 안정적이게 동작할까요?
