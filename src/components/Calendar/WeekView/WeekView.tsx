@@ -2,8 +2,8 @@ import { VStack, Heading, Table, Thead, Tbody, Tr, Th, Td, Text } from '@chakra-
 
 import { WeekViewProps } from './types';
 import { WeekViewEvent } from './WeekViewEvent';
-import { weekDays } from '../../constants';
-import { getWeekDates, formatWeek } from '../../utils/dateUtils';
+import { weekDays } from '../../../constants';
+import { getWeekDates, formatWeek } from '../../../utils/dateUtils';
 
 export const WeekView = ({ currentDate, events, notifiedEvents }: WeekViewProps) => {
   const weekDates = getWeekDates(currentDate);

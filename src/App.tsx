@@ -6,19 +6,15 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import {
-  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Checkbox,
-  CloseButton,
   Flex,
   FormControl,
   FormLabel,
@@ -35,7 +31,7 @@ import {
 import { useRef, useState } from 'react';
 
 import { MonthView } from './components/Calendar/MonthView/MonthView.tsx';
-import { WeekView } from './components/Calendar/WeekView.tsx';
+import { WeekView } from './components/Calendar/WeekView/WeekView.tsx';
 import { Notification } from './components/Notification/Alert/Notification.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
