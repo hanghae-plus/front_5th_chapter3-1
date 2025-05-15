@@ -72,10 +72,67 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    
+    setupMockHandlerUpdating();
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    //이벤트 리스트 -> 수정하고자 하는 일정의 수정 버튼 클릭
+    const eventList = screen.getByTestId('event-list');
+    const eventDetails = within(eventList);
+    const eventItem = eventDetails.getByTestId('event-1');
+    const eventItemDetails = within(eventItem);
+    const editButton = eventItemDetails.getByTestId('edit-event-1');
+
+    await user.click(editButton);
+
+    //수정 폼에 해당 일정의 정보가 정확히 표시되는지 확인
+    expect(screen.getByLabelText('제목')).toHaveValue('기존 회의');
+    expect(screen.getByLabelText('날짜')).toHaveValue('2025-10-15');
+    expect(screen.getByLabelText('시작 시간')).toHaveValue('09:00');
+    expect(screen.getByLabelText('종료 시간')).toHaveValue('10:00');
+    expect(screen.getByLabelText('설명')).toHaveValue('기존 팀 미팅');
+
+    const updatedEvent: EventFormData = {
+      title: '기존 회의',
+      date: '2025-10-15',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+    };
+
+    await saveSchedule(user, updatedEvent);
+    const updatedEventItem = eventDetails.getByTestId('event-1');
+    const updatedEventItemDetails = within(updatedEventItem);
+    expect(updatedEventItemDetails.getByText(updatedEvent.title)).toBeInTheDocument();
+    expect(updatedEventItemDetails.getByText(updatedEvent.date)).toBeInTheDocument();
+    expect(
+      updatedEventItemDetails.getByText(`${updatedEvent.startTime} - ${updatedEvent.endTime}`)
+    ).toBeInTheDocument();
+    expect(updatedEventItemDetails.getByText(updatedEvent.description)).toBeInTheDocument();
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion();
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    //이벤트 리스트 -> 수정하고자 하는 일정의 수정 버튼 클릭
+    const eventList = screen.getByTestId('event-list');
+    const eventDetails = within(eventList);
+    const eventItem = eventDetails.getByTestId('event-1');
+    const eventItemDetails = within(eventItem);
+    const deleteButton = eventItemDetails.getByTestId('delete-event-1');
+
+    await user.click(deleteButton);
+
+    expect(eventDetails.queryByTestId('event-1')).not.toBeInTheDocument();
+  });
 });
 
 describe('일정 뷰', () => {
