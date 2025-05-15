@@ -1,7 +1,7 @@
 import { VStack } from '@chakra-ui/react';
 
-import { NotificationProps } from '../../../hooks/useNotifications.ts';
-import { CustomAlert } from '../../molecules/custom-alert';
+import { CustomAlert } from '@/components/molecules/custom-alert';
+import { NotificationProps } from '@/hooks/useNotifications.ts';
 
 interface AlertContainerProps {
   notifications: NotificationProps[];

@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import React, { forwardRef, RefObject } from 'react';
 
-import { Event } from '../../../types';
+import { Event } from '@/types';
 
 interface AlertModalProps {
   isOpen: boolean;

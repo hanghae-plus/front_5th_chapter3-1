@@ -19,8 +19,8 @@ import {
 } from '@chakra-ui/react';
 import { Fragment } from 'react';
 
-import { Event } from '../../../types';
-import { MonthlyCalendar, WeeklyCalendar } from '../../organisms/schedule/calender';
+import { MonthlyCalendar, WeeklyCalendar } from '@/components/organisms/schedule/calender';
+import { Event } from '@/types';
 
 interface ViewScheduleTemplateProps {
   view: 'week' | 'month';

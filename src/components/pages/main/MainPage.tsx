@@ -1,17 +1,17 @@
 import { Box, Flex, useToast } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
-import { AlertContainer } from '../../../components/organisms/alert-container';
-import { AlertModal } from '../../../components/organisms/alert-modal';
-import { AddScheduleTemplate } from '../../../components/templates/add-schedule/AddScheduleTemplate.tsx';
-import { useCalendarView } from '../../../hooks/useCalendarView.ts';
-import { useEventForm } from '../../../hooks/useEventForm.ts';
-import { useEventOperations } from '../../../hooks/useEventOperations.ts';
-import { useNotifications } from '../../../hooks/useNotifications.ts';
-import { useSearch } from '../../../hooks/useSearch.ts';
-import { Event, EventForm } from '../../../types';
-import { findOverlappingEvents } from '../../../utils/eventOverlap';
-import { ViewScheduleTemplate } from '../../templates/view-schedule';
+import { AlertContainer } from '@/components/organisms/alert-container';
+import { AlertModal } from '@/components/organisms/alert-modal';
+import { AddScheduleTemplate } from '@/components/templates/add-schedule/AddScheduleTemplate.tsx';
+import { ViewScheduleTemplate } from '@/components/templates/view-schedule';
+import { useCalendarView } from '@/hooks/useCalendarView.ts';
+import { useEventForm } from '@/hooks/useEventForm.ts';
+import { useEventOperations } from '@/hooks/useEventOperations.ts';
+import { useNotifications } from '@/hooks/useNotifications.ts';
+import { useSearch } from '@/hooks/useSearch.ts';
+import { Event, EventForm } from '@/types';
+import { findOverlappingEvents } from '@/utils/eventOverlap';
 
 export function MainPage() {
   const {

@@ -1,6 +1,9 @@
 import { Heading, VStack } from '@chakra-ui/react';
 
-import { AddScheduleFrom, AddScheduleFromProps } from '../../organisms/schedule/add-schedule-from';
+import {
+  AddScheduleFrom,
+  AddScheduleFromProps,
+} from '@/components/organisms/schedule/add-schedule-from';
 
 export const AddScheduleTemplate = ({
   addOrUpdateEvent,

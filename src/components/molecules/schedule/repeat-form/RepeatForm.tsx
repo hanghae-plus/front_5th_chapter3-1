@@ -1,9 +1,9 @@
 import { HStack, VStack } from '@chakra-ui/react';
 import React from 'react';
 
-import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '../../../../types';
-import { FormInput } from '../../../atoms/form/input';
-import { FormSelect } from '../../../atoms/form/select';
+import { FormInput } from '@/components/atoms/form/input';
+import { FormSelect } from '@/components/atoms/form/select';
+import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '@/types';
 
 interface RepeatFormProps {
   eventForm: EventForm;

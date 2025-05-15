@@ -1,13 +1,13 @@
 import { Button, HStack } from '@chakra-ui/react';
 import React, { Fragment } from 'react';
 
-import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '../../../../types';
-import { getTimeErrorMessage } from '../../../../utils/timeValidation';
-import { FormCheckbox } from '../../../atoms/form/checkbox';
-import { FormInput } from '../../../atoms/form/input';
-import { FormSelect } from '../../../atoms/form/select';
-import { FormTimeInput } from '../../../atoms/form/time-input';
-import { RepeatForm } from '../../../molecules/schedule/repeat-form';
+import { FormCheckbox } from '@/components/atoms/form/checkbox';
+import { FormInput } from '@/components/atoms/form/input';
+import { FormSelect } from '@/components/atoms/form/select';
+import { FormTimeInput } from '@/components/atoms/form/time-input';
+import { RepeatForm } from '@/components/molecules/schedule/repeat-form';
+import { EventForm, RepeatInfo, RepeatType, ScheduleField } from '@/types';
+import { getTimeErrorMessage } from '@/utils/timeValidation';
 
 export interface AddScheduleFromProps {
   addOrUpdateEvent: () => void;
