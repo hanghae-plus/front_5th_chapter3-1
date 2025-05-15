@@ -17,6 +17,7 @@ import {
 import { EventForm } from './components/EventForm.tsx';
 import { EventList } from './components/EventList.tsx';
 import { MonthView } from './components/MonthView.tsx';
+import { Notifications } from './components/Notifications.tsx';
 import { WeekView } from './components/WeekView.tsx';
 import { useEventFormContext } from './contexts/EventFormContext.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
@@ -183,21 +184,10 @@ function App() {
 
       <OverlapDialog />
 
-      {notifications.length > 0 && (
-        <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification, index) => (
-            <Alert key={index} status="info" variant="solid" width="auto">
-              <AlertIcon />
-              <Box flex="1">
-                <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
-              </Box>
-              <CloseButton
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
-            </Alert>
-          ))}
-        </VStack>
-      )}
+      <Notifications
+        notifications={notifications}
+        onClose={(index) => setNotifications((prev) => prev.filter((_, i) => i !== index))}
+      />
     </Box>
   );
 }
