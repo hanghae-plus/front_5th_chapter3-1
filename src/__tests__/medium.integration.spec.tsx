@@ -1,6 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, waitFor, within } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
+import { type UserEvent, userEvent } from '@testing-library/user-event';
 
 import {
   setupMockHandlerCreation,
@@ -11,15 +11,6 @@ import App from '@/App';
 import { Providers } from '@/components/providers';
 import { server } from '@/setupTests';
 import type { Event } from '@/types';
-waitFor;
-setupMockHandlerUpdating;
-setupMockHandlerDeletion;
-
-let user: UserEvent;
-beforeEach(() => {
-  vi.setSystemTime(new Date('2025-05-01'));
-  user = userEvent.setup();
-});
 
 const renderApp = () => {
   return render(
@@ -30,6 +21,12 @@ const renderApp = () => {
     </ChakraProvider>
   );
 };
+
+let user: UserEvent;
+beforeEach(() => {
+  vi.setSystemTime(new Date('2025-05-01'));
+  user = userEvent.setup();
+});
 
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
