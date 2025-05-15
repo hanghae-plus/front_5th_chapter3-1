@@ -20,6 +20,7 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {
+    'linebreak-style': 'off',
     'no-unused-vars': 'warn',
     'react/prop-types': 'off',
     'import/order': [
