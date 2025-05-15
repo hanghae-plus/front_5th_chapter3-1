@@ -13,7 +13,10 @@ export function getDaysInMonth(year: number, month: number): number {
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
   const diff = date.getDate() - day;
-  const sunday = new Date(date.setDate(diff));
+
+  const sunday = new Date(date);
+  sunday.setDate(diff);
+
   const weekDates = [];
   for (let i = 0; i < 7; i++) {
     const nextDate = new Date(sunday);
