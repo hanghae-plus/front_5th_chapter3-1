@@ -6,18 +6,20 @@ export const createEventStore = (initEvents: Event[] = []) => {
   const events = [...initEvents];
 
   return {
+    // * 이벤트 조회 함수
     getEvents: () => events,
+    // * 이벤트 추가 함수
     addEvent: (event: Event) => {
       events.push(event);
       return event;
     },
 
-    // * 공통 이벤트 조회 핸들러
+    // * 이벤트 조회 핸들러
     getHandler: http.get('/api/events', () => {
       return HttpResponse.json({ events });
     }),
 
-    // * ID 파라미터 처리 유틸리티 함수ㄴ
+    // * ID 파라미터 처리 유틸리티 함수
     getEventId: (id: string | readonly string[]) => {
       return typeof id === 'string' ? id : id[0];
     },

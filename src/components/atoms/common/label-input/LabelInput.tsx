@@ -9,7 +9,7 @@ export const LabelInput = ({ title, value, onChange, ...props }: LabelInputProps
   return (
     <FormControl>
       <FormLabel>{title}</FormLabel>
-      <Input {...props} onChange={onChange} />
+      <Input value={value} {...props} onChange={onChange} />
     </FormControl>
   );
 };

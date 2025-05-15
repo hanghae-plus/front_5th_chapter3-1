@@ -48,6 +48,7 @@ export const AddScheduleFrom: React.FC<AddScheduleFromProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           handleOnChangeEvent('date', e.target.value)
         }
+        type="date"
       />
 
       <HStack width="100%">
