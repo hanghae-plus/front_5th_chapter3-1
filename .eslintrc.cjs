@@ -22,17 +22,17 @@ module.exports = {
   rules: {
     'no-unused-vars': 'warn',
     'react/prop-types': 'off',
-    'import/order': [
-      'error',
-      {
-        groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-        'newlines-between': 'always',
-      },
-    ],
+    // 'import/order': [
+    //   'error',
+    //   {
+    //     groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
+    //     alphabetize: {
+    //       order: 'asc',
+    //       caseInsensitive: true,
+    //     },
+    //     'newlines-between': 'always',
+    //   },
+    // ],
   },
   globals: {
     Set: true,

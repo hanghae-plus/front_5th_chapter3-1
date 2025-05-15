@@ -53,6 +53,6 @@ describe('getUpcomingEvents', () => {
 describe('createNotificationMessage', () => {
   it('올바른 알림 메시지를 생성해야 한다', () => {
     const result = createNotificationMessage(events[0]);
-    expect(result).toEqual('5분 후 이벤트 1 일정이 시작됩니다.');
+    expect(result).toBe('5분 후 이벤트 1 일정이 시작됩니다.');
   });
 });

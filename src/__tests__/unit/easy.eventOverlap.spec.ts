@@ -137,7 +137,7 @@ describe('isOverlapping', () => {
         notificationTime: 0,
       }
     );
-    expect(result).toEqual(true);
+    expect(result).toBe(true);
   });
 
   it('두 이벤트가 겹치지 않는 경우 false를 반환한다', () => {
@@ -165,7 +165,7 @@ describe('isOverlapping', () => {
         notificationTime: 0,
       }
     );
-    expect(result).toEqual(false);
+    expect(result).toBe(false);
   });
 });
 

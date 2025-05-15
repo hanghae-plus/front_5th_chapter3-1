@@ -1,9 +1,10 @@
 import userEvent from '@testing-library/user-event';
 import { render } from '@testing-library/react';
 import { ChakraProvider } from '@chakra-ui/react';
+import { ReactNode } from 'react';
 
 export default async (
-  component: React.ReactNode
+  component: ReactNode
 ): Promise<{
   user: ReturnType<typeof userEvent.setup>;
   [key: string]: any;
