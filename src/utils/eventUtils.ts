@@ -9,6 +9,7 @@ function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event
 }
 
 function containsTerm(target: string, term: string) {
+  if (!target || !term) return false;
   return target.toLowerCase().includes(term.toLowerCase());
 }
 
@@ -36,15 +37,17 @@ export function getFilteredEvents(
   currentDate: Date,
   view: 'week' | 'month'
 ): Event[] {
-  const searchedEvents = searchEvents(events, searchTerm);
+  // 검색어가 있을 때만 검색 필터링 적용
+  let filteredEvents = searchTerm ? searchEvents(events, searchTerm) : events;
 
+  // 뷰에 따른 날짜 필터링
   if (view === 'week') {
-    return filterEventsByDateRangeAtWeek(searchedEvents, currentDate);
+    return filterEventsByDateRangeAtWeek(filteredEvents, currentDate);
   }
 
   if (view === 'month') {
-    return filterEventsByDateRangeAtMonth(searchedEvents, currentDate);
+    return filterEventsByDateRangeAtMonth(filteredEvents, currentDate);
   }
 
-  return searchedEvents;
+  return filteredEvents;
 }
