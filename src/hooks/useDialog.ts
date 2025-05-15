@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { RefObject, useRef, useState } from 'react';
 import { Event } from '@/types';
 
 interface UseDialogReturn {
   isOverlapDialogOpen: boolean;
   overlappingEvents: Event[];
-  cancelRef: React.RefObject<HTMLButtonElement>;
+  cancelRef: RefObject<HTMLButtonElement>;
   openDialog: (events: Event[]) => void;
   closeDialog: () => void;
 }

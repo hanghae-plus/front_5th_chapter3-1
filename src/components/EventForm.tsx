@@ -10,7 +10,7 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
-
+import React from 'react';
 import { Event, RepeatType } from '@/types';
 import { getTimeErrorMessage } from '@/utils';
 import { categories, notificationOptions } from '@/lib';

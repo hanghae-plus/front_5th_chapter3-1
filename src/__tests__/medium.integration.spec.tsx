@@ -222,7 +222,6 @@ describe('일정 충돌', () => {
 
     await typeEvent(user, MOCK_EVENTS[1]);
 
-    // eslint-disable-next-line no-unused-vars
     const [_, secondEvent] = screen.getAllByTestId('event-item');
 
     expect(within(secondEvent).getByRole('button', { name: 'Edit event' })).toBeInTheDocument();
