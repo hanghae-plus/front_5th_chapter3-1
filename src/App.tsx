@@ -1,8 +1,5 @@
-import { Box, Flex, Heading, useToast, VStack } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
-
 import { AppLayout } from './components/AppLayout';
-import { CalendarDisplay } from './components/CalendarHeader';
+import { CalendarDisplay } from './components/CalendarDisplay';
 import { EventForm } from './components/EventForm';
 import { EventList } from './components/EventList';
 import { NotificationList } from './components/NotificationList';
@@ -13,8 +10,6 @@ import { useEventManagement } from './hooks/useEventManagement';
 import { useEventOperations } from './hooks/useEventOperations';
 import { useNotifications } from './hooks/useNotifications';
 import { useSearch } from './hooks/useSearch';
-import { Event, EventForm as EventFormType } from './types';
-import { findOverlappingEvents } from './utils/eventOverlap';
 
 function App() {
   const {
