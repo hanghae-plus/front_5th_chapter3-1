@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { useCalendarView } from '../../hooks/useCalendarView.ts';
-import { assertDate } from '../utils.ts';
+import { assertDate } from '@/__tests__/utils';
+import { useCalendarView } from '@/entities/calendar/model/useCalendarView';
 
 // 테스트 전체에서 사용할 고정된 날짜 설정
 beforeAll(() => {

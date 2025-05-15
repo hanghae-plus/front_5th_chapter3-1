@@ -1,8 +1,8 @@
 import { act, renderHook } from '@testing-library/react';
 
-import { events } from '../../__mocks__/response/events.json';
-import { useNotifications } from '../../hooks/useNotifications.ts';
-import { Event, RepeatType } from '../../types.ts';
+import { events } from '@/__mocks__/response/events.json';
+import { Event, RepeatType } from '@/entities/event/model/types';
+import { useNotifications } from '@/entities/event/model/useNotifications';
 
 const SEC_IN_MS = 1000;
 const ONE_MINUTE = SEC_IN_MS * 60;

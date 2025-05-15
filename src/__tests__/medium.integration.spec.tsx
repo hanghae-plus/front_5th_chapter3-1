@@ -7,17 +7,28 @@ import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
   setupMockHandlerUpdating,
-} from '../__mocks__/handlersUtils';
-import App from '../App';
-import { Event } from '../types';
-
+} from '@/__mocks__/handlersUtils';
+import App from '@/App';
+import { EventProvider } from '@/entities/event/model/EventProvider';
+import { Event } from '@/entities/event/model/types';
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
 // ! Medium: ChakraProvider로 묶어주는 동작은 의미있음. element 로 들어올 App 컴포넌트에서 Chakra UI 를 사용하는데 이 컴포넌트는 ChakraProvider 안에서 사용되어야 하기 때문
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 const setup = (element: ReactElement) => {
   const user = userEvent.setup();
 
-  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user };
+  return {
+    ...render(
+      <ChakraProvider>
+        <EventProvider>{element}</EventProvider>
+      </ChakraProvider>
+    ),
+    user,
+  };
 };
 
 // ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
@@ -99,7 +110,8 @@ describe('일정 CRUD 및 기본 기능', () => {
      * description: '기존 팀 미팅' -> '기획팀도 들어옴.'
      * location: '회의실 B' -> '회의실 A'
      */
-    await user.type(titleInput, ', 자료 프린트');
+    await user.clear(titleInput);
+    await user.type(titleInput, '기존 회의, 자료 프린트');
     await user.clear(DescriptionInput);
     await user.type(DescriptionInput, updatedDescription);
     await user.type(locationInput, '{Backspace}');
@@ -109,9 +121,11 @@ describe('일정 CRUD 및 기본 기능', () => {
       user.click(screen.getByTestId('event-submit-button'));
     });
 
-    expect(await within(eventList).findByText(updatedTitle)).toBeInTheDocument();
-    expect(await within(eventList).findByText(updatedDescription)).toBeInTheDocument();
-    expect(await within(eventList).findByText(updatedLocation)).toBeInTheDocument();
+    waitFor(async () => {
+      expect(await within(eventList).findByText(updatedTitle)).toBeInTheDocument();
+      expect(await within(eventList).findByText(updatedDescription)).toBeInTheDocument();
+      expect(await within(eventList).findByText(updatedLocation)).toBeInTheDocument();
+    });
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {

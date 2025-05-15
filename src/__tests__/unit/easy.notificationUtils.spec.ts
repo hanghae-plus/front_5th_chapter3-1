@@ -1,5 +1,8 @@
-import { Event } from '../../types';
-import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
+import {
+  createNotificationMessage,
+  getUpcomingEvents,
+} from '@/entities/event/lib/notificationUtils';
+import { Event } from '@/entities/event/model/types';
 
 const events: Event[] = [
   {
