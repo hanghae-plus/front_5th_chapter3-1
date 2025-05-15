@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 import { ReactElement } from 'react';
@@ -116,7 +116,26 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(screen.getByText('회의 설명 변경')).toBeInTheDocument();
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    // 이벤트들이 렌더링 -> 휴지통 아이콘 클릭 -> 삭제 -> 이벤트 리스트에서 그 제목이 안 보여야 함
+    setupMockHandlerDeletion();
+
+    const { user } = setup(<App />);
+
+    const list = await screen.findByTestId('event-list');
+    const target = within(list).getByText('삭제할 이벤트');
+
+    expect(target).toBeInTheDocument();
+
+    // 삭제 버튼 클릭
+    const deleteButtons = screen.getAllByLabelText('Delete event');
+    await user.click(deleteButtons[0]);
+
+    // 삭제 후 해당 텍스트가 더 이상 없어야 함
+    await waitFor(() => {
+      expect(screen.queryByText('삭제할 이벤트')).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {
