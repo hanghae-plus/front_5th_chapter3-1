@@ -151,11 +151,55 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    // 기존의 일정들 렌더링 -> 입력창에 없는 검색어 입력 -> 결과 없다는 메시지가 화면에 나타나야 함
+    setupMockHandlerUpdating();
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    const { user } = setup(<App />);
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    // 이벤트가 리스트에 렌더링되길 기다림
+    await screen.findAllByText('기존 회의');
+
+    const input = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(input, '없는 검색어');
+
+    expect(await screen.findByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    // 일정이 렌더링되길 기다림
+    await screen.findAllByText('기존 회의');
+
+    const input = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(input, '기존 회의2');
+
+    const matches = await screen.findAllByText('기존 회의2');
+    expect(matches).toHaveLength(2);
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    await screen.findAllByText('기존 회의');
+    const input = screen.getByPlaceholderText('검색어를 입력하세요');
+
+    await user.type(input, '기존 회의2');
+    expect(await screen.findAllByText('기존 회의2')).toHaveLength(2);
+    expect(screen.queryByText('기존 회의')).not.toBeInTheDocument();
+
+    // 검색어 삭제
+    await user.clear(input);
+
+    // 모든 일정 다시 보이기
+    expect(await screen.findAllByText('기존 회의')).toHaveLength(2);
+    expect(screen.getAllByText('기존 회의2')).toHaveLength(2);
+  });
 });
 
 describe('일정 충돌', () => {
