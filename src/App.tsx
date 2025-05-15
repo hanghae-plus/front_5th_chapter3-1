@@ -459,7 +459,14 @@ function App() {
             <Text>검색 결과가 없습니다.</Text>
           ) : (
             filteredEvents.map((event) => (
-              <Box key={event.id} borderWidth={1} borderRadius="lg" p={3} width="100%">
+              <Box
+                key={event.id}
+                borderWidth={1}
+                borderRadius="lg"
+                p={3}
+                width="100%"
+                data-testid="event-card"
+              >
                 <HStack justifyContent="space-between">
                   <VStack align="start">
                     <HStack>
@@ -503,11 +510,13 @@ function App() {
                       aria-label="Edit event"
                       icon={<EditIcon />}
                       onClick={() => editEvent(event)}
+                      data-testid="edit-event-button"
                     />
                     <IconButton
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
                       onClick={() => deleteEvent(event.id)}
+                      data-testid="delete-event-button"
                     />
                   </HStack>
                 </HStack>
