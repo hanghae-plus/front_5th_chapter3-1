@@ -1,31 +1,11 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
-import {
-  Alert,
-  AlertDialog,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
-  Box,
-  Button,
-  CloseButton,
-  Flex,
-  Heading,
-  HStack,
-  IconButton,
-  Select,
-  Text,
-  VStack,
-} from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { Box, Flex } from '@chakra-ui/react';
+import { useState } from 'react';
 
 import { EventFormWidget } from './components/EventForm.tsx';
-import { MonthView } from './components/MonthView.tsx';
+import { Notification } from './components/Notification.tsx';
 import { SearchEvents } from './components/SearchEvents.tsx';
-import { WeekView } from './components/WeekView.tsx';
+import { ShowEvents } from './components/ShowEvents.tsx';
+import { WaringDialog } from './components/WaringDialog.tsx';
 import { weekDays, notificationOptions } from './constants.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
@@ -78,7 +58,6 @@ function App() {
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
 
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
@@ -118,48 +97,16 @@ function App() {
           saveEvent={saveEvent}
         />
 
-        <VStack flex={1} spacing={5} align="stretch">
-          <Heading>일정 보기</Heading>
-
-          <HStack mx="auto" justifyContent="space-between">
-            <IconButton
-              aria-label="Previous"
-              icon={<ChevronLeftIcon />}
-              onClick={() => navigate('prev')}
-            />
-            <Select
-              aria-label="view"
-              value={view}
-              onChange={(e) => setView(e.target.value as 'week' | 'month')}
-            >
-              <option value="week">Week</option>
-              <option value="month">Month</option>
-            </Select>
-            <IconButton
-              aria-label="Next"
-              icon={<ChevronRightIcon />}
-              onClick={() => navigate('next')}
-            />
-          </HStack>
-
-          {view === 'week' && (
-            <WeekView
-              currentDate={currentDate}
-              weekDays={weekDays}
-              filteredEvents={filteredEvents}
-              notifiedEvents={notifiedEvents}
-            />
-          )}
-          {view === 'month' && (
-            <MonthView
-              currentDate={currentDate}
-              weekDays={weekDays}
-              holidays={holidays}
-              filteredEvents={filteredEvents}
-              notifiedEvents={notifiedEvents}
-            />
-          )}
-        </VStack>
+        <ShowEvents
+          navigate={navigate}
+          view={view}
+          setView={setView}
+          currentDate={currentDate}
+          weekDays={weekDays}
+          filteredEvents={filteredEvents}
+          notifiedEvents={notifiedEvents}
+          holidays={holidays}
+        />
 
         <SearchEvents
           searchTerm={searchTerm}
@@ -172,75 +119,28 @@ function App() {
         />
       </Flex>
 
-      <AlertDialog
-        isOpen={isOverlapDialogOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              일정 겹침 경고
-            </AlertDialogHeader>
-
-            <AlertDialogBody>
-              다음 일정과 겹칩니다:
-              {overlappingEvents.map((event) => (
-                <Text key={event.id}>
-                  {event.title} ({event.date} {event.startTime}-{event.endTime})
-                </Text>
-              ))}
-              계속 진행하시겠습니까?
-            </AlertDialogBody>
-
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
-                취소
-              </Button>
-              <Button
-                colorScheme="red"
-                onClick={() => {
-                  setIsOverlapDialogOpen(false);
-                  saveEvent({
-                    id: editingEvent ? editingEvent.id : undefined,
-                    title,
-                    date,
-                    startTime,
-                    endTime,
-                    description,
-                    location,
-                    category,
-                    repeat: {
-                      type: isRepeating ? repeatType : 'none',
-                      interval: repeatInterval,
-                      endDate: repeatEndDate || undefined,
-                    },
-                    notificationTime,
-                  });
-                }}
-                ml={3}
-              >
-                계속 진행
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      <WaringDialog
+        isOverlapDialogOpen={isOverlapDialogOpen}
+        setIsOverlapDialogOpen={setIsOverlapDialogOpen}
+        overlappingEvents={overlappingEvents}
+        saveEvent={saveEvent}
+        editingEvent={editingEvent}
+        title={title}
+        date={date}
+        startTime={startTime}
+        endTime={endTime}
+        description={description}
+        location={location}
+        category={category}
+        isRepeating={isRepeating}
+        repeatType={repeatType}
+        repeatInterval={repeatInterval}
+        repeatEndDate={repeatEndDate}
+        notificationTime={notificationTime}
+      />
 
       {notifications.length > 0 && (
-        <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification, index) => (
-            <Alert key={index} status="info" variant="solid" width="auto">
-              <AlertIcon />
-              <Box flex="1">
-                <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
-              </Box>
-              <CloseButton
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
-            </Alert>
-          ))}
-        </VStack>
+        <Notification notifications={notifications} setNotifications={setNotifications} />
       )}
     </Box>
   );
