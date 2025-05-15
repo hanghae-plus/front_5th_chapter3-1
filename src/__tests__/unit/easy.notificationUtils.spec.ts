@@ -1,7 +1,6 @@
 // ... (기존 import문)
 import { Event } from '../../types'; // 경로 확인
-import { createNotificationMessage } from '../../utils/notificationUtils';
-import { getUpcomingEvents } from '../../utils/notificationUtils'; // 경로 확인
+import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils'; // 하나의 import 문으로 그룹화
 import dummyEvents from '../dummy/dummyNotificationEvents.json' assert { type: 'json' }; // 수정된 더미 데이터 import
 
 describe('getUpcomingEvents', () => {
