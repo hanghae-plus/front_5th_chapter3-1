@@ -19,10 +19,8 @@ import {
   Select,
   Text,
   Tooltip,
-  useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
 
 import { MonthView } from './components/Calendar/MonthView/MonthView.tsx';
 import { WeekView } from './components/Calendar/WeekView/WeekView.tsx';
@@ -32,6 +30,7 @@ import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
+import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
 import { useSearch } from './hooks/useSearch.ts';
 import { useToastMessage } from './hooks/useToastMessage.ts';
 import { Event, EventForm, RepeatType } from './types';
@@ -90,10 +89,14 @@ function App() {
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
-
+  const {
+    isOverlapDialogOpen,
+    setIsOverlapDialogOpen,
+    overlappingEvents,
+    cancelRef,
+    openOverlapDialog,
+    closeOverlapDialog,
+  } = useOverlapDialog();
   const { showErrorToast } = useToastMessage();
 
   const addOrUpdateEvent = async () => {
@@ -126,8 +129,7 @@ function App() {
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openOverlapDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();
@@ -318,7 +320,7 @@ function App() {
       <AlertDialog
         isOpen={isOverlapDialogOpen}
         leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
+        onClose={() => closeOverlapDialog()}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
