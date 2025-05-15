@@ -51,7 +51,7 @@ describe('일정 CRUD 및 기본 기능', () => {
       category: '업무',
     });
 
-    expect(screen.getAllByText('일정 추가')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('새로운 일정')[0]).toBeInTheDocument();
     expect(screen.getByText('2025-10-16')).toBeInTheDocument();
     expect(screen.getByText('09:00 - 10:00')).toBeInTheDocument();
     expect(screen.getByText('새 일정 설명')).toBeInTheDocument();
