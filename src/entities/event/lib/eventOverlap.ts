@@ -1,4 +1,4 @@
-import { Event, EventForm } from '../types';
+import { Event, EventForm } from '@/entities/event/model/types';
 
 export function parseDateTime(date: string, time: string) {
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
