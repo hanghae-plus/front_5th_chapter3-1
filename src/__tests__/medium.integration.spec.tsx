@@ -38,15 +38,15 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
+beforeAll(() => {
+  vi.useFakeTimers();
+});
+
+afterAll(() => {
+  vi.useRealTimers();
+});
+
 describe('일정 CRUD 및 기본 기능', () => {
-  beforeAll(() => {
-    vi.useFakeTimers();
-  });
-
-  afterAll(() => {
-    vi.useRealTimers();
-  });
-
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     setupMockHandlerCreation(events as Event[]);
@@ -168,17 +168,111 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-13T12:00'));
+    const { user } = setup(<App></App>);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    const eventList = await screen.findByTestId('event-list');
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    await user.type(within(eventList).getByRole('textbox'), '이상한 제목');
+
+    expect(within(eventList).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'기존 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-13T12:00'));
+    const { user } = setup(<App></App>);
+
+    const { id, title } = events[0];
+    const eventList = await screen.findByTestId('event-list');
+
+    await user.type(within(eventList).getByRole('textbox'), '기존 회의');
+
+    const event = await screen.findByLabelText(`event-${id}`);
+
+    expect(within(event).getByText(title)).toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-13T12:00'));
+    const { user } = setup(<App></App>);
+
+    const { id, title } = events[0];
+    const eventList = await screen.findByTestId('event-list');
+
+    await user.type(within(eventList).getByRole('textbox'), '기존 회의');
+
+    const event = await screen.findByLabelText(`event-${id}`);
+
+    expect(within(event).getByText(title)).toBeInTheDocument();
+
+    await user.clear(within(eventList).getByRole('textbox'));
+
+    events.forEach(({ title }) => {
+      expect(within(eventList).getByText(title)).toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerCreation(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-01'));
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    const { user } = setup(<App></App>);
+
+    const newEvent = {
+      title: '이벤트 1',
+      date: '2025-10-15',
+      startTime: '08:30',
+      endTime: '13:30',
+      description: '이벤트 1입니다',
+      location: '회의실 1',
+      category: '업무',
+    };
+
+    await saveSchedule(user, newEvent);
+
+    expect(screen.getByText('일정 겹침 경고')).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerUpdating(events as Event[]);
+    vi.setSystemTime(new Date('2025-10-11T12:00'));
+
+    const { user } = setup(<App></App>);
+    const { id, startTime, endTime } = events[0];
+
+    const event = await screen.findByLabelText(`event-${id}`);
+    await user.click(within(event).getByLabelText('Edit event'));
+
+    await user.clear(screen.getByLabelText('시작 시간'));
+    await user.type(screen.getByLabelText('시작 시간'), endTime);
+    await user.clear(screen.getByLabelText('종료 시간'));
+    await user.type(screen.getByLabelText('종료 시간'), startTime);
+
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    expect(screen.getByText('시간 설정을 확인해주세요.')).toBeInTheDocument();
+  });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  setupMockHandlerCreation(events as Event[]);
+  vi.setSystemTime(new Date('2025-10-15T08:49'));
+  setup(<App></App>);
+
+  const { id, notificationTime, title } = events[0];
+  await screen.findByLabelText(`event-${id}`);
+
+  act(() => {
+    vi.advanceTimersByTime(60 * 1_000);
+  });
+
+  expect(
+    screen.getByText(`${notificationTime}분 후 ${title} 일정이 시작됩니다.`)
+  ).toBeInTheDocument();
+});
