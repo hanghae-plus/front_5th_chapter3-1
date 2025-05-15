@@ -31,3 +31,5 @@ export const useNotifications = (events: Event[]) => {
 
   return { notifications, notifiedEvents, setNotifications, removeNotification };
 };
+
+export type UseNotificationsReturn = ReturnType<typeof useNotifications>;
