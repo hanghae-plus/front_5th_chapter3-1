@@ -1,4 +1,4 @@
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { wait } from '@testing-library/user-event/dist/cjs/utils/index.js';
@@ -13,6 +13,9 @@ import {
 import App from '../App';
 import { server } from '../setupTests';
 import { Event } from '../types';
+import { events } from '../__mocks__/response/events.json';
+
+const mockEvents = events as Event[];
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 const setup = (element: ReactElement) => {
@@ -45,12 +48,11 @@ const saveSchedule = async (
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
-    setupMockHandlerCreation();
+    setupMockHandlerCreation([]);
 
     const { user } = setup(<App />);
 
-    const newEvent: Event = {
-      id: '1',
+    const newEvent: Omit<Event, 'id' | 'notificationTime' | 'repeat'> = {
       title: '새로운 일정',
       date: '2025-10-11',
       startTime: '10:00',
@@ -58,8 +60,6 @@ describe('일정 CRUD 및 기본 기능', () => {
       description: '새로운 일정 설명',
       location: '회의실',
       category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
     };
 
     await saveSchedule(user, newEvent);
@@ -67,43 +67,31 @@ describe('일정 CRUD 및 기본 기능', () => {
     const eventList = await screen.findByTestId('event-list');
 
     await waitFor(() => {
-      expect(within(eventList).getByText(newEvent.title)).toBeInTheDocument();
-      expect(within(eventList).getByText(newEvent.description)).toBeInTheDocument();
-      expect(within(eventList).getByText(newEvent.location)).toBeInTheDocument();
-      // expect(within(eventList).getByText(newEvent.category)).toBeInTheDocument(); // ?
+      expect(within(eventList).getByLabelText(newEvent.title)).toBeInTheDocument();
+      expect(within(eventList).getByLabelText(newEvent.description)).toBeInTheDocument();
+      expect(within(eventList).getByLabelText(newEvent.location)).toBeInTheDocument();
     });
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
-    const event: Event = {
-      id: '1',
-      title: '기존 일정',
-      date: '2025-10-12',
-      startTime: '11:00',
-      endTime: '12:00',
-      description: '기존 일정 설명',
-      location: '회의실 A',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    };
+    const updatedEvents = [{ ...mockEvents[0], title: '수정된 일정' }];
 
-    setupMockHandlerCreation([event]);
+    setupMockHandlerUpdating(updatedEvents);
 
     const { user } = setup(<App />);
 
-    // 렌더링 대기
     const eventList = await screen.findByTestId('event-list');
-    expect(within(eventList).getByText('기존 일정')).toBeInTheDocument();
+    expect(within(eventList).getByText(mockEvents[0].title)).toBeInTheDocument();
 
-    // 버튼 존재 여부 대기
-    const editButton = await within(eventList).findByTestId('edit-event-button-1');
+    const editButton = await within(eventList).findByTestId(
+      `edit-event-button-${mockEvents[0].id}`
+    );
     await user.click(editButton);
 
     // 제목 수정
-    const titleInput = await screen.findByLabelText('제목');
-    await user.clear(titleInput);
-    await user.type(titleInput, '수정된 일정');
+    const title = await screen.findByLabelText('제목');
+    await user.clear(title);
+    await user.type(title, '수정된 일정');
 
     // 제출
     const submitButton = screen.getByTestId('event-submit-button');
@@ -111,24 +99,93 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     // 결과 확인
     const updatedEventList = await screen.findByTestId('event-list');
+
     await waitFor(() => {
-      expect(within(updatedEventList).getByText('수정된 일정')).toBeInTheDocument();
+      expect(within(updatedEventList).getByLabelText('수정된 일정')).toBeInTheDocument();
     });
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {});
+  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    setupMockHandlerDeletion(mockEvents);
+
+    const { user } = setup(<App />);
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(mockEvents[0].title)).toBeInTheDocument();
+
+    const deleteButton = await within(eventList).findByTestId(
+      `delete-event-button-${mockEvents[0].id}`
+    );
+    await user.click(deleteButton);
+
+    await waitFor(() => {
+      expect(within(eventList).queryByText(mockEvents[0].title)).not.toBeInTheDocument();
+    });
+  });
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    setupMockHandlerCreation([]);
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const { user } = setup(<App />);
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    const weekButton = await screen.findByTestId('view-select');
+    await user.selectOptions(weekButton, 'week');
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).queryByText(mockEvents[0].title)).not.toBeInTheDocument();
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    setupMockHandlerCreation(mockEvents);
+
+    const { user } = setup(<App />);
+
+    const weekButton = await screen.findByTestId('view-select');
+    await user.selectOptions(weekButton, 'week');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(mockEvents[0].title)).toBeInTheDocument();
+    expect(within(eventList).getByText(mockEvents[0].description)).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    setupMockHandlerCreation([]);
+
+    const { user } = setup(<App />);
+
+    const monthButton = await screen.findByTestId('view-select');
+    await user.selectOptions(monthButton, 'month');
+
+    expect(screen.queryByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation(mockEvents);
+
+    const { user } = setup(<App />);
+
+    const monthButton = await screen.findByTestId('view-select');
+    await user.selectOptions(monthButton, 'month');
+
+    const eventList = await screen.findByTestId('event-list');
+    expect(within(eventList).getByText(mockEvents[0].title)).toBeInTheDocument();
+    expect(within(eventList).getByText(mockEvents[0].description)).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    vi.setSystemTime(new Date('2025-01-01'));
+
+    const { user } = setup(<App />);
+
+    const monthButton = await screen.findByTestId('view-select');
+    await user.selectOptions(monthButton, 'month');
+
+    const eventList = await screen.findByTestId('event-list');
+    const holiday = within(eventList).getByText('신정');
+    expect(holiday).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {

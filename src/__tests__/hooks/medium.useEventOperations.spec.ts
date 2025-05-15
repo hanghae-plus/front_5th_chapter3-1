@@ -54,8 +54,7 @@ it('정의된 이벤트 정보를 기준으로 적절하게 저장이 된다', a
     notificationTime: 5,
   };
 
-  setupMockHandlerCreation([...mockEvents, newEvent]);
-  // setupMockHandlerUpdating();
+  setupMockHandlerUpdating([...mockEvents, newEvent]);
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
@@ -81,8 +80,7 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
     notificationTime: 5,
   };
 
-  setupMockHandlerCreation([...mockEvents, newEvent]);
-  // setupMockHandlerUpdating();
+  setupMockHandlerUpdating([...mockEvents, newEvent]);
 
   await act(async () => {
     await result.current.saveEvent(newEvent);
@@ -94,8 +92,6 @@ it("새로 정의된 'title', 'endTime' 기준으로 적절하게 일정이 업�
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
   const { result } = renderHook(() => useEventOperations(true));
-
-  setupMockHandlerDeletion();
 
   const eventToDelete: Event = {
     id: '1',
@@ -109,6 +105,8 @@ it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', 
     repeat: { type: 'none', interval: 0 },
     notificationTime: 10,
   };
+
+  setupMockHandlerDeletion([eventToDelete]);
 
   await act(async () => {
     await result.current.deleteEvent(eventToDelete.id);

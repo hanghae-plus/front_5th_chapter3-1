@@ -28,7 +28,7 @@ describe('getDaysInMonth', () => {
     expect(getDaysInMonth(2025, 2)).toBe(28);
   });
 
-  // 유효하지 않은 월에 대해 적절히 처리한다 -> 정확한 처리가 있어야 하기 때문에 null로 반환한다로 변경
+  // 유효하지 않은 월에 대해 적절히 처리한다 
   it('0 이하 또는 13 이상의 유효하지 않은 월은 null을 반환한다', () => {
     expect(getDaysInMonth(2025, 13)).toBeNull();
     expect(getDaysInMonth(2025, 0)).toBeNull();
