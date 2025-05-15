@@ -11,11 +11,43 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { getTimeErrorMessage } from '../utils/timeValidation';
+import { useEventFormContext } from '../../context/EventContext';
+import { RepeatType } from '../../types';
+import { getTimeErrorMessage } from '../../utils/timeValidation';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
 export const EventForm = () => {
+  const {
+    title,
+    setTitle,
+    date,
+    setDate,
+    startTime,
+    endTime,
+    description,
+    setDescription,
+    location,
+    setLocation,
+    category,
+    setCategory,
+    isRepeating,
+    setIsRepeating,
+    repeatType,
+    setRepeatType,
+    repeatInterval,
+    setRepeatInterval,
+    repeatEndDate,
+    setRepeatEndDate,
+    notificationTime,
+    setNotificationTime,
+    startTimeError,
+    endTimeError,
+    editingEvent,
+    handleStartTimeChange,
+    handleEndTimeChange,
+  } = useEventFormContext();
+
   return (
     <VStack w="400px" spacing={5} align="stretch">
       {/* 일정을 수정하는 경우 이 split view가 일정 수정으로 변경 */}

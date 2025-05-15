@@ -17,6 +17,7 @@ import {
 } from '@chakra-ui/react';
 
 import { Calander, AlertOverlapDialog } from './components';
+import { useEventFormContext } from './context/EventContext';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -38,36 +39,24 @@ const notificationOptions = [
 function App() {
   const {
     title,
-    setTitle,
     date,
-    setDate,
     startTime,
     endTime,
     description,
-    setDescription,
     location,
-    setLocation,
     category,
-    setCategory,
     isRepeating,
-    setIsRepeating,
     repeatType,
-    setRepeatType,
     repeatInterval,
-    setRepeatInterval,
     repeatEndDate,
-    setRepeatEndDate,
     notificationTime,
-    setNotificationTime,
     startTimeError,
     endTimeError,
     editingEvent,
     setEditingEvent,
-    handleStartTimeChange,
-    handleEndTimeChange,
     resetForm,
     editEvent,
-  } = useEventForm();
+  } = useEventFormContext();
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
@@ -87,7 +76,6 @@ function App() {
   } = useOverlapDialog();
 
   const toast = useToast();
-
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
       toast({
@@ -135,7 +123,6 @@ function App() {
       resetForm();
     }
   };
-
   return (
     <Box w="full" h="100vh" m="auto" p={5}>
       <Flex gap={6} h="full">
