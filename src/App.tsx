@@ -6,19 +6,15 @@ import {
   EditIcon,
 } from '@chakra-ui/icons';
 import {
-  Alert,
   AlertDialog,
   AlertDialogBody,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  AlertIcon,
-  AlertTitle,
   Box,
   Button,
   Checkbox,
-  CloseButton,
   Flex,
   FormControl,
   FormLabel,
@@ -59,6 +55,7 @@ import {
   findOverlappingEvents,
   getTimeErrorMessage,
 } from '@/utils';
+import { Notification } from '@/components';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
@@ -110,7 +107,7 @@ function App() {
     setEditingEvent(null)
   );
 
-  const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
+  const { notifications, notifiedEvents } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
@@ -589,16 +586,8 @@ function App() {
 
       {notifications.length > 0 && (
         <VStack position="fixed" top={4} right={4} spacing={2} align="flex-end">
-          {notifications.map((notification, index) => (
-            <Alert key={index} status="info" variant="solid" width="auto">
-              <AlertIcon />
-              <Box flex="1">
-                <AlertTitle fontSize="sm">{notification.message}</AlertTitle>
-              </Box>
-              <CloseButton
-                onClick={() => setNotifications((prev) => prev.filter((_, i) => i !== index))}
-              />
-            </Alert>
+          {notifications.map((notification) => (
+            <Notification key={notification.id} notification={notification} />
           ))}
         </VStack>
       )}
