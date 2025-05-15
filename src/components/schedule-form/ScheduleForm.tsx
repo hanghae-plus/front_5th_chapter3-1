@@ -7,6 +7,7 @@ import { notificationOptions, categories } from '../../libs/constants';
 import CheckInput from '../../shares/ui/input/CheckInput';
 import LabelInput from '../../shares/ui/input/LabelInput';
 import Selector from '../../shares/ui/Selector';
+import { getTimeErrorMessage } from '../../utils/timeValidation';
 
 interface ScheduleFormProps {
   editingEvent?: boolean;
@@ -29,6 +30,12 @@ const ScheduleForm = ({ editingEvent = false, addOrUpdateEvent }: ScheduleFormPr
     setIsRepeating,
     notificationTime,
     setNotificationTime,
+    startTime,
+    endTime,
+    startTimeError,
+    endTimeError,
+    handleStartTimeChange,
+    handleEndTimeChange,
   } = useEventFormContext();
 
   return (
@@ -38,7 +45,17 @@ const ScheduleForm = ({ editingEvent = false, addOrUpdateEvent }: ScheduleFormPr
       <LabelInput value={title} onChange={setTitle} label="제목" />
       <LabelInput value={date} onChange={setDate} label="날짜" type="date" />
 
-      <TimeRangeInput />
+      <TimeRangeInput
+        startTime={startTime}
+        endTime={endTime}
+        startTimeTooltipLabel={startTimeError}
+        endTimeTooltipLabel={endTimeError}
+        isValidStartTime={!startTimeError}
+        isValidEndTime={!endTimeError}
+        onBlur={getTimeErrorMessage}
+        onChangeStartTime={handleStartTimeChange}
+        onChangeEndTime={handleEndTimeChange}
+      />
 
       <LabelInput value={description} onChange={setDescription} label="설명" />
       <LabelInput value={location} onChange={setLocation} label="위치" />
