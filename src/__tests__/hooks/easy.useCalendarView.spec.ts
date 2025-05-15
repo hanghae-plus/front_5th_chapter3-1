@@ -4,6 +4,17 @@ import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
 describe('초기 상태', () => {
+  beforeEach(() => {
+    // ✅ 날짜를 2025년 10월 1일로 고정
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2025-10-01'));
+  });
+
+  afterEach(() => {
+    // ✅ 타이머 복원
+    vi.useRealTimers();
+  });
+
   it('view는 "month"이어야 한다', () => {
     const { result } = renderHook(() => useCalendarView());
     expect(result.current.view).toBe('month');

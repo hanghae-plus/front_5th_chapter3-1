@@ -427,6 +427,7 @@ function App() {
               onClick={() => navigate('prev')}
             />
             <Select
+              data-testid="view-select"
               aria-label="view"
               value={view}
               onChange={(e) => setView(e.target.value as 'week' | 'month')}
@@ -449,6 +450,7 @@ function App() {
           <FormControl>
             <FormLabel>일정 검색</FormLabel>
             <Input
+              data-testid="search-input"
               placeholder="검색어를 입력하세요"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -502,11 +504,13 @@ function App() {
                     <IconButton
                       aria-label="Edit event"
                       icon={<EditIcon />}
+                      data-testid={`event-edit-button-${event.id}`}
                       onClick={() => editEvent(event)}
                     />
                     <IconButton
                       aria-label="Delete event"
                       icon={<DeleteIcon />}
+                      data-testid={`event-delete-button-${event.id}`}
                       onClick={() => deleteEvent(event.id)}
                     />
                   </HStack>

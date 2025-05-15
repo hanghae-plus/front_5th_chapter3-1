@@ -10,8 +10,8 @@ beforeAll(() => {
   server.listen();
 
   // ✅ 날짜를 2025년 10월 1일로 고정
-  vi.useFakeTimers();
-  vi.setSystemTime(new Date('2025-10-01'));
+  //   vi.useFakeTimers();
+  //   vi.setSystemTime(new Date('2025-10-01'));
 });
 
 beforeEach(() => {
@@ -28,6 +28,6 @@ afterAll(() => {
   server.close();
 
   // ✅ 타이머 복원
-  vi.useRealTimers();
-  vi.resetAllMocks();
+  // vi.useRealTimers();
+  // vi.resetAllMocks();
 });
