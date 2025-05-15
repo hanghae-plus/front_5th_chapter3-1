@@ -1,11 +1,11 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { useState } from 'react';
 
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
-import { Event } from './types';
+import { useOverlapDialog } from './hooks/useOverlapDialog.ts';
+
 import { EventForm } from './components/EventForm.tsx';
 import { CalendarView } from './components/CalendarView.tsx';
 import { SearchView } from './components/SearchView.tsx';
@@ -52,9 +52,8 @@ function App() {
 
   const { notifications, notifiedEvents, setNotifications } = useNotifications(events);
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
-
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
+  const { isOverlapDialogOpen, setIsOverlapDialogOpen, overlappingEvents, setOverlappingEvents } =
+    useOverlapDialog();
 
   const eventForm = {
     id: editingEvent ? editingEvent.id : undefined,
