@@ -18,10 +18,23 @@ const HOLIDAY_RECORD = {
 type HolidayRecord = typeof HOLIDAY_RECORD;
 type HolidayKeys = keyof HolidayRecord;
 
-export function fetchHolidays(date: Date) {
+/**
+ * 주어진 날짜의 공휴일 목록을 반환합니다.
+ *
+ * @example
+ * fetchHolidays(new Date('2025-06-01'))
+ * // {
+ * //   '2025-06-06': '현충일',
+ * // }
+ *
+ * fetchHolidays(new Date('2025-07-01'))
+ * // {}
+ */
+export const fetchHolidays = (date: Date) => {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
   const holidays = Object.keys(HOLIDAY_RECORD) as HolidayKeys[];
+
   return holidays
     .filter((date) => date.includes(`${y}-${m}`))
     .reduce(
@@ -31,4 +44,4 @@ export function fetchHolidays(date: Date) {
       }),
       {}
     );
-}
+};

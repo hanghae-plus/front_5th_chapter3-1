@@ -6,6 +6,8 @@ export interface RepeatInfo {
   endDate?: string;
 }
 
+export type EventCategory = '업무' | '개인' | '가족' | '기타';
+
 export interface EventForm {
   title: string;
   date: string;
@@ -13,7 +15,7 @@ export interface EventForm {
   endTime: string;
   description: string;
   location: string;
-  category: string;
+  category: EventCategory;
   repeat: RepeatInfo;
   notificationTime: number; // 분 단위로 저장
 }
