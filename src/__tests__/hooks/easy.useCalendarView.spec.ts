@@ -5,7 +5,7 @@ import { useCalendarView } from '../../hooks/useCalendarView.ts';
 import { assertDate } from '../utils.ts';
 
 beforeEach(() => {
-  vi.useFakeTimers().setSystemTime(new Date('2025-10-01T00:00:00Z'));
+  vi.setSystemTime(new Date('2025-10-01T00:00:00Z'));
 });
 
 afterEach(() => {

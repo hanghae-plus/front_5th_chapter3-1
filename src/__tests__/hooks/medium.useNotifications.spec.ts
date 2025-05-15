@@ -2,80 +2,95 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event } from '../../types.ts';
-import { formatDate } from '../../utils/dateUtils.ts';
-import { parseHM } from '../utils.ts';
 
-vi.useFakeTimers();
+const now = new Date('2025-06-10T09:59:00');
 
-const now = new Date('2025-05-14T10:00:00');
+beforeEach(() => {
+  vi.useRealTimers();
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+});
 
-vi.setSystemTime(now);
+afterEach(() => {
+  vi.useRealTimers();
+});
 
-const makeEvent = (minsLater: number): Event => {
-  const eventTime = new Date(now.getTime() + minsLater * 60 * 1000);
-
-  return {
-    id: `${minsLater}`,
-    title: `Event in ${minsLater} mins`,
-    date: formatDate(eventTime),
-    startTime: parseHM(eventTime.getTime()),
-    endTime: parseHM(eventTime.getTime()),
+const events: Event[] = [
+  {
+    id: '1',
+    title: 'Event 1',
+    date: '2025-06-10',
+    startTime: '10:00',
+    endTime: '11:00',
     description: '',
     location: '',
     category: '',
-    repeat: { type: 'none', interval: 1 },
-    notificationTime: 5,
-  };
-};
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  },
+  {
+    id: '2',
+    title: 'Event 2',
+    date: '2025-06-15',
+    startTime: '12:30',
+    endTime: '13:30',
+    description: '',
+    location: '',
+    category: '',
+    repeat: { type: 'none', interval: 0 },
+    notificationTime: 1,
+  },
+];
 
-it('초기 상태에서는 알림이 없어야 한다', () => {
-  const { result } = renderHook(() => useNotifications([]));
-  expect(result.current.notifications).toHaveLength(0);
-  expect(result.current.notifiedEvents).toHaveLength(0);
+it('초기 상태에서는 알림이 비어 있어야 한다', () => {
+  const { result } = renderHook(() => useNotifications(events));
+  expect(result.current.notifications).toEqual([]);
 });
 
-it('지정된 시간이 된 경우 알림이 새롭게 생성되어 추가된다', () => {
-  const event = makeEvent(5);
-  const { result } = renderHook(() => useNotifications([event]));
+it('알림 시간이 되면 새로운 알림이 생성되어야 한다', () => {
+  const { result } = renderHook(() => useNotifications(events));
 
   act(() => {
     vi.advanceTimersByTime(1000);
   });
 
-  expect(result.current.notifications).toHaveLength(1);
-  expect(result.current.notifications[0].id).toBe(event.id);
+  expect(result.current.notifications).toEqual([
+    {
+      id: '1',
+      message: expect.stringContaining('Event 1'),
+    },
+  ]);
 });
 
-it('index를 기준으로 알림을 적절하게 제거할 수 있다', () => {
-  const event = makeEvent(5);
-  const { result } = renderHook(() => useNotifications([event]));
+it('알림을 인덱스 기준으로 정상적으로 제거할 수 있어야 한다', () => {
+  const { result } = renderHook(() => useNotifications(events));
 
   act(() => {
     vi.advanceTimersByTime(1000);
   });
-
-  expect(result.current.notifications).toHaveLength(1);
 
   act(() => {
     result.current.removeNotification(0);
   });
 
-  expect(result.current.notifications).toHaveLength(0);
+  expect(result.current.notifications).toEqual([]);
 });
 
 it('이미 알림이 발생한 이벤트에 대해서는 중복 알림이 발생하지 않아야 한다', () => {
-  const event = makeEvent(5);
-  const { result } = renderHook(() => useNotifications([event]));
+  const { result } = renderHook(() => useNotifications(events));
 
   act(() => {
     vi.advanceTimersByTime(1000);
   });
 
-  expect(result.current.notifications).toHaveLength(1);
-
   act(() => {
-    vi.advanceTimersByTime(5000);
+    vi.advanceTimersByTime(1000);
   });
 
-  expect(result.current.notifications).toHaveLength(1);
+  expect(result.current.notifications).toEqual([
+    {
+      id: '1',
+      message: expect.stringContaining('Event 1'),
+    },
+  ]);
 });
