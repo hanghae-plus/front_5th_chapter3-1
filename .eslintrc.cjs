@@ -20,7 +20,8 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {
-    'no-unused-vars': 'warn',
+    'linebreak-style': 'off',
+    'no-unused-vars': 'off',
     'react/prop-types': 'off',
     'import/order': [
       'error',
@@ -31,6 +32,12 @@ module.exports = {
           caseInsensitive: true,
         },
         'newlines-between': 'always',
+      },
+    ],
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
       },
     ],
   },
