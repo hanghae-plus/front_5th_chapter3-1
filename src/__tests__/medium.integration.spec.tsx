@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act, waitFor } from '@testing-library/react';
+import { render, screen, within, act } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
 
@@ -10,7 +10,6 @@ import {
 } from '../__mocks__/handlersUtils';
 import App from '../App';
 import { Event } from '../types';
-import { server } from '../setupTests';
 
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 const setup = (element: ReactElement) => {
@@ -56,10 +55,11 @@ describe('일정 CRUD 및 기본 기능', () => {
       category: '업무',
     });
 
-    await waitFor(() => expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument());
+    await act(() => null);
 
     const events = within(await screen.findByTestId('event-list'));
 
+    expect(events.getByText('회의')).toBeInTheDocument();
     expect(events.getByText('2025-11-01')).toBeInTheDocument();
     expect(events.getByText('10:30 - 12:00')).toBeInTheDocument();
     expect(events.getByText('디자인 리뷰')).toBeInTheDocument();
