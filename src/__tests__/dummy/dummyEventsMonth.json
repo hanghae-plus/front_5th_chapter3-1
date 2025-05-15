@@ -1,0 +1,64 @@
+{
+  "events": [
+    {
+      "id": "MONTHLY001",
+      "title": "11월 첫째 주 주간회의 (월간 테스트용)",
+      "description": "11월 프로젝트 진행상황 점검",
+      "location": "1번 회의실",
+      "date": "2025-11-01",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "MONTHLY002",
+      "title": "11월 신규 입사자 온보딩 (월간 테스트용)",
+      "description": "회사 소개 및 팀 배치 안내",
+      "location": "인사팀 교육장",
+      "date": "2025-11-10",
+      "startTime": "09:00",
+      "endTime": "12:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 60
+    },
+    {
+      "id": "MONTHLY003",
+      "title": "11월 고객사 피드백 미팅 (월간 테스트용)",
+      "description": "지난 분기 서비스 만족도 조사 결과 공유",
+      "location": "고객사 회의실 (원격)",
+      "date": "2025-11-18",
+      "startTime": "14:00",
+      "endTime": "15:30",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 120
+    },
+    {
+      "id": "MONTHLY004",
+      "title": "11월 팀 회식 (월간 테스트용)",
+      "description": "프로젝트 중간 성공 기념",
+      "location": "더미 레스토랑",
+      "date": "2025-11-21",
+      "startTime": "18:30",
+      "endTime": "20:30",
+      "category": "개인",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 1440
+    },
+    {
+      "id": "MONTHLY005",
+      "title": "11월 말 월간 보고서 작성 (월간 테스트용)",
+      "description": "11월 성과 정리 및 제출",
+      "location": "개인 자리",
+      "date": "2025-11-28",
+      "startTime": "16:00",
+      "endTime": "17:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 10
+    }
+  ]
+}

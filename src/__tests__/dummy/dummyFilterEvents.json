@@ -1,0 +1,100 @@
+{
+  "events": [
+    {
+      "id": "FILTER001",
+      "title": "이벤트 1",
+      "description": "7월 첫째 주 이벤트",
+      "location": "1번 회의실",
+      "date": "2025-07-01",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER002",
+      "title": "이벤트 2",
+      "description": "7월 첫째 주 이벤트",
+      "location": "2번 회의실",
+      "date": "2025-07-01",
+      "startTime": "13:00",
+      "endTime": "14:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER003",
+      "title": "이벤트 3",
+      "description": "7월 첫째 주 이벤트",
+      "location": "3번 회의실",
+      "date": "2025-07-02",
+      "startTime": "09:00",
+      "endTime": "10:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER004",
+      "title": "이벤트 4",
+      "description": "7월 둘째 주 이벤트",
+      "location": "4번 회의실",
+      "date": "2025-07-10",
+      "startTime": "15:00",
+      "endTime": "16:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER005",
+      "title": "이벤트 5",
+      "description": "7월 마지막 날 이벤트",
+      "location": "5번 회의실",
+      "date": "2025-08-31",
+      "startTime": "17:00",
+      "endTime": "18:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER006",
+      "title": "이벤토 6",
+      "description": "8월 첫째 날 이벤트 (월 경계 테스트)",
+      "location": "6번 회의실",
+      "date": "2025-08-01",
+      "startTime": "10:00",
+      "endTime": "11:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER007",
+      "title": "Special Event",
+      "description": "영문 이벤트 (검색어 대소문자 테스트)",
+      "location": "7번 회의실",
+      "date": "2025-07-15",
+      "startTime": "12:00",
+      "endTime": "13:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    },
+    {
+      "id": "FILTER008",
+      "title": "이벤트 2 추가",
+      "description": "검색어 '이벤트 2' 테스트용",
+      "location": "8번 회의실",
+      "date": "2025-07-03",
+      "startTime": "14:00",
+      "endTime": "15:00",
+      "category": "업무",
+      "repeat": { "type": "none", "interval": 0 },
+      "notificationTime": 30
+    }
+  ]
+}
