@@ -5,7 +5,8 @@ import { Event } from '../types';
 
 export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   const mockEvents: Event[] = [...initEvents];
-
+  // server.use는 MSW의 메서드로, 기존에 정의된 API 핸들러를 런타임에 동적으로 재정의합니다.
+  // 여기서는 GET과 POST 요청 핸들러를 재정의하여 mockEvents 배열을 사용한 테스트 환경을 구성합니다.
   server.use(
     http.get('/api/events', () => {
       return HttpResponse.json({ events: mockEvents });
