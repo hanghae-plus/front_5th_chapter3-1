@@ -21,13 +21,6 @@ export const useEventRepeat = (initialRepeat?: Event['repeat']) => {
     setRepeatInterval(repeat.interval);
     setRepeatEndDate(repeat.endDate || '');
   };
-
-  const getRepeatData = () => ({
-    type: repeatType,
-    interval: repeatInterval,
-    endDate: repeatEndDate || null,
-  });
-
   return {
     isRepeating,
     setIsRepeating,
@@ -39,6 +32,5 @@ export const useEventRepeat = (initialRepeat?: Event['repeat']) => {
     setRepeatEndDate,
     resetRepeat,
     setRepeatInfo,
-    getRepeatData,
   };
 };
