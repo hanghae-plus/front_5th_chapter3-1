@@ -1,11 +1,13 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { EventFormWidget } from './components/EventForm.tsx';
-import { Notification } from './components/Notification.tsx';
-import { SearchEvents } from './components/SearchEvents.tsx';
-import { ShowEvents } from './components/ShowEvents.tsx';
-import { WaringDialog } from './components/WaringDialog.tsx';
+import {
+  EventFormWidget,
+  Notification,
+  SearchEvents,
+  ShowEvents,
+  WaringDialog,
+} from './components';
 import { weekDays, notificationOptions } from './constants.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
