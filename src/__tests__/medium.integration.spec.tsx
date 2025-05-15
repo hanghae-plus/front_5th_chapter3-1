@@ -86,7 +86,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+  it('일정 수정 후 변경된 제목과 설명이 이벤트 리스트에 반영되어야 한다', async () => {
     const { handlers } = setupMockHandlerUpdating(mockTestDataList as Event[]);
     server.use(...handlers);
     // 테스트 중에 event.id 가 '3' 이라고 가정
@@ -116,7 +116,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     });
   });
 
-  it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+  it('일정 삭제 후 해당 일정이 이벤트 리스트에서 사라져야 한다', async () => {
     const { handlers } = setupMockHandlerDeletion(mockTestDataList as Event[]);
     server.use(...handlers);
 
