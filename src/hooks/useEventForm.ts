@@ -104,3 +104,5 @@ export const useEventForm = (initialEvent?: Event) => {
     editEvent,
   };
 };
+
+export type UseEventFormReturn = ReturnType<typeof useEventForm>;

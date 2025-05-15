@@ -16,3 +16,5 @@ export const useSearch = (events: Event[], currentDate: Date, view: 'week' | 'mo
     filteredEvents,
   };
 };
+
+export type UseSearchReturn = ReturnType<typeof useSearch>;

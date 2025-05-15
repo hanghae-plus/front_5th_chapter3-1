@@ -26,3 +26,5 @@ export const useCalendarView = () => {
 
   return { view, setView, currentDate, setCurrentDate, holidays, navigate };
 };
+
+export type UseCalendarViewReturn = ReturnType<typeof useCalendarView>;

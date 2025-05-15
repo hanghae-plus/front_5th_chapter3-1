@@ -108,3 +108,5 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
 
   return { events, fetchEvents, saveEvent, deleteEvent };
 };
+
+export type UseEventOperationsReturn = ReturnType<typeof useEventOperations>;
