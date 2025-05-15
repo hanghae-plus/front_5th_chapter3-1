@@ -1,8 +1,6 @@
-import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, waitFor } from '@testing-library/react';
-import { UserEvent, userEvent } from '@testing-library/user-event';
+import { screen, within, waitFor } from '@testing-library/react';
+import { UserEvent } from '@testing-library/user-event';
 // import { http, HttpResponse } from 'msw';
-import { ReactElement } from 'react';
 
 import {
   setupMockHandlerCreation,
@@ -10,6 +8,7 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
+import { setup } from './setup';
 // import { server } from '../setupTests';
 import { Event } from '../types';
 
@@ -75,13 +74,6 @@ const mockEvents: Event[] = [
     notificationTime: 1,
   },
 ];
-
-// ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
-const setup = (element: ReactElement) => {
-  const user = userEvent.setup();
-
-  return { ...render(<ChakraProvider>{element}</ChakraProvider>), user }; // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
-};
 
 // ! HINT. 이 유틸을 사용해 일정을 저장해보세요.
 const saveSchedule = async (
