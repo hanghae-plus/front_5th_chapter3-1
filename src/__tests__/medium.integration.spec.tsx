@@ -12,8 +12,8 @@ import {
 } from '../__mocks__/handlersUtils';
 import { events } from '../__mocks__/response/events.json' assert { type: 'json' };
 import App from '../App';
+import { Event } from '../entities/event/model/types';
 import { server } from '../setupTests';
-import { Event } from '../types';
 
 const MOCK_EVENTS: Event[] = [
   {

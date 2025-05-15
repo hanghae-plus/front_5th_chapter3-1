@@ -1,5 +1,8 @@
-import { Event } from '../../types';
-import { createNotificationMessage, getUpcomingEvents } from '../../utils/notificationUtils';
+import { Event } from '../../entities/event/model/types';
+import {
+  createNotificationMessage,
+  getUpcomingEvents,
+} from '../../features/event-operations/lib/notificationUtils';
 
 describe('getUpcomingEvents', () => {
   it('알림 시간이 정확히 도래한 이벤트를 반환한다', () => {
@@ -131,7 +134,7 @@ describe('getUpcomingEvents', () => {
       },
     ];
 
-    const notifiedEvents = [];
+    const notifiedEvents: string[] = [];
     const upcomingEvents = getUpcomingEvents(events, now, notifiedEvents);
 
     expect(upcomingEvents).toEqual([]);
@@ -147,6 +150,10 @@ describe('createNotificationMessage', () => {
       startTime: '14:30',
       endTime: '15:30',
       notificationTime: 10,
+      description: '',
+      location: '',
+      category: '',
+      repeat: undefined,
     };
 
     const message = createNotificationMessage(event);

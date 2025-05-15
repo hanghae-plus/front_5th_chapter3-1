@@ -7,9 +7,9 @@ import {
   setupMockHandlerUpdating,
 } from '../../__mocks__/handlersUtils.ts';
 import { events } from '../../__mocks__/response/events.json' assert { type: 'json' };
-import { useEventOperations } from '../../hooks/useEventOperations.ts';
+import { Event } from '../../entities/event/model/types.ts';
+import { useEventOperations } from '../../features/event-operations/model/useEventOperations.ts';
 import { server } from '../../setupTests.ts';
-import { Event } from '../../types.ts';
 
 const mockToast = vi.fn();
 const INITIAL_EVENTS = events as Event[];

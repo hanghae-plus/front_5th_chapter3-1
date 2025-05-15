@@ -1,5 +1,5 @@
-import { Event } from '../../types';
-import { getFilteredEvents } from '../../utils/eventUtils';
+import { getFilteredEvents } from '../../entities/event/lib/eventUtils';
+import { Event } from '../../entities/event/model/types';
 
 describe('getFilteredEvents', () => {
   it("검색어 '이벤트 2'에 맞는 이벤트만 반환한다", () => {
