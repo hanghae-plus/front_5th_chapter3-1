@@ -9,14 +9,17 @@ import {
 } from '../__mocks__/handlersUtils';
 import { events } from '../__mocks__/response/realEvents.json' assert { type: 'json' };
 import App from '../App';
+import { EventFormProvider } from '../contexts/event-form-context';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
 const renderApp = () => {
   return render(
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
+    <EventFormProvider>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </EventFormProvider>
   );
 };
 
@@ -91,7 +94,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     await user.click(submitButton);
 
     const newEventList = await screen.findByTestId('event-list');
-    screen.debug(newEventList);
+
     await waitFor(() => {
       expect(within(newEventList).getByText('수정된 제목')).toBeInTheDocument();
       expect(within(newEventList).getByText('2025-05-23')).toBeInTheDocument();
