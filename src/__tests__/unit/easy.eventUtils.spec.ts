@@ -232,7 +232,7 @@ describe('getFilteredEvents', () => {
         category: '카테고리 3',
         repeat: { type: 'none', interval: 0 },
         notificationTime: 0,
-      }
+      },
     ];
     const filteredEvents = getFilteredEvents(events, 'event', new Date('2025-07-01'), 'week');
 

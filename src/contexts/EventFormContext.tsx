@@ -39,7 +39,7 @@ const initialState: EventFormState = {
 };
 
 type EventFormAction =
-  | { type: 'SET_FIELD'; field: keyof EventFormState; value: any }
+  | { type: 'SET_FIELD'; field: keyof EventFormState; value: unknown }
   | { type: 'RESET'; initialState: EventFormState }
   | { type: 'SET_EDITING_EVENT'; editingEvent: Event | null };
 
@@ -70,6 +70,7 @@ export const EventFormProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useEventFormContext = () => {
   const context = useContext(EventFormContext);
   if (!context) {
