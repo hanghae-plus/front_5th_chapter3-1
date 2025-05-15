@@ -2,11 +2,11 @@ import { userEvent } from '@testing-library/user-event';
 import { http, HttpResponse } from 'msw';
 
 import App from '../App';
-import { server } from '../setupTests';
-import { render, screen, within, waitFor, fireEvent, act } from './test-utils';
-import { Event, EventForm } from '../types';
-import { createMockHandlersUtils } from '../__mocks__/handlersUtils';
 import { createHandlers } from '../__mocks__/handlers';
+import { createMockHandlersUtils } from '../__mocks__/handlersUtils';
+import { server } from '../setupTests';
+import { Event } from '../types';
+import { render, screen, within, waitFor, fireEvent, act } from './test-utils';
 
 const createCurrentMonthEvent = (title = '테스트 일정', description = '테스트 일정 설명') => {
   const currentDate = new Date();
@@ -454,7 +454,7 @@ describe('일정 충돌', () => {
   });
 });
 
-it.only('notificationTime을 10으로 하면 알림이 노출된다', async () => {
+it('notificationTime을 10으로 하면 알림이 노출된다', async () => {
   const MOCK_EVENTS = [
     {
       id: '999',
