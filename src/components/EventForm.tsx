@@ -11,7 +11,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
-import { useEventForm } from '../hooks/useEventForm';
+import { useEventFormContext } from '../contexts/EventFormContext';
 import { RepeatType } from '../types';
 import { getTimeErrorMessage } from '../utils/timeValidation';
 
@@ -58,7 +58,7 @@ export function EventForm({ onSubmit }: EventFormProps) {
     editingEvent,
     handleStartTimeChange,
     handleEndTimeChange,
-  } = useEventForm();
+  } = useEventFormContext();
 
   return (
     <VStack w="400px" spacing={5} align="stretch">

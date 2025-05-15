@@ -42,8 +42,8 @@ import { useRef, useState } from 'react';
 
 import { EventForm } from './components/EventForm.tsx';
 import { WeekView } from './components/WeekView.tsx';
+import { useEventFormContext } from './contexts/EventFormContext.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
 import { useSearch } from './hooks/useSearch.ts';
@@ -102,7 +102,7 @@ function App() {
     handleEndTimeChange,
     resetForm,
     editEvent,
-  } = useEventForm();
+  } = useEventFormContext();
 
   const { events, saveEvent, deleteEvent } = useEventOperations(Boolean(editingEvent), () =>
     setEditingEvent(null)
