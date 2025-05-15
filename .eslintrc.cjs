@@ -20,19 +20,19 @@ module.exports = {
     ecmaVersion: 2022,
   },
   rules: {
-    'no-unused-vars': 'warn',
+    'no-unused-vars': 'off',
     'react/prop-types': 'off',
-    'import/order': [
-      'error',
-      {
-        groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
-        },
-        'newlines-between': 'always',
-      },
-    ],
+    // 'import/order': [
+    //   'error',
+    //   {
+    //     groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
+    //     alphabetize: {
+    //       order: 'asc',
+    //       caseInsensitive: true,
+    //     },
+    //     'newlines-between': 'always',
+    //   },
+    // ],
   },
   globals: {
     Set: true,

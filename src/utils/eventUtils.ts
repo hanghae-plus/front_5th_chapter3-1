@@ -1,5 +1,5 @@
-import { Event } from '../types';
-import { getWeekDates, isDateInRange } from './dateUtils';
+import type { CalendarView, Event } from '@/types';
+import { getWeekDates, isDateInRange } from '@/utils';
 
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
@@ -34,7 +34,7 @@ export function getFilteredEvents(
   events: Event[],
   searchTerm: string,
   currentDate: Date,
-  view: 'week' | 'month'
+  view: CalendarView
 ): Event[] {
   const searchedEvents = searchEvents(events, searchTerm);
 
