@@ -8,7 +8,7 @@ import {
   Button,
   Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import { useRef } from 'react';
 
 import { Event } from '../../types';
 
@@ -16,7 +16,6 @@ interface ConflictWarnProps {
   isOverlapDialogOpen: boolean;
   setIsOverlapDialogOpen: (isOpen: boolean) => void;
   overlappingEvents: Event[];
-  cancelRef: React.RefObject<HTMLButtonElement>;
   onAlertClick: () => void;
 }
 
@@ -24,9 +23,10 @@ export const EventConflictAlertDialog = ({
   isOverlapDialogOpen,
   setIsOverlapDialogOpen,
   overlappingEvents,
-  cancelRef,
   onAlertClick,
 }: ConflictWarnProps) => {
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
   return (
     <AlertDialog
       isOpen={isOverlapDialogOpen}

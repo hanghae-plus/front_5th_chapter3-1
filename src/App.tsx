@@ -9,7 +9,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { EventConflictAlertDialog } from './components/dialog/ConflictWarn.tsx';
 import { EventFormComponent } from './components/EventForm.tsx';
@@ -69,7 +69,6 @@ function App() {
 
   const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
   const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
 
   const toast = useToast();
 
@@ -211,7 +210,6 @@ function App() {
         isOverlapDialogOpen={isOverlapDialogOpen}
         setIsOverlapDialogOpen={setIsOverlapDialogOpen}
         overlappingEvents={overlappingEvents}
-        cancelRef={cancelRef}
         onAlertClick={onAlertClick}
       />
       {notifications.length > 0 && (
