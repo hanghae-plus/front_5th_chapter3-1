@@ -149,7 +149,7 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-06-20');
     renderApp();
 
-    const viewSelector = screen.getByLabelText('view');
+    const viewSelector = screen.getByRole('combobox', { name: /Select View/i });
     await user.selectOptions(viewSelector, 'week');
 
     const eventList = await screen.findByTestId('event-list');
@@ -161,7 +161,7 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-06-01');
     renderApp();
 
-    const viewSelector = screen.getByLabelText('view');
+    const viewSelector = screen.getByRole('combobox', { name: /Select View/i });
     await user.selectOptions(viewSelector, 'week');
 
     const eventList = await screen.findByTestId('event-list');
@@ -173,7 +173,7 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-07-01');
     renderApp();
 
-    const viewSelector = screen.getByLabelText('view');
+    const viewSelector = screen.getByRole('combobox', { name: /Select View/i });
     await user.selectOptions(viewSelector, 'month');
 
     const eventList = await screen.findByTestId('event-list');
@@ -185,7 +185,7 @@ describe('일정 뷰', () => {
     vi.setSystemTime('2025-06-01');
     renderApp();
 
-    const viewSelector = screen.getByLabelText('view');
+    const viewSelector = screen.getByRole('combobox', { name: /Select View/i });
     await user.selectOptions(viewSelector, 'month');
 
     const eventList = await screen.findByTestId('event-list');
