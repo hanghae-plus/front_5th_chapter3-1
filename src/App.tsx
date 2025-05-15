@@ -1,4 +1,4 @@
-import { Box, Flex, useToast } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 
 import { AlertOverlapEvent } from './components/alert/AlertOverlapEvent.tsx';
 import { EventEdit, EventSearch, EventView } from './components/event';
@@ -10,9 +10,9 @@ import {
   useNotifications,
   useSearch,
   useOverlappingEventDialog,
+  useEventValidation,
 } from './hooks';
 import { Event, EventForm } from './types';
-import { findOverlappingEvents } from './utils/eventOverlap';
 
 function App() {
   const {
@@ -63,29 +63,14 @@ function App() {
     },
   });
 
-  const toast = useToast();
+  const { validateAndSaveEvent } = useEventValidation({
+    events,
+    onSave: saveEvent,
+    onReset: resetForm,
+    openOverlapDialog: overlapDialog.openDialog,
+  });
 
   const addOrUpdateEvent = async () => {
-    if (!title || !date || !startTime || !endTime) {
-      toast({
-        title: '필수 정보를 모두 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
-    if (startTimeError || endTimeError) {
-      toast({
-        title: '시간 설정을 확인해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
-
     const eventData: Event | EventForm = {
       id: editingEvent ? editingEvent.id : undefined,
       title,
@@ -103,13 +88,7 @@ function App() {
       notificationTime,
     };
 
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (overlapping.length > 0) {
-      overlapDialog.openDialog(overlapping, eventData);
-    } else {
-      await saveEvent(eventData);
-      resetForm();
-    }
+    await validateAndSaveEvent(eventData);
   };
 
   return (
