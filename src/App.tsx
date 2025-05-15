@@ -1,15 +1,16 @@
 import { Box, Flex, useToast } from '@chakra-ui/react';
-import { useState } from 'react';
 
 import { AlertOverlapEvent } from './components/alert/AlertOverlapEvent.tsx';
 import { EventEdit, EventSearch, EventView } from './components/event';
 import { NotificationList } from './components/notification';
-import { useCalendarView } from './hooks/useCalendarView.ts';
-import { useEventForm } from './hooks/useEventForm.ts';
-import { useEventOperations } from './hooks/useEventOperations.ts';
-import { useNotifications } from './hooks/useNotifications.ts';
-import { useOverlappingEventDialog } from './hooks/useOverlappingEventDialog.ts';
-import { useSearch } from './hooks/useSearch.ts';
+import {
+  useCalendarView,
+  useEventForm,
+  useEventOperations,
+  useNotifications,
+  useSearch,
+  useOverlappingEventDialog,
+} from './hooks';
 import { Event, EventForm } from './types';
 import { findOverlappingEvents } from './utils/eventOverlap';
 
