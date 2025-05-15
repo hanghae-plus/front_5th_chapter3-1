@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Event, RepeatType } from '../types';
+import { Event } from '../types';
 import { getTimeErrorMessage } from '../utils/timeValidation';
 
 type TimeErrorRecord = Record<'startTimeError' | 'endTimeError', string | null>;

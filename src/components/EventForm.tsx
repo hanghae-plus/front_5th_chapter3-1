@@ -15,9 +15,8 @@ import { useEffect, useState } from 'react';
 
 import { categories, notificationOptions } from '../config/const.ts';
 import { useEventForm } from '../hooks/useEventForm.ts';
-import { Event, EventForm, RepeatType } from '../types';
+import { Event, EventForm } from '../types';
 import { findOverlappingEvents } from '../utils/eventOverlap.ts';
-import { getTimeErrorMessage } from '../utils/timeValidation';
 import { EventConflictAlertDialog } from './dialog/ConflictWarn.tsx';
 
 interface EventFormComponentProps {
