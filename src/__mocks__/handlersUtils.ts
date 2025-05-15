@@ -34,7 +34,7 @@ export const setupMockHandlerCreation = (initEvents: Event[] = []) => {
   const testId = generateUniqueTestId();
   setCurrentTestId(testId);
   // 초기 이벤트가 지정되지 않았으면 events.json의 데이터 사용
-  setCurrentEventStore(initEvents.length > 0 ? [...initEvents] : [...(events as Event[])]);
+  setCurrentEventStore(initEvents.length > 0 ? [...initEvents] : [...events]);
   return testId;
 };
 
