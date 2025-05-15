@@ -1,5 +1,5 @@
-import { Event } from '../types';
-import { getWeekDates, isDateInRange } from './dateUtils';
+import { getWeekDates, isDateInRange } from '@/entities/event/lib/dateUtils';
+import { Event } from '@/entities/event/model/types';
 
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
@@ -26,7 +26,7 @@ function filterEventsByDateRangeAtWeek(events: Event[], currentDate: Date) {
 
 function filterEventsByDateRangeAtMonth(events: Event[], currentDate: Date) {
   const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const monthEnd = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
   return filterEventsByDateRange(events, monthStart, monthEnd);
 }
 

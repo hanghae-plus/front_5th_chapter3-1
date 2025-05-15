@@ -1,5 +1,5 @@
-import { Event } from '../../types';
-import { getFilteredEvents } from '../../utils/eventUtils';
+import { getFilteredEvents } from '@/entities/event/lib/eventUtils';
+import { Event } from '@/entities/event/model/types';
 
 const events: Event[] = [
   {
