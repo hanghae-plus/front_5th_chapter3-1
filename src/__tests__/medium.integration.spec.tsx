@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within, act } from '@testing-library/react';
+import { render, screen, within, act, waitFor } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
 
@@ -63,23 +63,16 @@ describe('일정 CRUD 및 기본 기능', () => {
       location: '1층 대회의실',
       category: '업무',
     });
-    await saveSchedule(user, {
-      title: '프로젝트 킥오프',
-      date: '2025-11-01',
-      startTime: '10:30',
-      endTime: '12:00',
-      description: '디자인 리뷰',
-      location: '1층 대회의실',
-      category: '업무',
-    });
+
+    await waitFor(() => expect(screen.queryByText('검색 결과가 없습니다')).not.toBeInTheDocument());
 
     const events = within(await screen.findByTestId('event-list'));
-    expect(await events.findByText('프로젝트 킥오프')).toBeInTheDocument();
-    expect(await events.findByText('2025-11-01')).toBeInTheDocument();
-    expect(await events.findByText('10:30 - 12:00')).toBeInTheDocument();
-    expect(await events.findByText('디자인 리뷰')).toBeInTheDocument();
-    expect(await events.findByText('1층 대회의실')).toBeInTheDocument();
-    expect(await events.findByText('카테고리: 업무')).toBeInTheDocument();
+    expect(events.getByText('프로젝트 킥오프')).toBeInTheDocument();
+    expect(events.getByText('2025-11-01')).toBeInTheDocument();
+    expect(events.getByText('10:30 - 12:00')).toBeInTheDocument();
+    expect(events.getByText('디자인 리뷰')).toBeInTheDocument();
+    expect(events.getByText('1층 대회의실')).toBeInTheDocument();
+    expect(events.getByText('카테고리: 업무')).toBeInTheDocument();
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
