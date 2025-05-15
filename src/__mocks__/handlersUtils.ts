@@ -19,8 +19,8 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   );
 };
 
-export const setupMockHandlerUpdating = (updatedEvents = [] as Event[]) => {
-  const mockEvents: Event[] = [...updatedEvents];
+export const setupMockHandlerUpdating = (originalEvents = [] as Event[]) => {
+  const mockEvents: Event[] = [...originalEvents];
 
   server.use(
     http.get('/api/events', () => {
@@ -31,14 +31,18 @@ export const setupMockHandlerUpdating = (updatedEvents = [] as Event[]) => {
       const updatedEvent = (await request.json()) as Event;
       const index = mockEvents.findIndex((event) => event.id === id);
 
+      if (index === -1) {
+        return HttpResponse.json({ error: 'Event not found' }, { status: 404 });
+      }
+
       mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
-      return HttpResponse.json(mockEvents[index]);
+      return HttpResponse.json(updatedEvent, { status: 200 });
     })
   );
 };
 
-export const setupMockHandlerDeletion = (deletedEvents = [] as Event[]) => {
-  const mockEvents: Event[] = [...deletedEvents];
+export const setupMockHandlerDeletion = (originalEvents = [] as Event[]) => {
+  const mockEvents: Event[] = [...originalEvents];
 
   server.use(
     http.get('/api/events', () => {
