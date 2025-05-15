@@ -1,4 +1,3 @@
-import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 
@@ -19,11 +18,7 @@ describe('일정 CRUD 및 기본 기능', () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const titleInput = screen.getByLabelText('제목');
     const dateInput = screen.getByLabelText('날짜');
@@ -53,11 +48,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const eventList = screen.getByTestId('event-list');
 
@@ -80,11 +71,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const eventList = screen.getByTestId('event-list');
 
@@ -112,11 +99,7 @@ describe('일정 뷰', () => {
 
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
     await user.selectOptions(viewSelect, 'Week');
@@ -131,11 +114,7 @@ describe('일정 뷰', () => {
   it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
     await user.selectOptions(viewSelect, 'Week');
@@ -153,11 +132,7 @@ describe('일정 뷰', () => {
 
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
     await user.selectOptions(viewSelect, 'Month');
@@ -172,11 +147,7 @@ describe('일정 뷰', () => {
   it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const viewSelect = screen.getByRole('combobox', { name: 'view' });
     await user.selectOptions(viewSelect, 'Month');
@@ -192,11 +163,7 @@ describe('일정 뷰', () => {
   it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
     vi.setSystemTime(new Date('2025-01-01'));
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const dayCell = screen.getByText('1').parentElement;
     expect(within(dayCell!).getByText('신정')).toBeInTheDocument();
@@ -215,11 +182,7 @@ describe('검색 기능', () => {
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
     await user.type(searchInput, '없음');
@@ -262,11 +225,7 @@ describe('검색 기능', () => {
 
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
     await user.type(searchInput, '팀 회의');
@@ -282,11 +241,7 @@ describe('검색 기능', () => {
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
     await user.type(searchInput, '없음');
@@ -319,11 +274,7 @@ describe('일정 충돌', () => {
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const titleInput = screen.getByLabelText('제목');
     const dateInput = screen.getByLabelText('날짜');
@@ -379,11 +330,7 @@ describe('일정 충돌', () => {
 
     const user = userEvent.setup();
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     const eventList = screen.getByTestId('event-list');
     const editButtons = await within(eventList).findAllByRole('button', { name: 'Edit event' });
@@ -407,11 +354,7 @@ describe('알림 기능', () => {
   it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
     vi.setSystemTime(new Date('2025-10-15T08:49:00'));
 
-    render(
-      <ChakraProvider>
-        <App />
-      </ChakraProvider>
-    );
+    render(<App />);
 
     vi.setSystemTime(new Date('2025-10-15T08:50:00'));
 
