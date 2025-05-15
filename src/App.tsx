@@ -40,6 +40,7 @@ import {
 } from '@chakra-ui/react';
 import { useRef, useState } from 'react';
 
+import { WeekView } from './components/Calendar/WeekView.tsx';
 import { useCalendarView } from './hooks/useCalendarView.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
@@ -49,14 +50,13 @@ import { Event, EventForm, RepeatType } from './types';
 import {
   formatDate,
   formatMonth,
-  formatWeek,
+  // formatWeek,
   getEventsForDay,
-  getWeekDates,
+  // getWeekDates,
   getWeeksAtMonth,
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-import { WeekView } from './components/Calendar/WeekView.tsx';
 
 const categories = ['업무', '개인', '가족', '기타'];
 
