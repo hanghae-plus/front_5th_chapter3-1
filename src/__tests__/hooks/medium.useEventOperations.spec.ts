@@ -148,14 +148,10 @@ it("새로 정의된 'title', 'endTime' 기준으로 일정이 수정된다", as
 });
 
 it('존재하는 이벤트 삭제 시 에러없이 아이템이 삭제된다.', async () => {
-  setupMockHandlerDeletion();
+  setupMockHandlerDeletion(events as Event[]);
   const { result } = renderHook(() => useEventOperations(true));
 
-  await waitFor(() => {
-    expect(result.current.events.length).toBeGreaterThan(0);
-  });
-
-  const targetId = result.current.events[0].id;
+  const targetId = events[0].id;
 
   await act(async () => await result.current.deleteEvent(targetId));
 

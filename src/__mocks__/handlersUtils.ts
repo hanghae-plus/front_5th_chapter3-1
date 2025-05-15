@@ -38,21 +38,8 @@ export const setupMockHandlerUpdating = (initEvents = events as Event[]) => {
   );
 };
 
-export const setupMockHandlerDeletion = () => {
-  const mockEvents: Event[] = [
-    {
-      id: '1',
-      title: '삭제할 이벤트',
-      date: '2025-10-15',
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '삭제할 이벤트입니다',
-      location: '어딘가',
-      category: '기타',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-  ];
+export const setupMockHandlerDeletion = (initEvents = events as Event[]) => {
+  const mockEvents: Event[] = [...initEvents];
 
   server.use(
     http.get('/api/events', () => {
