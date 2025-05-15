@@ -126,6 +126,7 @@ const EventFormComponent = ({ events, saveEvent, checkOverlap }: EventFormProps)
       <FormControl>
         <FormLabel>반복 설정</FormLabel>
         <Checkbox
+          data-testid="repeat-checkbox"
           isChecked={isRepeating}
           onChange={(e) => setEventForm({ ...eventForm, isRepeating: e.target.checked })}
         >
