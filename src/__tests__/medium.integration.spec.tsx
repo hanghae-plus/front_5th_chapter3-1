@@ -55,9 +55,9 @@ describe('일정 CRUD 및 기본 기능', () => {
       category: '업무',
     });
 
-    const events = await screen.findByTestId('event-list');
-
     await waitFor(() => {
+      const events = screen.getByTestId('event-list');
+
       expect(within(events).getByText('회의')).toBeInTheDocument();
       expect(within(events).getByText('2025-11-01')).toBeInTheDocument();
       expect(within(events).getByText('10:30 - 12:00')).toBeInTheDocument();
