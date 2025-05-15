@@ -2,6 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { render, screen, within } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { vi } from 'vitest';
+import { server } from '../setupTests';
 
 import {
   setupMockHandlerCreation,
@@ -55,6 +56,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+    server.resetHandlers();
   });
   const renderApp = () => {
     return render(
@@ -65,7 +67,7 @@ describe('일정 CRUD 및 기본 기능', () => {
   };
 
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderApp();
     // 기존 이벤트와 겹치지 않는 고유 ID 생성
 
@@ -136,6 +138,7 @@ describe('일정 뷰', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+    server.resetHandlers();
   });
   const renderApp = () => {
     return render(
@@ -210,6 +213,7 @@ describe('검색 기능', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+    server.resetHandlers();
   });
   const renderApp = () => {
     return render(
@@ -263,6 +267,7 @@ describe('일정 충돌', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+    server.resetHandlers();
   });
   const renderApp = () => {
     return render(
@@ -272,7 +277,7 @@ describe('일정 충돌', () => {
     );
   };
   it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
-    const user = userEvent.setup();
+    const user = userEvent.setup({ delay: null });
     renderApp();
 
     const duplicateEvent = {
@@ -339,6 +344,7 @@ describe('알림 기능', () => {
   });
   afterEach(() => {
     vi.useRealTimers();
+    server.resetHandlers();
   });
   const renderApp = () => {
     return render(
