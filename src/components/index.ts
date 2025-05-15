@@ -4,3 +4,4 @@ export * from './WeekView';
 export * from './MonthView';
 export * from './Calendar';
 export * from './EventSearchForm';
+export * from './EventItemCard';
