@@ -3,6 +3,7 @@ import { Event } from '../types';
 const 초 = 1000;
 const 분 = 초 * 60;
 
+/**  지금 알림을 보내야 할 이벤트인가 확인하는 함수 */
 export function getUpcomingEvents(events: Event[], now: Date, notifiedEvents: string[]) {
   return events.filter((event) => {
     const eventStart = new Date(`${event.date}T${event.startTime}`);

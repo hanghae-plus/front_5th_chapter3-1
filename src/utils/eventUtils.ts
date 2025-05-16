@@ -3,7 +3,7 @@ import { getWeekDates, isDateInRange } from './dateUtils';
 
 function filterEventsByDateRange(events: Event[], start: Date, end: Date): Event[] {
   return events.filter((event) => {
-    const eventDate = new Date(event.date);
+    const eventDate = new Date(`${event.date}T00:00:00`); // 명확히 자정으로 고정
     return isDateInRange(eventDate, start, end);
   });
 }

@@ -74,7 +74,7 @@ export const useEventOperations = (editing: boolean, onSave?: () => void) => {
         throw new Error('Failed to delete event');
       }
 
-      await fetchEvents();
+      await fetchEvents(); // 전체 이벤트 다시 불러옴
       toast({
         title: '일정이 삭제되었습니다.',
         status: 'info',
