@@ -280,11 +280,123 @@ describe('일정 뷰', () => {
 });
 
 describe('검색 기능', () => {
-  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {});
+  it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '주간 회의',
+        date: '2025-10-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
 
-  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {});
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
 
-  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {});
+    // 존재하지 않는 일정 검색
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '가나다라마바사');
+
+    // "검색 결과가 없습니다." 메시지 확인
+    expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2025-10-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '개인 일정',
+        date: '2025-10-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '개인 업무',
+        location: '회의실 B',
+        category: '개인',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // '팀 회의' 검색
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+
+    // 이벤트 리스트에서 검색된 일정만 표시되는지 확인
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(eventList).queryByText('개인 일정')).not.toBeInTheDocument();
+  });
+
+  it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '팀 회의',
+        date: '2025-10-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '개인 일정',
+        date: '2025-10-02',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '개인 업무',
+        location: '회의실 B',
+        category: '개인',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 먼저 '팀 회의' 검색
+    const searchInput = screen.getByPlaceholderText('검색어를 입력하세요');
+    await user.type(searchInput, '팀 회의');
+
+    // 검색어 지우기
+    await user.clear(searchInput);
+
+    // 모든 일정이 다시 표시되는지 확인
+    const eventList = screen.getByTestId('event-list');
+    expect(within(eventList).getByText('팀 회의')).toBeInTheDocument();
+    expect(within(eventList).getByText('개인 일정')).toBeInTheDocument();
+  });
 });
 
 describe('일정 충돌', () => {
