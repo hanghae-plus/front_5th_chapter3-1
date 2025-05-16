@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react';
 
 import { useToastManage } from '../../hooks/useToastManage';
 
+// useToast mocking
 vi.mock('@chakra-ui/react', () => {
   return {
     useToast: vi.fn(),
