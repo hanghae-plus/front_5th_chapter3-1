@@ -1,37 +1,36 @@
 module.exports = {
   root: true,
-  plugins: ['react', 'react-hooks', 'prettier'],
+  plugins: ["react", "react-hooks", "prettier"],
   extends: [
-    'eslint:recommended',
-    'plugin:react-hooks/recommended',
-    'plugin:storybook/recommended',
-    'plugin:prettier/recommended',
-    'plugin:cypress/recommended',
-    'plugin:import/warnings',
+    "eslint:recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:storybook/recommended",
+    "plugin:prettier/recommended",
+    "plugin:cypress/recommended",
+    "plugin:import/warnings",
   ],
   env: {
     browser: true,
     node: true,
   },
-  ignorePatterns: ['node_modules/*', 'dist'],
-  parser: '@typescript-eslint/parser',
+  ignorePatterns: ["node_modules/*", "dist"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     tsconfigRootDir: __dirname,
     ecmaVersion: 2022,
   },
   rules: {
-    'no-unused-vars': 'warn',
-    'react/prop-types': 'off',
-    'import/order': [
-      'error',
+    "no-unused-vars": "warn",
+    "react/prop-types": "off",
+    "import/order": [
+      "error",
       {
-        groups: ['builtin', 'external', ['parent', 'sibling'], 'index'],
+        groups: ["builtin", "external", ["parent", "sibling"], "index"],
         alphabetize: {
-          order: 'asc',
+          order: "asc",
           caseInsensitive: true,
         },
-        'newlines-between': 'always',
-        'endOfLine': 'auto',
+        "newlines-between": "always",
       },
     ],
   },
@@ -41,20 +40,20 @@ module.exports = {
   },
   settings: {
     react: {
-      version: 'detect',
+      version: "detect",
     },
   },
   overrides: [
     {
       files: [
-        '**/src/**/*.{spec,test}.[jt]s?(x)',
-        '**/__mocks__/**/*.[jt]s?(x)',
-        './src/setupTests.ts',
+        "**/src/**/*.{spec,test}.[jt]s?(x)",
+        "**/__mocks__/**/*.[jt]s?(x)",
+        "./src/setupTests.ts",
       ],
-      plugins: ['vitest'],
-      extends: ['plugin:vitest/recommended'],
+      plugins: ["vitest"],
+      extends: ["plugin:vitest/recommended"],
       rules: {
-        'vitest/expect-expect': 'off',
+        "vitest/expect-expect": "off",
       },
       globals: {
         globalThis: true,
@@ -69,11 +68,11 @@ module.exports = {
       },
     },
     {
-      files: ['cypress/e2e/**/*.cy.js'],
-      plugins: ['cypress'],
-      extends: ['plugin:cypress/recommended'],
+      files: ["cypress/e2e/**/*.cy.js"],
+      plugins: ["cypress"],
+      extends: ["plugin:cypress/recommended"],
       env: {
-        'cypress/globals': true,
+        "cypress/globals": true,
       },
       globals: {
         cy: true,
