@@ -1,5 +1,5 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, renderHook, screen, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
 
@@ -9,7 +9,8 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { Event } from '../types';
+import { useCalendarView } from '../hooks/useCalendarView';
+import { Event, RepeatType } from '../types';
 
 const setup = (element: ReactElement) => {
   const user = userEvent.setup();
@@ -136,15 +137,146 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    const mockEvents: Event[] = [];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    // 주별 뷰로 변경
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    // 주별 뷰가 표시되는지 확인
+    const weekView = screen.getByTestId('week-view');
+    expect(weekView).toBeInTheDocument();
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+    // 일정이 없는 날짜의 셀에는 일정이 표시되지 않아야 함
+    const weekDates = within(weekView).getAllByRole('cell');
+    weekDates.forEach((cell) => {
+      const dateText = within(cell).queryByText(/\d+/); // 날짜를 찾음
+      if (dateText) {
+        const date = parseInt(dateText.textContent || '0');
+        const eventsForDate = mockEvents.filter((event) => new Date(event.date).getDate() === date);
+        const eventElements = within(cell)
+          .queryAllByRole('generic')
+          .filter(
+            (el) =>
+              el.tagName.toLowerCase() === 'div' && el.getAttribute('class')?.includes('chakra-box')
+          );
+        expect(eventElements).toHaveLength(eventsForDate.length);
+      }
+    });
+  });
+
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '주간 회의',
+        date: '2025-10-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '주간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 주별 뷰로 변경
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // 주별 뷰 내에서 일정 확인
+    const weekView = screen.getByTestId('week-view');
+
+    // 10월 1일 셀 찾기
+    const cells = within(weekView).getAllByRole('cell');
+    const targetCell = cells.find((cell) => within(cell).queryByText('1'));
+
+    // mock 데이터의 일정이  표시되는지 확인
+    const eventElement = within(targetCell!).getByText(mockEvents[0].title);
+    expect(eventElement).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    const mockEvents: Event[] = [];
+    setupMockHandlerCreation(mockEvents);
+    setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 월별 뷰가 표시되는지 확인
+    const monthView = screen.getByTestId('month-view');
+    expect(monthView).toBeInTheDocument();
+
+    // 일정이 없는 날짜의 셀에는 일정이 표시되지 않아야 함
+    const monthDates = within(monthView).getAllByRole('cell');
+    // 모든 날짜 셀에는 일정이 표시되지 않아야 함
+    monthDates.forEach((cell) => {
+      //data testid로 month-view-event 로 시작하는 요소가 없어야 함
+      expect(within(cell).queryByTestId(/month-view-event/)).not.toBeInTheDocument();
+    });
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '월간 회의',
+        date: '2025-10-01',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '월간 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+
+    setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 월별 뷰 내에서 일정 확인
+    const monthView = screen.getByTestId('month-view');
+
+    // 10월 1일 셀 찾기
+    const cells = within(monthView).getAllByRole('cell');
+    const targetCell = cells.find((cell) => within(cell).queryByText('1'));
+
+    // mock 데이터의 일정이 모두 표시되는지 확인
+    const eventElement = within(targetCell!).getByText(mockEvents[0].title);
+    expect(eventElement).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation();
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 이전 버튼을 클릭하여 2025년 1월로 이동 (현재는 2025년 10월)
+    for (let i = 0; i < 9; i++) {
+      await user.click(screen.getByLabelText('Previous'));
+    }
+
+    // 신정이 표시되는지 확인
+    expect(screen.getByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {

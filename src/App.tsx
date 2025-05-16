@@ -194,6 +194,7 @@ function App() {
                           key={event.id}
                           p={1}
                           my={1}
+                          data-testid={`week-view-event-${event.id}`}
                           bg={isNotified ? 'red.100' : 'gray.100'}
                           borderRadius="md"
                           fontWeight={isNotified ? 'bold' : 'normal'}
@@ -261,6 +262,7 @@ function App() {
                             return (
                               <Box
                                 key={event.id}
+                                data-testid={`month-view-event-${event.id}`}
                                 p={1}
                                 my={1}
                                 bg={isNotified ? 'red.100' : 'gray.100'}
