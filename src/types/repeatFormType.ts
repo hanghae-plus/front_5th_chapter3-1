@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export type RepeatType = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly';
 
 export interface Repeat {

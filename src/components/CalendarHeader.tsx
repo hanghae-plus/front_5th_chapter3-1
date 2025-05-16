@@ -7,6 +7,7 @@ type ViewType = 'week' | 'month';
 type CalendarHeaderProps = {
   view: ViewType;
   setView: React.Dispatch<React.SetStateAction<ViewType>>;
+  // eslint-disable-next-line no-unused-vars
   navigate: (direction: 'prev' | 'next') => void;
 };
 

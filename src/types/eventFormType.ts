@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { ChangeEvent } from 'react';
 
 import { Repeat, RepeatType } from './repeatFormType';
