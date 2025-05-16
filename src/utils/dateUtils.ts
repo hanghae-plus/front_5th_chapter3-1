@@ -116,7 +116,9 @@ export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boo
  * 예: 5 -> "05", 123 -> "123"
  */
 export function fillZero(value: number, size = 2) {
-  return String(value).padStart(size, '0');
+  const sign = value < 0 ? '-' : '';
+  const absValue = Math.abs(value);
+  return sign + String(absValue).padStart(size, '0');
 }
 
 /**

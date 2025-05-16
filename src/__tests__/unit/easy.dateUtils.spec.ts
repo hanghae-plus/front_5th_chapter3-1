@@ -307,6 +307,14 @@ describe('fillZero', () => {
     expect(fillZero(3.14, 5)).toBe('03.14');
   });
 
+  test("음수 -100을 2자리 문자열로 변환하면 '-100'을 반환한다", () => {
+    expect(fillZero(-100, 2)).toBe('-100');
+  });
+
+  test("음수 -10을 4자리 문자열로 변환하면 '-0010'을 반환한다", () => {
+    expect(fillZero(-10, 4)).toBe('-0010');
+  });
+
   test('size 파라미터를 생략하면 기본값 2가 적용된다', () => {
     const values = [2, 10, 1000, 0, 0.5];
     const expectResults = ['02', '10', '1000', '00', '0.5'];
