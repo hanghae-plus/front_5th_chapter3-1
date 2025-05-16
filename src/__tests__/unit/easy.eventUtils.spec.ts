@@ -259,20 +259,24 @@ describe('getFilteredEvents', () => {
         category: '개인',
         repeat: { type: 'none', interval: 0 },
         notificationTime: 1,
-      }
-    ]
-    expect(getFilteredEvents(lowerUpperCaseEvents, 'birthday party', new Date('2025-05-01'), 'month')).toEqual([{
-      id: 'dac62941-69e5-4ec0-98cc-24c2a79a7f81',
-      title: 'BirtHDay PartY',
-      date: '2025-05-28',
-      startTime: '19:00',
-      endTime: '22:00',
-      description: '친구 생일 축하',
-      location: '친구 집',
-      category: '개인',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 1,
-    },])
+      },
+    ];
+    expect(
+      getFilteredEvents(lowerUpperCaseEvents, 'birthday party', new Date('2025-05-01'), 'month')
+    ).toEqual([
+      {
+        id: 'dac62941-69e5-4ec0-98cc-24c2a79a7f81',
+        title: 'BirtHDay PartY',
+        date: '2025-05-28',
+        startTime: '19:00',
+        endTime: '22:00',
+        description: '친구 생일 축하',
+        location: '친구 집',
+        category: '개인',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 1,
+      },
+    ]);
   });
 
   it('월의 경계에 있는 이벤트를 올바르게 필터링한다', () => {
@@ -300,9 +304,11 @@ describe('getFilteredEvents', () => {
         category: '개인',
         repeat: { type: 'none', interval: 0 },
         notificationTime: 1,
-      }
+      },
     ];
-    expect(getFilteredEvents(monthLatestEvents, '', new Date('2025-05-01'), 'month')).toEqual(monthLatestEvents)
+    expect(getFilteredEvents(monthLatestEvents, '', new Date('2025-05-01'), 'month')).toEqual(
+      monthLatestEvents
+    );
   });
 
   it('빈 이벤트 리스트에 대해 빈 배열을 반환한다', () => {

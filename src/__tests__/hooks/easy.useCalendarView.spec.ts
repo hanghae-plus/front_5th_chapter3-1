@@ -18,7 +18,6 @@ describe('초기 상태', () => {
   });
 
   it('holidays는 10월 휴일인 개천절, 한글날이 지정되어 있어야 한다', () => {
-
     const updateDate = result.current.setCurrentDate;
     act(() => {
       updateDate(new Date('2025-10-01'));
@@ -33,9 +32,6 @@ describe('초기 상태', () => {
     expect(holidays).toMatchObject(OctoberHolidays);
   });
 });
-
-
-
 
 it("view를 'week'으로 변경 시 적절하게 반영된다", async () => {
   const { result } = renderHook(() => useCalendarView());
