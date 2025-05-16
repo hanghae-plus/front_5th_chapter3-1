@@ -11,22 +11,56 @@ import {
   isDateInRange,
 } from '../../utils/dateUtils';
 
-describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환합니다.', () => {
+  it('1월은 31일 수를 반환한다', () => {
+    const result = getDaysInMonth(2025, 1);
+    expect(result).toBe(31);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    const result = getDaysInMonth(2025, 4);
+    expect(result).toBe(30);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    const result = getDaysInMonth(2024, 2);
+    expect(result).toBe(29);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    const result = getDaysInMonth(2025, 2);
+    expect(result).toBe(28);
+  });
 
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it('유효하지 않은 월에 대해 0을 반환한다', () => {
+    const result = getDaysInMonth(2025, 13);
+    expect(result).toBe(0);
+  });
 });
 
-describe('getWeekDates', () => {
-  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.', () => {
+  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-14');
+    const result = getWeekDates(date);
 
-  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+    expect(result).toEqual([
+      new Date('2025-05-11'),
+      new Date('2025-05-12'),
+      new Date('2025-05-13'),
+      new Date('2025-05-14'),
+      new Date('2025-05-15'),
+      new Date('2025-05-16'),
+      new Date('2025-05-17'),
+    ]);
+  });
+
+  // todo
+  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-12');
+    const result = getWeekDates(date);
+
+    expect(result).toEqual([new Date('2025-05-11'), new Date('2025-05-12')]);
+  });
 
   it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
 
