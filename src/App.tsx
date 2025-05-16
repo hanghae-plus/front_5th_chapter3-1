@@ -1,4 +1,4 @@
-import { Box, Flex, VStack } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 
 import { CalendarView } from './components/CalendarView';
 import { EventForm } from './components/EventForm';

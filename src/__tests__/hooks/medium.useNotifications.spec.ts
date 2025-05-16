@@ -2,9 +2,8 @@ import { act, renderHook } from '@testing-library/react';
 
 import { useNotifications } from '../../hooks/useNotifications.ts';
 import { Event, RepeatType } from '../../types.ts';
-import { formatDate, formatTime } from '../../utils/dateUtils.ts';
+import { formatDate } from '../../utils/dateUtils.ts';
 import { createNotificationMessage } from '../../utils/notificationUtils.ts';
-import { parseHM } from '../utils.ts';
 
 function makeEvent(id: string, updatedProperty: Partial<Event> = {}): Event {
   const defaultEvent = {

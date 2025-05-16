@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 
 import { categories, notificationOptions } from '../../data/constants';
-import { EventForm as EventFormType, RepeatType } from '../../types';
+import { RepeatType } from '../../types';
 import { getTimeErrorMessage } from '../../utils/timeValidation';
 
 interface EventFormProps {

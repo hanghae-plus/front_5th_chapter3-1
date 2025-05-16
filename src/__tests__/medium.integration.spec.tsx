@@ -1,8 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { act, render, renderHook, screen, within } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
-import { vi } from 'vitest';
 
 import {
   setupMockHandlerCreation,
@@ -10,7 +9,6 @@ import {
   setupMockHandlerUpdating,
 } from '../__mocks__/handlersUtils';
 import App from '../App';
-import { useCalendarView } from '../hooks/useCalendarView';
 import { Event, RepeatType } from '../types';
 
 const setup = (element: ReactElement) => {
