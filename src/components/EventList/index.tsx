@@ -1,5 +1,14 @@
 import { BellIcon, DeleteIcon, EditIcon } from '@chakra-ui/icons';
-import { Box, FormControl, FormLabel, HStack, IconButton, Input, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  FormControl,
+  FormLabel,
+  HStack,
+  IconButton,
+  Input,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 
 import { notificationOptions } from './data';
 import { Event } from '../../types';
