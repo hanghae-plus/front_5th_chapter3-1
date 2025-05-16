@@ -24,6 +24,10 @@ describe('parseDateTime', () => {
   it('날짜 문자열이 비어있을 경우 Invalid Date를 반환한다', () => {
     expect(parseDateTime('', '12:00')).toBe('Invalid Date');
   });
+
+  it('시간이 비어있을 경우 Invalid Date를 반환한다', () => {
+    expect(parseDateTime('2025-05-13', '')).toBe('Invalid Date');
+  });
 });
 
 describe('convertEventToDateRange', () => {
@@ -74,6 +78,26 @@ describe('convertEventToDateRange', () => {
       date: '2025-10-01',
       startTime: '-00:00',
       endTime: '25:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    };
+
+    expect(convertEventToDateRange(mockEvents)).toEqual({
+      start: 'Invalid Date',
+      end: 'Invalid Date',
+    });
+  });
+
+  it('비어있는 날짜 형식의 이벤트에 대해 Invalid Date를 반환한다', () => {
+    const mockEvents: Event = {
+      id: '1',
+      title: '기존 회의',
+      date: '',
+      startTime: '09:00',
+      endTime: '10:00',
       description: '기존 팀 미팅',
       location: '회의실 B',
       category: '업무',
