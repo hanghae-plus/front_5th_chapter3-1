@@ -2,33 +2,49 @@ import { Event } from '../types.ts';
 
 /**
  * 주어진 년도와 월의 일수를 반환합니다.
+ * 예: 2025년 5월 -> 31일
  */
-export function getDaysInMonth(year: number, month: number): number {
+export function getDaysInMonth(year: number, month: number): number | null {
+  if (month < 1 || month > 12) {
+    return null;
+  }
   return new Date(year, month, 0).getDate();
 }
 
 /**
- * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.
+ * 주어진 날짜가 속한 주의 모든 날짜를 반환합니다. (일요일부터 시작)
+ * 예: 2025년 5월 14일(수요일) -> [2025-05-11, 2025-05-12, 2025-05-13, 2025-05-14, 2025-05-15, 2025-05-16, 2025-05-17]
  */
 export function getWeekDates(date: Date): Date[] {
   const day = date.getDay();
   const diff = date.getDate() - day;
   const sunday = new Date(date.setDate(diff));
   const weekDates = [];
+
   for (let i = 0; i < 7; i++) {
     const nextDate = new Date(sunday);
     nextDate.setDate(sunday.getDate() + i);
     weekDates.push(nextDate);
   }
+
   return weekDates;
 }
 
+/**
+ * 주어진 날짜가 속한 월의 모든 주를 반환합니다.
+ * 예: 2025년 5월 -> [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14], ...]
+ */
 export function getWeeksAtMonth(currentDate: Date) {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
   const daysInMonth = getDaysInMonth(year, month + 1);
+
+  if (daysInMonth === null) {
+    return [];
+  }
+
   const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const days: number[] = Array.from({ length: daysInMonth }, (_, i) => i + 1);
   const weeks = [];
 
   const initWeek = () => Array(7).fill(null);
@@ -55,6 +71,10 @@ export function getEventsForDay(events: Event[], date: number): Event[] {
   return events.filter((event) => new Date(event.date).getDate() === date);
 }
 
+/**
+ * 주어진 날짜의 주 정보를 "YYYY년 M월 W주" 형식으로 반환합니다.
+ * 예: 2025년 5월 14일(수요일) -> "2025년 5월 3주"
+ */
 export function formatWeek(targetDate: Date) {
   const dayOfWeek = targetDate.getDay();
   const diffToThursday = 4 - dayOfWeek;
@@ -91,10 +111,19 @@ export function isDateInRange(date: Date, rangeStart: Date, rangeEnd: Date): boo
   return date >= rangeStart && date <= rangeEnd;
 }
 
+/**
+ * 주어진 값의 길이를 지정된 크기로 맞추고, 부족한 부분을 0으로 채웁니다.
+ * 예: 5 -> "05", 123 -> "123"
+ */
 export function fillZero(value: number, size = 2) {
-  return String(value).padStart(size, '0');
+  const sign = value < 0 ? '-' : '';
+  const absValue = Math.abs(value);
+  return sign + String(absValue).padStart(size, '0');
 }
 
+/**
+ * 주어진 날짜를 "YYYY-MM-DD" 형식으로 포맷합니다.
+ */
 export function formatDate(currentDate: Date, day?: number) {
   return [
     currentDate.getFullYear(),

@@ -1,7 +1,10 @@
 import { Event, EventForm } from '../types';
 
 export function parseDateTime(date: string, time: string) {
-  return new Date(`${date}T${time}`);
+  const parsedDate = new Date(`${date}T${time}`);
+
+  // 잘못된 날짜를 받아도 Date 객체를 생성하기 때문에 getTime()으로 유효성 확인
+  return isNaN(parsedDate.getTime()) ? 'Invalid Date' : parsedDate;
 }
 
 export function convertEventToDateRange({ date, startTime, endTime }: Event | EventForm) {
