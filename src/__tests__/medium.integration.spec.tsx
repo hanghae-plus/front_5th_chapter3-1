@@ -2,6 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react';
 import { act, render, renderHook, screen, within } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
 import { ReactElement } from 'react';
+import { vi } from 'vitest';
 
 import {
   setupMockHandlerCreation,
@@ -523,4 +524,30 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+describe('알림', () => {
+  it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '회의',
+        date: '2025-10-01',
+        startTime: '00:10', // 현재 시각은 이벤트 시작 10분적이 되도록
+        endTime: '00:20',
+        description: '팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+
+    setupMockHandlerCreation(mockEvents);
+    setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    const alert = await screen.findByRole('alert', {}, { timeout: 3000 });
+    expect(within(alert).getByText('10분 후 회의 일정이 시작됩니다.')).toBeInTheDocument();
+  });
+});
