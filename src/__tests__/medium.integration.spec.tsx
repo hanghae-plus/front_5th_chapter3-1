@@ -265,4 +265,33 @@ describe('일정 충돌', () => {
   });
 });
 
-it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
+it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {
+  vi.setSystemTime(new Date('2025-10-01T09:00:00'));
+  setupMockHandlerCreation();
+
+  const { user } = setup(<App />);
+
+  // 현재 시간은 2025-10-01T09:00
+  const form = {
+    title: '회의 알림 테스트',
+    date: '2025-10-01',
+    startTime: '09:10', // 10분 뒤
+    endTime: '10:00',
+    location: '회의실 A',
+    description: '알림 테스트 설명',
+    category: '업무',
+  };
+
+  await saveSchedule(user, form);
+
+  // 1초마다 알림 확인 로직이 실행되므로 타이머를 진행시킴
+  await act(() => {
+    vi.advanceTimersByTime(1000);
+  });
+
+  const alert = await screen.findByRole('alert');
+  const message = within(alert).getByText((text) =>
+    text.includes('10분 후 회의 알림 테스트 일정이 시작됩니다')
+  );
+  expect(message).toBeInTheDocument();
+});
