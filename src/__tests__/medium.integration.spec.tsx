@@ -11,6 +11,7 @@ import {
 import App from '@/App';
 import { EventProvider } from '@/entities/event/model/EventProvider';
 import { Event } from '@/entities/event/model/types';
+import { EventSettingView } from '@/widgets/ui/EventSettingView';
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
 // ! Medium: ChakraProvider로 묶어주는 동작은 의미있음. element 로 들어올 App 컴포넌트에서 Chakra UI 를 사용하는데 이 컴포넌트는 ChakraProvider 안에서 사용되어야 하기 때문
@@ -51,6 +52,32 @@ const saveSchedule = async (
   await user.click(screen.getByTestId('event-submit-button'));
 };
 
+it('일정 리스트에서 수정 버튼을 누르면 이벤트 폼 제목이 일정 추가에서 일정 수정으로 바뀐다.', async () => {
+  setupMockHandlerUpdating();
+  const { user } = setup(<App />);
+
+  // 초기 타이틀 상태 확인
+  const addTitle = screen.getAllByText('일정 추가');
+  expect(addTitle[0]).toBeInTheDocument();
+
+  const eventList = screen.getByTestId('event-list');
+  const eventTitle = '기존 회의';
+
+  // 수정 버튼 쿼링
+  const eventElement = await within(eventList).findByText(eventTitle);
+  const eventContainer = eventElement.closest('.chakra-stack.css-1y3f6ad') as HTMLElement; // 해당 이벤트 버튼을 포함한 상위 요소 찾기
+  const editButton = await within(eventContainer!).findByRole('button', {
+    name: 'Edit event',
+  });
+
+  // 수정 버튼 클릭 후 타이틀 상태 확인
+  act(() => {
+    user.click(editButton);
+  });
+  const updateTitle = await screen.findAllByText('일정 수정');
+  expect(updateTitle[0]).toBeInTheDocument();
+});
+
 describe('일정 CRUD 및 기본 기능', () => {
   it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // ! HINT. event를 추가 제거하고 저장하는 로직을 잘 살펴보고, 만약 그대로 구현한다면 어떤 문제가 있을 지 고민해보세요.
@@ -76,10 +103,6 @@ describe('일정 CRUD 및 기본 기능', () => {
     setupMockHandlerUpdating();
     const { user } = setup(<App />);
 
-    // 초기 타이틀 상태 확인
-    const addTitle = screen.getAllByText('일정 추가');
-    expect(addTitle[0]).toBeInTheDocument();
-
     const eventList = await screen.findByTestId('event-list');
 
     const updatedTitle = '기존 회의, 자료 프린트';
@@ -94,12 +117,9 @@ describe('일정 CRUD 및 기본 기능', () => {
       name: 'Edit event',
     });
 
-    // 수정 버튼 클릭 후 타이틀 상태 확인
     act(() => {
       user.click(editButton);
     });
-    const updateTitle = await screen.findAllByText('일정 수정');
-    expect(updateTitle[0]).toBeInTheDocument();
 
     const titleInput = screen.getByLabelText('제목');
     const DescriptionInput = screen.getByLabelText('설명');
