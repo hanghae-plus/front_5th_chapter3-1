@@ -19,7 +19,6 @@ describe('fetchHolidays', () => {
     expect(fetchHolidays(dateApr)).toEqual({});
   });
 
-  // TODO: 1번 케이스랑 다른게 뭐지?
   it('여러 공휴일이 있는 월에 대해 모든 공휴일을 반환한다', () => {
     const date = new Date('2025-10');
     const expectedHolidays = {

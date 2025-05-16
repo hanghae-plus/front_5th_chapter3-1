@@ -116,7 +116,6 @@ describe('getFilteredEvents', () => {
     expect(filtered.map((e) => e.id).sort()).toEqual(['1', '2', '7']);
   });
 
-  // TODO: id 5번이 포함이 안됨
   it('월간 뷰에서 2025년 7월의 모든 이벤트를 반환한다', () => {
     const filtered = getFilteredEvents(events, '', date2, 'month');
     expect(filtered).toHaveLength(6);
