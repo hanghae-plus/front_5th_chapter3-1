@@ -22,6 +22,15 @@ type EventFormData = Omit<Event, 'id' | 'notificationTime' | 'repeat'>;
 const saveSchedule = async (user: UserEvent, form: EventFormData) => {
   const { title, date, startTime, endTime, location, description, category } = form;
 
+  // 기존 값 지우기
+  await user.clear(screen.getByLabelText('제목'));
+  await user.clear(screen.getByLabelText('날짜'));
+  await user.clear(screen.getByLabelText('시작 시간'));
+  await user.clear(screen.getByLabelText('종료 시간'));
+  await user.clear(screen.getByLabelText('설명'));
+  await user.clear(screen.getByLabelText('위치'));
+
+  // 새 값 입력
   await user.type(screen.getByLabelText('제목'), title);
   await user.type(screen.getByLabelText('날짜'), date);
   await user.type(screen.getByLabelText('시작 시간'), startTime);
@@ -400,9 +409,118 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-10-15',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '기존 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 겹치는 시간에 새 일정 추가
+    const newEvent: EventFormData = {
+      title: '새로운 회의',
+      date: '2025-10-15',
+      startTime: '14:30',
+      endTime: '15:30',
+      description: '새로운 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+    };
+
+    await saveSchedule(user, newEvent);
+
+    // 일정 충돌 경고 다이얼로그가 표시되는지 확인
+    const dialog = await screen.findByRole('alertdialog');
+    expect(within(dialog).getByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(within(dialog).getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/기존 회의/)).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        title: '첫 번째 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '첫 번째 팀 미팅',
+        location: '회의실 A',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '두 번째 회의',
+        date: '2025-10-15',
+        startTime: '14:00',
+        endTime: '15:00',
+        description: '두 번째 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none' as RepeatType, interval: 0 },
+        notificationTime: 10,
+      },
+    ];
+    setupMockHandlerCreation(mockEvents);
+    const { user } = setup(<App />);
+
+    // 초기 로딩 완료 대기
+    await screen.findByText('일정 로딩 완료!');
+
+    // 이벤트들이 로드되었는지 확인
+    const eventList = screen.getByTestId('event-list');
+    await within(eventList).findByText('첫 번째 회의');
+    await within(eventList).findByText('두 번째 회의');
+
+    // 첫 번째 회의 수정 버튼 클릭
+    const eventItem = within(eventList).getByTestId('event-1');
+    const editButton = within(eventItem).getByTestId('edit-event-1');
+    await user.click(editButton);
+
+    // 폼이 기존 값으로 채워져 있는지 확인
+    expect(screen.getByLabelText('제목')).toHaveValue('첫 번째 회의');
+    expect(screen.getByLabelText('날짜')).toHaveValue('2025-10-15');
+    expect(screen.getByLabelText('시작 시간')).toHaveValue('09:00');
+    expect(screen.getByLabelText('종료 시간')).toHaveValue('10:00');
+    expect(screen.getByLabelText('설명')).toHaveValue('첫 번째 팀 미팅');
+    expect(screen.getByLabelText('위치')).toHaveValue('회의실 A');
+    expect(screen.getByLabelText('카테고리')).toHaveValue('업무');
+
+    // 시간을 수정하여 두 번째 회의와 겹치게 만듦
+    const updatedEvent: EventFormData = {
+      title: '첫 번째 회의',
+      date: '2025-10-15',
+      startTime: '13:30',
+      endTime: '14:30',
+      description: '첫 번째 팀 미팅',
+      location: '회의실 A',
+      category: '업무',
+    };
+
+    await saveSchedule(user, updatedEvent);
+
+    // 일정 충돌 경고 다이얼로그가 표시되기를 기다림
+    const dialog = await screen.findByRole('alertdialog', {}, { timeout: 3000 });
+    expect(within(dialog).getByText('일정 겹침 경고')).toBeInTheDocument();
+    expect(within(dialog).getByText(/다음 일정과 겹칩니다/)).toBeInTheDocument();
+    expect(within(dialog).getByText(/두 번째 회의/)).toBeInTheDocument();
+  });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
