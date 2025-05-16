@@ -1,8 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { render, screen, RenderOptions } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { UserEvent, userEvent } from '@testing-library/user-event';
-import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { useState } from 'react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import EventList, { EventListProps } from '../../components/EventList';
 import { NOTIFICATION_OPTIONS } from '../../constants';
@@ -15,8 +15,25 @@ vi.mock('../../hooks/useEventForm', () => ({
   }),
 }));
 
-const renderEventList = (ui: React.ReactNode, options?: RenderOptions) => {
-  return render(ui, { wrapper: ChakraProvider, ...options });
+const EventListWrapper = (props: Partial<EventListProps> & { initialSearchTerm?: string }) => {
+  const [searchTerm, setSearchTerm] = useState(props.initialSearchTerm || '');
+
+  const handleSetSearchTerm = (term: string) => {
+    setSearchTerm(term);
+    if (props.setSearchTerm) {
+      props.setSearchTerm(term);
+    }
+  };
+
+  const eventListSpecificProps: EventListProps = {
+    notifiedEvents: props.notifiedEvents || [],
+    filteredEvents: props.filteredEvents || [],
+    deleteEvent: props.deleteEvent || vi.fn(),
+    searchTerm: searchTerm,
+    setSearchTerm: handleSetSearchTerm,
+  };
+
+  return <EventList {...eventListSpecificProps} />;
 };
 
 const mockEvents: Event[] = [
@@ -60,19 +77,19 @@ const mockEvents: Event[] = [
 
 describe('EventList Component Test', () => {
   let mockDeleteEvent: ReturnType<typeof vi.fn>;
-  let mockSetSearchTerm: ReturnType<typeof vi.fn>;
-  let defaultProps: EventListProps;
+  let mockOriginalSetSearchTerm: ReturnType<typeof vi.fn>;
+  let baseProps: Omit<EventListProps, 'searchTerm' | 'setSearchTerm'>;
+  let user: UserEvent;
 
   beforeEach(() => {
     mockDeleteEvent = vi.fn();
-    mockSetSearchTerm = vi.fn();
+    mockOriginalSetSearchTerm = vi.fn();
     vi.clearAllMocks();
+    user = userEvent.setup();
 
-    defaultProps = {
+    baseProps = {
       notifiedEvents: [],
       filteredEvents: [],
-      searchTerm: '',
-      setSearchTerm: mockSetSearchTerm,
       deleteEvent: mockDeleteEvent,
     };
   });
@@ -83,18 +100,43 @@ describe('EventList Component Test', () => {
 
   describe('렌더링 및 초기 상태', () => {
     it('일정 검색 UI가 올바르게 렌더링되어야 한다.', () => {
-      renderEventList(<EventList {...defaultProps} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            initialSearchTerm=""
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
       expect(screen.getByLabelText('일정 검색')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('검색어를 입력하세요')).toBeInTheDocument();
     });
 
     it('filteredEvents가 비어있을 때 "검색 결과가 없습니다." 메시지를 표시해야 한다.', () => {
-      renderEventList(<EventList {...defaultProps} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            initialSearchTerm=""
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
       expect(screen.getByText('검색 결과가 없습니다.')).toBeInTheDocument();
     });
 
     it('filteredEvents에 일정이 있을 경우 모든 일정 정보를 정확히 렌더링해야 한다.', () => {
-      renderEventList(<EventList {...defaultProps} filteredEvents={mockEvents} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            filteredEvents={mockEvents}
+            initialSearchTerm=""
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
 
       mockEvents.forEach((event) => {
         expect(screen.getByText(event.title)).toBeInTheDocument();
@@ -136,30 +178,37 @@ describe('EventList Component Test', () => {
   });
 
   describe('사용자 상호작용', () => {
-    let user: UserEvent;
-    beforeEach(() => {
-      vi.clearAllMocks();
-      user = userEvent.setup();
-    });
-
     it('검색어 입력 시 setSearchTerm 함수가 호출되고 입력 필드의 값이 변경되어야 한다.', async () => {
-      const { rerender } = renderEventList(<EventList {...defaultProps} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            initialSearchTerm=""
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
+
       const searchInput = screen.getByPlaceholderText('검색어를 입력하세요') as HTMLInputElement;
+      const searchTermToType = '테스트 검색어';
 
-      let currentSearchTerm = defaultProps.searchTerm;
-      mockSetSearchTerm.mockImplementation((term: string) => {
-        currentSearchTerm = term;
-        const newProps = { ...defaultProps, searchTerm: currentSearchTerm };
-        rerender(<EventList {...newProps} />);
-      });
+      await user.type(searchInput, searchTermToType);
 
-      await user.type(searchInput, '테스트 검색어');
-      expect(mockSetSearchTerm).toHaveBeenCalledWith('테스트 검색어');
+      expect(mockOriginalSetSearchTerm).toHaveBeenLastCalledWith(searchTermToType);
+      expect(searchInput.value).toBe(searchTermToType);
     });
 
     it('수정 버튼 클릭 시 editEvent 함수가 해당 이벤트 객체와 함께 호출되어야 한다.', async () => {
       const eventToEdit = mockEvents[0];
-      renderEventList(<EventList {...defaultProps} filteredEvents={[eventToEdit]} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            filteredEvents={[eventToEdit]}
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
       const editButton = screen.getByTestId(`edit-button-${eventToEdit.id}`);
       await user.click(editButton);
       expect(mockEditEvent).toHaveBeenCalledWith(eventToEdit);
@@ -167,7 +216,15 @@ describe('EventList Component Test', () => {
 
     it('삭제 버튼 클릭 시 deleteEvent 함수가 해당 이벤트 ID와 함께 호출되어야 한다.', async () => {
       const eventToDelete = mockEvents[1];
-      renderEventList(<EventList {...defaultProps} filteredEvents={[eventToDelete]} />);
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            filteredEvents={[eventToDelete]}
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
       const deleteButton = screen.getByTestId(`delete-button-${eventToDelete.id}`);
       await user.click(deleteButton);
       expect(mockDeleteEvent).toHaveBeenCalledWith(eventToDelete.id);
@@ -175,12 +232,22 @@ describe('EventList Component Test', () => {
   });
 
   describe('Props 변경에 따른 UI 업데이트', () => {
-    it('searchTerm prop 변경 시 입력 필드의 값이 업데이트되어야 한다.', () => {
-      const { rerender } = renderEventList(<EventList {...defaultProps} searchTerm="초기값" />);
+    it('searchTerm prop 변경 시 입력 필드의 값이 업데이트되어야 한다.', async () => {
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            initialSearchTerm="초기값"
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
+      );
       const searchInput = screen.getByPlaceholderText('검색어를 입력하세요') as HTMLInputElement;
       expect(searchInput.value).toBe('초기값');
 
-      rerender(<EventList {...defaultProps} searchTerm="변경된 검색어" />);
+      await user.clear(searchInput);
+      await user.type(searchInput, '변경된 검색어');
+      expect(mockOriginalSetSearchTerm).toHaveBeenLastCalledWith('변경된 검색어');
       expect(searchInput.value).toBe('변경된 검색어');
     });
 
@@ -188,18 +255,20 @@ describe('EventList Component Test', () => {
       const notifiedEvent = mockEvents[0];
       const regularEvent = mockEvents[1];
 
-      renderEventList(
-        <EventList
-          {...defaultProps}
-          filteredEvents={[notifiedEvent, regularEvent]}
-          notifiedEvents={[notifiedEvent.id]}
-        />
+      render(
+        <ChakraProvider>
+          <EventListWrapper
+            {...baseProps}
+            filteredEvents={[notifiedEvent, regularEvent]}
+            notifiedEvents={[notifiedEvent.id]}
+            setSearchTerm={mockOriginalSetSearchTerm}
+          />
+        </ChakraProvider>
       );
       const bellIcon = screen.getByTestId(`bell-icon-${notifiedEvent.id}`);
       expect(bellIcon).toBeInTheDocument();
 
       const notifiedEventTitle = screen.getByText(notifiedEvent.title);
-      screen.debug(notifiedEventTitle);
       expect(notifiedEventTitle).toHaveStyle('font-weight: var(--chakra-fontWeights-bold)');
       expect(notifiedEventTitle).toHaveStyle('color: var(--chakra-colors-red-500)');
 
