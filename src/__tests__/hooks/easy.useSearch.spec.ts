@@ -3,7 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { useSearch } from '../../hooks/useSearch';
 import { Event } from '../../types';
 
-describe('useSearch', () => {
+describe.shuffle('useSearch', () => {
   const mockEvents: Event[] = [
     {
       id: '1',

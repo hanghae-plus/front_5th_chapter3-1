@@ -20,19 +20,10 @@ vi.mock('@chakra-ui/react', () => {
   };
 });
 
+// describe.concurrent 적용하고 싶었지만 실패.
 describe.shuffle('useEventOperations', () => {
-  beforeAll(() => {
-    server.listen();
-  });
-
-  afterAll(() => {
-    server.close();
-  });
-
   beforeEach(() => {
-    // describe.concurrent를 적용한다면 의미없는 실행이라 주석처리
-    // vi.clearAllMocks();
-    // handlersBuilder = new HandlersBuilder(events);
+    vi.clearAllMocks();
   });
 
   it(

@@ -10,14 +10,33 @@ import { EventProvider } from '../context/event-context';
 import { server } from '../setupTests';
 import { Event } from '../types';
 
+const renderApp = async (initialEvents: Event[]) => {
+  const handlersBuilder = new HandlersBuilder(initialEvents);
+  server.use(...handlersBuilder.createAll());
+
+  render(
+    <ChakraProvider>
+      <EventProvider initialDate={new Date()} initialView="month">
+        <App />
+      </EventProvider>
+    </ChakraProvider>
+  );
+
+  await act(() => null);
+};
+
 describe('일정 CRUD 및 기본 기능', () => {
   let user: UserEvent;
-  let events: Event[];
-  let handlersBuilder: HandlersBuilder;
 
   beforeEach(async () => {
     user = userEvent.setup();
+  });
 
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     const todayEvent = createTodayEvent({
       id: '1',
       title: '기존 회의',
@@ -30,33 +49,14 @@ describe('일정 CRUD 및 기본 기능', () => {
       notificationTime: 10,
     }) satisfies Event;
 
-    events = [todayEvent];
+    await renderApp([todayEvent]);
 
-    handlersBuilder = new HandlersBuilder(events);
-    server.use(...handlersBuilder.createAll());
-
-    render(
-      <ChakraProvider>
-        <EventProvider initialDate={new Date()} initialView="month">
-          <App />
-        </EventProvider>
-      </ChakraProvider>
-    );
-
-    await act(() => null);
-  });
-
-  afterEach(() => {
-    server.resetHandlers();
-  });
-
-  it('입력한 새로운 일정 정보에 맞춰 모든 필드가 이벤트 리스트에 정확히 저장된다.', async () => {
     // findBy 쿼리를 사용해 이벤트 목록이 로드될 때까지 기다림
     const eventList = await screen.findByTestId('event-list');
 
     // 첫 번째 이벤트 제목이 나타날 때까지 기다림
-    await within(eventList).findByText(events[0].title);
-    expect(within(eventList).getByText(events[0].title)).toBeInTheDocument();
+    await within(eventList).findByText(todayEvent.title);
+    expect(within(eventList).getByText(todayEvent.title)).toBeInTheDocument();
 
     // 내일 날짜 계산 (현재 날짜에 하루 추가)
     const tomorrow = new Date();
@@ -89,12 +89,26 @@ describe('일정 CRUD 및 기본 기능', () => {
   });
 
   it('기존 일정의 세부 정보를 수정하고 변경사항이 정확히 반영된다', async () => {
+    const todayEvent = createTodayEvent({
+      id: '1',
+      title: '기존 회의',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    }) satisfies Event;
+
+    await renderApp([todayEvent]);
+
     // findBy 쿼리를 사용해 이벤트 목록이 로드될 때까지 기다림
     const eventList = await screen.findByTestId('event-list');
 
     // 첫 번째 이벤트 제목이 나타날 때까지 기다림
-    await within(eventList).findByText(events[0].title);
-    expect(within(eventList).getByText(events[0].title)).toBeInTheDocument();
+    await within(eventList).findByText(todayEvent.title);
+    expect(within(eventList).getByText(todayEvent.title)).toBeInTheDocument();
 
     // 첫 번째 이벤트의 편집 버튼 클릭
     const editButtons = await screen.findAllByLabelText('Edit event');
@@ -125,16 +139,30 @@ describe('일정 CRUD 및 기본 기능', () => {
     expect(within(eventList).getByText('카테고리: 가족')).toBeInTheDocument();
 
     // 원래 값은 더 이상 표시되지 않아야 함
-    expect(within(eventList).queryByText(events[0].title)).not.toBeInTheDocument();
+    expect(within(eventList).queryByText(todayEvent.title)).not.toBeInTheDocument();
   });
 
   it('일정을 삭제하고 더 이상 조회되지 않는지 확인한다', async () => {
+    const todayEvent = createTodayEvent({
+      id: '1',
+      title: '기존 회의',
+      startTime: '09:00',
+      endTime: '10:00',
+      description: '기존 팀 미팅',
+      location: '회의실 B',
+      category: '업무',
+      repeat: { type: 'none', interval: 0 },
+      notificationTime: 10,
+    }) satisfies Event;
+
+    await renderApp([todayEvent]);
+
     // 이벤트 목록이 로드될 때까지 기다림
     const eventList = await screen.findByTestId('event-list');
 
     // 첫 번째 이벤트가 목록에 표시되는지 확인
-    await within(eventList).findByText(events[0].title);
-    expect(within(eventList).getByText(events[0].title)).toBeInTheDocument();
+    await within(eventList).findByText(todayEvent.title);
+    expect(within(eventList).getByText(todayEvent.title)).toBeInTheDocument();
 
     // 삭제 버튼 찾기 (aria-label로 찾기)
     const deleteButtons = await screen.findAllByLabelText('Delete event');
@@ -145,7 +173,7 @@ describe('일정 CRUD 및 기본 기능', () => {
 
     // 삭제된 이벤트가 더 이상 목록에 표시되지 않는지 확인
     await waitFor(() => {
-      expect(screen.queryByText(events[0].title)).not.toBeInTheDocument();
+      expect(screen.queryByText(todayEvent.title)).not.toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -157,22 +185,9 @@ describe('일정 CRUD 및 기본 기능', () => {
 describe('일정 뷰', () => {
   let user: UserEvent;
 
-  const renderApp = async (initialEvents: Event[]) => {
-    const handlersBuilder = new HandlersBuilder(initialEvents);
-    server.use(...handlersBuilder.createAll());
-
+  beforeEach(async () => {
     user = userEvent.setup();
-
-    render(
-      <ChakraProvider>
-        <EventProvider initialDate={new Date()} initialView="month">
-          <App />
-        </EventProvider>
-      </ChakraProvider>
-    );
-
-    await act(() => null);
-  };
+  });
 
   afterEach(() => {
     server.resetHandlers();
@@ -206,8 +221,10 @@ describe('일정 뷰', () => {
       location: '회의실 A',
     });
 
-    // 2. 앱 렌더링 및 Week 뷰로 변경
+    // 앱 렌더링
     await renderApp([testEvent]);
+
+    // Week 뷰로 변경
     fireEvent.change(screen.getByTestId('view-select'), { target: { value: 'week' } });
 
     // 3. Week 뷰 확인
@@ -403,31 +420,8 @@ describe('일정 뷰', () => {
 describe('검색 기능', () => {
   let user: UserEvent;
 
-  const renderApp = async (initialEvents: Event[]) => {
-    const handlersBuilder = new HandlersBuilder(initialEvents);
-    server.use(...handlersBuilder.createAll());
-
-    user = userEvent.setup();
-
-    render(
-      <ChakraProvider>
-        <EventProvider initialDate={new Date()} initialView="month">
-          <App />
-        </EventProvider>
-      </ChakraProvider>
-    );
-
-    await act(() => null);
-  };
-
   beforeEach(async () => {
-    const todayEvent = createTodayEvent({
-      id: '1',
-      title: '팀 회의',
-      description: '즐거운 회의',
-    });
-
-    await renderApp([todayEvent]);
+    user = userEvent.setup();
   });
 
   afterEach(() => {
@@ -435,6 +429,14 @@ describe('검색 기능', () => {
   });
 
   it('검색 결과가 없으면, "검색 결과가 없습니다."가 표시되어야 한다.', async () => {
+    const todayEvent = createTodayEvent({
+      id: '1',
+      title: '팀 회의',
+      description: '즐거운 회의',
+    });
+
+    await renderApp([todayEvent]);
+
     // 검색창 찾기
     const searchInput = screen.getByPlaceholderText(/검색/i) || screen.getByLabelText(/검색/i);
     expect(searchInput).toBeInTheDocument();
@@ -455,6 +457,14 @@ describe('검색 기능', () => {
   });
 
   it("'팀 회의'를 검색하면 해당 제목을 가진 일정이 리스트에 노출된다", async () => {
+    const todayEvent = createTodayEvent({
+      id: '1',
+      title: '팀 회의',
+      description: '즐거운 회의',
+    });
+
+    await renderApp([todayEvent]);
+
     // 검색창 찾기
     const searchInput = screen.getByPlaceholderText(/검색/i) || screen.getByLabelText(/검색/i);
     expect(searchInput).toBeInTheDocument();
@@ -486,6 +496,14 @@ describe('검색 기능', () => {
   });
 
   it('검색어를 지우면 모든 일정이 다시 표시되어야 한다', async () => {
+    const todayEvent = createTodayEvent({
+      id: '1',
+      title: '팀 회의',
+      description: '즐거운 회의',
+    });
+
+    await renderApp([todayEvent]);
+
     // 검색창 찾기
     const searchInput = screen.getByPlaceholderText(/검색/i) || screen.getByLabelText(/검색/i);
     expect(searchInput).toBeInTheDocument();
@@ -516,22 +534,9 @@ describe('검색 기능', () => {
 describe('일정 충돌', () => {
   let user: UserEvent;
 
-  const renderApp = async (initialEvents: Event[]) => {
-    const handlersBuilder = new HandlersBuilder(initialEvents);
-    server.use(...handlersBuilder.createAll());
-
+  beforeEach(async () => {
     user = userEvent.setup();
-
-    render(
-      <ChakraProvider>
-        <EventProvider initialDate={new Date()} initialView="month">
-          <App />
-        </EventProvider>
-      </ChakraProvider>
-    );
-
-    await act(() => null);
-  };
+  });
 
   afterEach(() => {
     server.resetHandlers();
@@ -679,7 +684,6 @@ describe('알림 기능', () => {
     const startTime = '14:00'; // 현재 시간으로부터 10분 후
     const endTime = '15:00';
 
-    // 직접 이벤트 객체 생성
     const testEvent: Event = {
       id: '1',
       title: '곧 시작하는 회의',
@@ -693,20 +697,7 @@ describe('알림 기능', () => {
       notificationTime: 10, // 10분 전 알림
     };
 
-    // 앱 렌더링
-    const handlersBuilder = new HandlersBuilder([testEvent]);
-    server.use(...handlersBuilder.createAll());
-
-    render(
-      <ChakraProvider>
-        <EventProvider initialDate={new Date()} initialView="month">
-          <App />
-        </EventProvider>
-      </ChakraProvider>
-    );
-
-    // 컴포넌트 초기화 및 이벤트 로드
-    await act(() => null);
+    await renderApp([testEvent]);
 
     // 이벤트 목록에서 이벤트 확인
     const eventList = await screen.findByTestId('event-list');
