@@ -139,15 +139,88 @@ describe('일정 CRUD 및 기본 기능', () => {
 });
 
 describe('일정 뷰', () => {
-  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {});
+  it('주별 뷰를 선택 후 해당 주에 일정이 없으면, 일정이 표시되지 않는다.', async () => {
+    setupMockHandlerCreation();
 
-  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {});
+    const { user } = setup(<App />);
 
-  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {});
+    // 주간 뷰 선택
+    const select = screen.getByLabelText('view');
+    await user.selectOptions(select, 'week');
 
-  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {});
+    const list = await screen.findByTestId('event-list');
+    expect(within(list).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
 
-  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {});
+  it('주별 뷰 선택 후 해당 일자에 일정이 존재한다면 해당 일정이 정확히 표시된다', async () => {
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    // 뷰 전환
+    await user.selectOptions(screen.getByLabelText('view'), 'week');
+
+    // navigate → navigate (10/15 포함 주간으로 이동)
+    await user.click(screen.getByLabelText('Next'));
+    await user.click(screen.getByLabelText('Next'));
+
+    // 리스트 로딩
+    const list = await screen.findByTestId('event-list');
+
+    // 요소 검증
+    expect(within(list).getAllByText((text) => text.includes('기존 회의'))).toHaveLength(2);
+  });
+
+  it('월별 뷰에 일정이 없으면, 일정이 표시되지 않아야 한다.', async () => {
+    setupMockHandlerCreation(); // 일정 없음
+
+    const { user } = setup(<App />);
+
+    const select = screen.getByLabelText('view');
+    await user.selectOptions(select, 'month');
+
+    const list = await screen.findByTestId('event-list');
+    expect(within(list).getByText('검색 결과가 없습니다.')).toBeInTheDocument();
+  });
+
+  it('월별 뷰에 일정이 정확히 표시되는지 확인한다', async () => {
+    setupMockHandlerUpdating(); // 10월 일정 2개
+
+    const { user } = setup(<App />);
+
+    await screen.findAllByText('기존 회의');
+
+    const select = screen.getByLabelText('view');
+    await user.selectOptions(select, 'month');
+
+    const list = await screen.findByTestId('event-list');
+    expect(within(list).getByText('기존 회의')).toBeInTheDocument();
+    expect(within(list).getByText('기존 회의2')).toBeInTheDocument();
+  });
+
+  it('달력에 1월 1일(신정)이 공휴일로 표시되는지 확인한다', async () => {
+    setupMockHandlerCreation(); // 이벤트 없어도 OK
+
+    const { user } = setup(<App />);
+
+    const select = screen.getByLabelText('view');
+    await user.selectOptions(select, 'month');
+
+    // navigate로 2025년 1월로 이동
+    await user.click(screen.getByLabelText('Previous')); // 9월
+    await user.click(screen.getByLabelText('Previous')); // 8월
+    await user.click(screen.getByLabelText('Previous')); // 7월
+    await user.click(screen.getByLabelText('Previous')); // 6월
+    await user.click(screen.getByLabelText('Previous')); // 5월
+    await user.click(screen.getByLabelText('Previous')); // 4월
+    await user.click(screen.getByLabelText('Previous')); // 3월
+    await user.click(screen.getByLabelText('Previous')); // 2월
+    await user.click(screen.getByLabelText('Previous')); // 1월
+
+    // "신정"이라는 공휴일 텍스트가 달력에 표시되어야 함
+    const calendar = await screen.findByTestId('month-view');
+    expect(within(calendar).getByText('신정')).toBeInTheDocument();
+  });
 });
 
 describe('검색 기능', () => {
