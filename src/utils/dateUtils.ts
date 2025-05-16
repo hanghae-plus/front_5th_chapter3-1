@@ -102,3 +102,22 @@ export function formatDate(currentDate: Date, day?: number) {
     fillZero(day ?? currentDate.getDate()),
   ].join('-');
 }
+
+export function formatNotificationTime(minutes: number): string {
+  const MINUTES_IN_HOUR = 60;
+  const MINUTES_IN_DAY = 1440;
+
+  if (minutes < 1) {
+    return `${Math.floor(minutes * 60)}초 전`;
+  }
+
+  if (minutes < MINUTES_IN_HOUR) {
+    return `${Math.floor(minutes)}분 전`;
+  }
+
+  if (minutes < MINUTES_IN_DAY) {
+    return `${Math.floor(minutes / MINUTES_IN_HOUR)}시간 전`;
+  }
+
+  return `${Math.floor(minutes / MINUTES_IN_DAY)}일 전`;
+}
