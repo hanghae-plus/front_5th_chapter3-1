@@ -11,7 +11,9 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
       return HttpResponse.json({ events: mockEvents });
     }),
     http.post('/api/events', async ({ request }) => {
-      const newEvent = (await request.json()) as Event;
+      const result = await request.json();
+      console.log('result', result);
+      const newEvent = result as Event;
       newEvent.id = String(mockEvents.length + 1); // 간단한 ID 생성
       mockEvents.push(newEvent);
       return HttpResponse.json(newEvent, { status: 201 });
@@ -19,68 +21,30 @@ export const setupMockHandlerCreation = (initEvents = [] as Event[]) => {
   );
 };
 
-export const setupMockHandlerUpdating = () => {
-  const mockEvents: Event[] = [
-    {
-      id: '1',
-      title: '기존 회의',
-      date: '2025-10-15',
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '기존 팀 미팅',
-      location: '회의실 B',
-      category: '업무',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-    {
-      id: '2',
-      title: '기존 회의2',
-      date: '2025-10-15',
-      startTime: '11:00',
-      endTime: '12:00',
-      description: '기존 팀 미팅 2',
-      location: '회의실 C',
-      category: '업무 회의',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 5,
-    },
-  ];
-
+export const setupMockHandlerUpdating = (mockEvents = [] as Event[]) => {
+  // mockEvent를 여기서 선언하고 수정하게되면, 어느것을 수정하든 계속 해당 선언이벤트만 수정하는 결과를 낳게됨.
+  // mockEvent를 직접 props로 받아서 수정하게해야한다.
+  const updateEvents: Event[] = [...mockEvents];
   server.use(
     http.get('/api/events', () => {
-      return HttpResponse.json({ events: mockEvents });
+      return HttpResponse.json({ events: [updateEvents[1]] });
     }),
     http.put('/api/events/:id', async ({ params, request }) => {
+      console.log('UPDATE');
       const { id } = params;
       const updatedEvent = (await request.json()) as Event;
       const index = mockEvents.findIndex((event) => event.id === id);
-
       mockEvents[index] = { ...mockEvents[index], ...updatedEvent };
       return HttpResponse.json(mockEvents[index]);
     })
   );
 };
 
-export const setupMockHandlerDeletion = () => {
-  const mockEvents: Event[] = [
-    {
-      id: '1',
-      title: '삭제할 이벤트',
-      date: '2025-10-15',
-      startTime: '09:00',
-      endTime: '10:00',
-      description: '삭제할 이벤트입니다',
-      location: '어딘가',
-      category: '기타',
-      repeat: { type: 'none', interval: 0 },
-      notificationTime: 10,
-    },
-  ];
-
+export const setupMockHandlerDeletion = (mockEvents: Event[]) => {
+  const deleteEvents = mockEvents.splice(0, 1);
   server.use(
     http.get('/api/events', () => {
-      return HttpResponse.json({ events: mockEvents });
+      return HttpResponse.json({ events: deleteEvents });
     }),
     http.delete('/api/events/:id', ({ params }) => {
       const { id } = params;
