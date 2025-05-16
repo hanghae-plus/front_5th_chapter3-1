@@ -119,6 +119,8 @@ describe('일정 CRUD 및 기본 기능', () => {
     act(() => {
       user.click(editButton);
     });
+    const updateTitle = await screen.findAllByText('일정 수정');
+    expect(updateTitle[0]).toBeInTheDocument();
 
     const titleInput = screen.getByLabelText('제목');
     const DescriptionInput = screen.getByLabelText('설명');
