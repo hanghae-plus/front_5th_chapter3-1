@@ -203,9 +203,66 @@ describe('검색 기능', () => {
 });
 
 describe('일정 충돌', () => {
-  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {});
+  it('겹치는 시간에 새 일정을 추가할 때 경고가 표시된다', async () => {
+    setupMockHandlerUpdating();
 
-  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {});
+    const { user } = setup(<App />);
+
+    // 초기 이벤트 로딩
+    await screen.findAllByText('기존 회의');
+
+    const form = {
+      title: '겹치는 일정',
+      date: '2025-10-15',
+      startTime: '09:30', // 기존 회의와 겹침
+      endTime: '10:30',
+      location: '회의실 A',
+      description: '충돌 테스트',
+      category: '업무',
+    };
+
+    await saveSchedule(user, form);
+
+    // 알림 다이얼로그 등장 확인
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByText(/겹칩니다/)).toBeInTheDocument();
+  });
+
+  it('기존 일정의 시간을 수정하여 충돌이 발생하면 경고가 노출된다', async () => {
+    setupMockHandlerUpdating();
+
+    const { user } = setup(<App />);
+
+    // 기존 회의 수정 버튼 클릭
+    const list = await screen.findByTestId('event-list');
+    const editButtons = within(list).getAllByLabelText('Edit event');
+    await user.click(editButtons[0]); // id: 1 (09:00–10:00)
+
+    // 시간을 기존 회의2와 겹치게 변경 (11:00–12:00)
+    const startInput = screen.getByLabelText('시작 시간');
+    const endInput = screen.getByLabelText('종료 시간');
+
+    await user.clear(startInput);
+    await user.type(startInput, '11:00');
+
+    await user.clear(endInput);
+    await user.type(endInput, '12:00');
+
+    await user.click(screen.getByTestId('event-submit-button'));
+
+    // 겹침 경고 다이얼로그 확인
+    const dialog = await screen.findByRole('alertdialog');
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByText(/겹칩니다/)).toBeInTheDocument();
+
+    // 계속 진행 클릭
+    await user.click(within(dialog).getByText('계속 진행'));
+
+    // 수정된 이벤트가 리스트에 반영되어야 함
+    expect(await screen.findAllByText('기존 회의')).toHaveLength(2);
+    expect(screen.getAllByText('11:00 - 12:00')).toHaveLength(2);
+  });
 });
 
 it('notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트가 노출된다', async () => {});
