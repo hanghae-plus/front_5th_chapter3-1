@@ -10,7 +10,6 @@ export const useCalendarView = () => {
   const navigate = (direction: 'prev' | 'next') => {
     setCurrentDate((prevDate) => {
       const newDate = new Date(prevDate);
-      console.log('useCalendarView', view, currentDate);
       if (view === 'week') {
         newDate.setDate(newDate.getDate() + (direction === 'next' ? 7 : -7));
       } else if (view === 'month') {
