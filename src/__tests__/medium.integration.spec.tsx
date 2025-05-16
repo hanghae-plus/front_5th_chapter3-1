@@ -1,7 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { UserEvent, userEvent } from "@testing-library/user-event";
-import { ReactElement } from "react";
+import { act, ReactElement } from "react";
 import {
   setupMockHandlerCreation,
   setupMockHandlerDeletion,
@@ -455,9 +455,11 @@ it("notificationTime을 10으로 하면 지정 시간 10분 전 알람 텍스트
   await waitFor(() => {
     expect(within(eventList).queryByText("검색 결과가 없습니다")).not.toBeInTheDocument();
   });
-  vi.advanceTimersByTime(1000 * 60);
+  act(() => vi.advanceTimersByTime(1000 * 60));
   await waitFor(() => {
     const dialog = screen.getByRole("alert");
-    expect(within(dialog).getByText(`10분 후 ${events[0].title} 일정이 시작됩니다.`)).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(`10분 후 ${events[0].title} 일정이 시작됩니다.`)
+    ).toBeInTheDocument();
   });
 });
