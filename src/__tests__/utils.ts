@@ -1,5 +1,5 @@
 import { fillZero } from '../utils/dateUtils';
-
+import { Event } from '../types';
 /**
  * 두 날짜가 같은지 확인합니다.
  */
@@ -15,4 +15,12 @@ export const parseHM = (timestamp: number) => {
   const h = fillZero(date.getHours());
   const m = fillZero(date.getMinutes());
   return `${h}:${m}`;
+};
+
+export const assertDates = (dates1: (number | null)[], dates2: (number | null)[]) => {
+  expect(dates1).toMatchObject(dates2);
+};
+
+export const assertEvents = (events1: Event[], events2: Event[]) => {
+  expect(events1).toMatchObject(events2);
 };

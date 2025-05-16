@@ -10,8 +10,8 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-import { assertDate } from '../utils';
-describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환합니다.', () => {
+import { assertDate, assertDates, assertEvents } from '../utils';
+describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환한다', () => {
   it('1월은 31일 수를 반환한다', () => {
     const result = getDaysInMonth(2025, 1);
     expect(result).toBe(31);
@@ -38,7 +38,7 @@ describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환합니다.'
   });
 });
 
-describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.', () => {
+describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반환한다', () => {
   /** @description 주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다 */
   it('주중의 날짜(수요일)에 대해 해당되는 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-05-14');
@@ -138,21 +138,87 @@ describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반�
   });
 });
 
-describe('getWeeksAtMonth', () => {
-  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
+/** @description 주어진 날짜의 월의 모든 주를 반환한다  */
+describe('getWeeksAtMonth: 주어진 날짜의 월에 해당하는 모든 날짜를 반환한다', () => {
+  /** @description 2025년 7월 1일의 올바른 주 정보를 반환한다 */
+  it('2025년 7월 1일의에 해당하는 달의 모든 날짜를 반환한다', () => {
+    const date = new Date('2025-07-01');
+    const result = getWeeksAtMonth(date);
+    const datesArr = [
+      [null, null, 1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10, 11, 12],
+      [13, 14, 15, 16, 17, 18, 19],
+      [20, 21, 22, 23, 24, 25, 26],
+      [27, 28, 29, 30, 31, null, null],
+    ]; // 이런 경우 배열을 통째로 비교하는게 좋을지? 아니면 하나하나 비교하는게 좋을지?
+
+    for (let i = 0; i < result.length; i++) {
+      assertDates(result[i], datesArr[i]);
+    }
+  });
 });
 
-describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+describe('getEventsForDay: 주어진 날짜에 해당하는 이벤트를 반환한다', () => {
+  const events: Event[] = [];
+  beforeEach(async () => {
+    events.push(
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '새로운 회의',
+        date: '2025-05-01',
+        startTime: '10:00',
+        endTime: '12:00',
+        description: '새로운 팀 미팅',
+        location: '회의실 C',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      }
+    );
+  });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const date = new Date('2025-05-01');
+    const result: Event[] = getEventsForDay(events, date.getDate());
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+    assertEvents(result, [events[1]]);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-02');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
+
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-00');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
+
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-32');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
 });
 
-describe('formatWeek', () => {
+describe('formatWeek: 주어진 날짜의 주를 반환한다', () => {
   it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {});
 
   it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {});
