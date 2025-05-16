@@ -1,10 +1,10 @@
 import { useToast } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
 
 import { useEventForm } from '../hooks/useEventForm';
 import { useEventOperations } from '../hooks/useEventOperations';
+import { useOverlapDetection } from '../hooks/useOverlapDetection';
 import { Event, EventForm as EventFormDataType } from '../types';
-import { findOverlappingEvents } from '../utils/eventOverlap';
+import { createEventToasts } from '../utils/toastUtils';
 
 interface AppLogicProps {
   formState: ReturnType<typeof useEventForm>;
@@ -32,29 +32,25 @@ export function useAppLogic({ formState, events, saveEvent }: AppLogicProps) {
     endTimeError,
   } = formState;
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
   const toast = useToast();
+  const { showErrorToast } = createEventToasts(toast);
+
+  const {
+    isOverlapDialogOpen,
+    setIsOverlapDialogOpen,
+    overlappingEvents,
+    cancelRef,
+    checkEventOverlap,
+  } = useOverlapDetection({ events });
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
-      toast({
-        title: '필수 정보를 모두 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      showErrorToast('필수 정보를 모두 입력해주세요.');
       return;
     }
 
     if (startTimeError || endTimeError) {
-      toast({
-        title: '시간 설정을 확인해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      showErrorToast('시간 설정을 확인해주세요.');
       return;
     }
 
@@ -75,23 +71,9 @@ export function useAppLogic({ formState, events, saveEvent }: AppLogicProps) {
       notificationTime,
     };
 
-    const overlapping = findOverlappingEvents(eventData, events);
-    if (
-      overlapping.length > 0 &&
-      (!editingEvent || overlapping.some((opEvent) => opEvent.id !== editingEvent.id))
-    ) {
-      const distinctOverlappingEvents = editingEvent
-        ? overlapping.filter((opEvent) => opEvent.id !== editingEvent.id)
-        : overlapping;
+    const hasOverlap = checkEventOverlap(eventData, editingEvent?.id);
 
-      if (distinctOverlappingEvents.length > 0) {
-        setOverlappingEvents(distinctOverlappingEvents);
-        setIsOverlapDialogOpen(true);
-      } else {
-        await saveEvent(eventData);
-        resetForm();
-      }
-    } else {
+    if (!hasOverlap) {
       await saveEvent(eventData);
       resetForm();
     }
