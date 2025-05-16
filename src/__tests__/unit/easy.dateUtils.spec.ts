@@ -10,7 +10,7 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
-
+import { assertDate } from '../utils';
 describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환합니다.', () => {
   it('1월은 31일 수를 반환한다', () => {
     const result = getDaysInMonth(2025, 1);
@@ -39,38 +39,103 @@ describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환합니다.'
 });
 
 describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반환합니다.', () => {
-  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
+  /** @description 주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주중의 날짜(수요일)에 대해 해당되는 주의 날짜들을 반환한다', () => {
     const date = new Date('2025-05-14');
     const result = getWeekDates(date);
 
-    expect(result).toEqual([
-      new Date('2025-05-11'),
-      new Date('2025-05-12'),
-      new Date('2025-05-13'),
-      new Date('2025-05-14'),
-      new Date('2025-05-15'),
-      new Date('2025-05-16'),
-      new Date('2025-05-17'),
-    ]);
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
   });
 
-  // todo
-  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {
-    const date = new Date('2025-05-12');
+  /** @description 주의 시작(일요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주의 시작(일요일)에 해당되는 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-11');
     const result = getWeekDates(date);
 
-    expect(result).toEqual([new Date('2025-05-11'), new Date('2025-05-12')]);
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
   });
 
-  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+  /** @description 주의 끝(토요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주의 끝(토요일)에 해당되는 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-17');
+    const result = getWeekDates(date);
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {});
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
+  });
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초)', () => {});
+  /** @description 연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말) */
+  it('연도를 넘어가는 주를 반환한다 (연말)', () => {
+    const date = new Date('2025-12-31');
+    const result = getWeekDates(date);
 
-  it('윤년의 2월 29일을 포함한 주를 올바르게 처리한다', () => {});
+    assertDate(result[0], new Date('2025-12-28'));
+    assertDate(result[1], new Date('2025-12-29'));
+    assertDate(result[2], new Date('2025-12-30'));
+    assertDate(result[3], new Date('2025-12-31'));
+    assertDate(result[4], new Date('2026-01-01'));
+    assertDate(result[5], new Date('2026-01-02'));
+    assertDate(result[6], new Date('2026-01-03'));
+  });
 
-  it('월의 마지막 날짜를 포함한 주를 올바르게 처리한다', () => {});
+  /** @description 연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초) */
+  it('연도를 넘어가는 주를 반환한다 (연초)', () => {
+    const date = new Date('2025-01-01');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2024-12-29'));
+    assertDate(result[1], new Date('2024-12-30'));
+    assertDate(result[2], new Date('2024-12-31'));
+    assertDate(result[3], new Date('2025-01-01'));
+    assertDate(result[4], new Date('2025-01-02'));
+    assertDate(result[5], new Date('2025-01-03'));
+    assertDate(result[6], new Date('2025-01-04'));
+  });
+
+  /** @description 윤년의 2월 29일을 포함한 주를 올바르게 처리한다 */
+  it('윤년의 2월 29일을 포함한 주를 반환한다', () => {
+    const date = new Date('2024-02-29');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2024-02-25'));
+    assertDate(result[1], new Date('2024-02-26'));
+    assertDate(result[2], new Date('2024-02-27'));
+    assertDate(result[3], new Date('2024-02-28'));
+    assertDate(result[4], new Date('2024-02-29'));
+    assertDate(result[5], new Date('2024-03-01'));
+    assertDate(result[6], new Date('2024-03-02'));
+  });
+
+  /** @description 월의 마지막 날짜를 포함한 주를 올바르게 처리한다 */
+  it('월의 마지막 날짜를 포함한 주를 반환한다', () => {
+    const date = new Date('2025-05-31');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2025-05-25'));
+    assertDate(result[1], new Date('2025-05-26'));
+    assertDate(result[2], new Date('2025-05-27'));
+    assertDate(result[3], new Date('2025-05-28'));
+    assertDate(result[4], new Date('2025-05-29'));
+    assertDate(result[5], new Date('2025-05-30'));
+    assertDate(result[6], new Date('2025-05-31'));
+  });
 });
 
 describe('getWeeksAtMonth', () => {
