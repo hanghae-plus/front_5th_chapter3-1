@@ -37,10 +37,10 @@ import {
   Tr,
   VStack,
 } from '@chakra-ui/react';
-import { useRef, useState } from 'react';
 
 import { CATEGORY, NOTIFICATION_OPTIONS, WEEKDAYS } from './constants/index.ts';
 import { useCalendarView } from './hooks/useCalendarView.ts';
+import { useDialogManage } from './hooks/useDialogManage.ts';
 import { useEventForm } from './hooks/useEventForm.ts';
 import { useEventOperations } from './hooks/useEventOperations.ts';
 import { useNotifications } from './hooks/useNotifications.ts';
@@ -57,7 +57,6 @@ import {
 } from './utils/dateUtils';
 import { findOverlappingEvents } from './utils/eventOverlap';
 import { getTimeErrorMessage } from './utils/timeValidation';
-
 function App() {
   const {
     title,
@@ -100,10 +99,14 @@ function App() {
   const { view, setView, currentDate, holidays, navigate } = useCalendarView();
   const { searchTerm, filteredEvents, setSearchTerm } = useSearch(events, currentDate, view);
 
-  const [isOverlapDialogOpen, setIsOverlapDialogOpen] = useState(false);
-  const [overlappingEvents, setOverlappingEvents] = useState<Event[]>([]);
-  const cancelRef = useRef<HTMLButtonElement>(null);
   const { showToast } = useToastManage();
+  const {
+    isOverlapDialogOpen,
+    overlappingEvents,
+    cancelRef,
+    openOverlapDialog,
+    closeOverlapDialog,
+  } = useDialogManage();
 
   const addOrUpdateEvent = async () => {
     if (!title || !date || !startTime || !endTime) {
@@ -136,8 +139,7 @@ function App() {
 
     const overlapping = findOverlappingEvents(eventData, events);
     if (overlapping.length > 0) {
-      setOverlappingEvents(overlapping);
-      setIsOverlapDialogOpen(true);
+      openOverlapDialog(overlapping);
     } else {
       await saveEvent(eventData);
       resetForm();
@@ -502,7 +504,7 @@ function App() {
       <AlertDialog
         isOpen={isOverlapDialogOpen}
         leastDestructiveRef={cancelRef}
-        onClose={() => setIsOverlapDialogOpen(false)}
+        onClose={() => closeOverlapDialog()}
       >
         <AlertDialogOverlay>
           <AlertDialogContent>
@@ -521,13 +523,13 @@ function App() {
             </AlertDialogBody>
 
             <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setIsOverlapDialogOpen(false)}>
+              <Button ref={cancelRef} onClick={() => closeOverlapDialog()}>
                 취소
               </Button>
               <Button
                 colorScheme="red"
                 onClick={() => {
-                  setIsOverlapDialogOpen(false);
+                  () => closeOverlapDialog();
                   saveEvent({
                     id: editingEvent ? editingEvent.id : undefined,
                     title,
