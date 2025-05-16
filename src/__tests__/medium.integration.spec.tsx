@@ -11,7 +11,6 @@ import {
 import App from '@/App';
 import { EventProvider } from '@/entities/event/model/EventProvider';
 import { Event } from '@/entities/event/model/types';
-import { EventSettingView } from '@/widgets/ui/EventSettingView';
 // ! HINT. 이 유틸을 사용해 리액트 컴포넌트를 렌더링해보세요.
 // ? Medium: 여기서 ChakraProvider로 묶어주는 동작은 의미있을까요? 있다면 어떤 의미일까요?
 // ! Medium: ChakraProvider로 묶어주는 동작은 의미있음. element 로 들어올 App 컴포넌트에서 Chakra UI 를 사용하는데 이 컴포넌트는 ChakraProvider 안에서 사용되어야 하기 때문

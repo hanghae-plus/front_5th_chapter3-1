@@ -20,7 +20,6 @@ import { useEventForm } from '@/entities/event/model/useEventForm';
 import { useNotifications } from '@/entities/event/model/useNotifications';
 import { useSearch } from '@/entities/event/model/useSearch';
 
-// TODO: view, events
 export const WeekView = () => {
   const { events } = useEventForm();
   const { view, currentDate } = useCalendarView();

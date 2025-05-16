@@ -1,4 +1,3 @@
-// src/__tests__/hooks/useEventForm.spec.ts
 import { renderHook, act, waitFor } from '@testing-library/react';
 import React from 'react';
 
