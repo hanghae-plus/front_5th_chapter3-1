@@ -10,53 +10,229 @@ import {
   getWeeksAtMonth,
   isDateInRange,
 } from '../../utils/dateUtils';
+import { assertDate, assertDates, assertEvents } from '../utils';
+describe('getDaysInMonth: 주어진 년도와 월의 일수를 반환한다', () => {
+  it('1월은 31일 수를 반환한다', () => {
+    const result = getDaysInMonth(2025, 1);
+    expect(result).toBe(31);
+  });
 
-describe('getDaysInMonth', () => {
-  it('1월은 31일 수를 반환한다', () => {});
+  it('4월은 30일 일수를 반환한다', () => {
+    const result = getDaysInMonth(2025, 4);
+    expect(result).toBe(30);
+  });
 
-  it('4월은 30일 일수를 반환한다', () => {});
+  it('윤년의 2월에 대해 29일을 반환한다', () => {
+    const result = getDaysInMonth(2024, 2);
+    expect(result).toBe(29);
+  });
 
-  it('윤년의 2월에 대해 29일을 반환한다', () => {});
+  it('평년의 2월에 대해 28일을 반환한다', () => {
+    const result = getDaysInMonth(2025, 2);
+    expect(result).toBe(28);
+  });
 
-  it('평년의 2월에 대해 28일을 반환한다', () => {});
-
-  it('유효하지 않은 월에 대해 적절히 처리한다', () => {});
+  it('유효하지 않은 월에 대해 0을 반환한다', () => {
+    const result = getDaysInMonth(2025, 13);
+    expect(result).toBe(0);
+  });
 });
 
-describe('getWeekDates', () => {
-  it('주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+describe('getWeekDates: 주어진 날짜가 속한 주의 모든 날짜를 반환한다', () => {
+  /** @description 주중의 날짜(수요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주중의 날짜(수요일)에 대해 해당되는 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-14');
+    const result = getWeekDates(date);
 
-  it('주의 시작(월요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
+  });
 
-  it('주의 끝(일요일)에 대해 올바른 주의 날짜들을 반환한다', () => {});
+  /** @description 주의 시작(일요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주의 시작(일요일)에 해당되는 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-11');
+    const result = getWeekDates(date);
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말)', () => {});
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
+  });
 
-  it('연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초)', () => {});
+  /** @description 주의 끝(토요일)에 대해 올바른 주의 날짜들을 반환한다 */
+  it('주의 끝(토요일)에 해당되는 주의 날짜들을 반환한다', () => {
+    const date = new Date('2025-05-17');
+    const result = getWeekDates(date);
 
-  it('윤년의 2월 29일을 포함한 주를 올바르게 처리한다', () => {});
+    assertDate(result[0], new Date('2025-05-11'));
+    assertDate(result[1], new Date('2025-05-12'));
+    assertDate(result[2], new Date('2025-05-13'));
+    assertDate(result[3], new Date('2025-05-14'));
+    assertDate(result[4], new Date('2025-05-15'));
+    assertDate(result[5], new Date('2025-05-16'));
+    assertDate(result[6], new Date('2025-05-17'));
+  });
 
-  it('월의 마지막 날짜를 포함한 주를 올바르게 처리한다', () => {});
+  /** @description 연도를 넘어가는 주의 날짜를 정확히 처리한다 (연말) */
+  it('연도를 넘어가는 주를 반환한다 (연말)', () => {
+    const date = new Date('2025-12-31');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2025-12-28'));
+    assertDate(result[1], new Date('2025-12-29'));
+    assertDate(result[2], new Date('2025-12-30'));
+    assertDate(result[3], new Date('2025-12-31'));
+    assertDate(result[4], new Date('2026-01-01'));
+    assertDate(result[5], new Date('2026-01-02'));
+    assertDate(result[6], new Date('2026-01-03'));
+  });
+
+  /** @description 연도를 넘어가는 주의 날짜를 정확히 처리한다 (연초) */
+  it('연도를 넘어가는 주를 반환한다 (연초)', () => {
+    const date = new Date('2025-01-01');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2024-12-29'));
+    assertDate(result[1], new Date('2024-12-30'));
+    assertDate(result[2], new Date('2024-12-31'));
+    assertDate(result[3], new Date('2025-01-01'));
+    assertDate(result[4], new Date('2025-01-02'));
+    assertDate(result[5], new Date('2025-01-03'));
+    assertDate(result[6], new Date('2025-01-04'));
+  });
+
+  /** @description 윤년의 2월 29일을 포함한 주를 올바르게 처리한다 */
+  it('윤년의 2월 29일을 포함한 주를 반환한다', () => {
+    const date = new Date('2024-02-29');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2024-02-25'));
+    assertDate(result[1], new Date('2024-02-26'));
+    assertDate(result[2], new Date('2024-02-27'));
+    assertDate(result[3], new Date('2024-02-28'));
+    assertDate(result[4], new Date('2024-02-29'));
+    assertDate(result[5], new Date('2024-03-01'));
+    assertDate(result[6], new Date('2024-03-02'));
+  });
+
+  /** @description 월의 마지막 날짜를 포함한 주를 올바르게 처리한다 */
+  it('월의 마지막 날짜를 포함한 주를 반환한다', () => {
+    const date = new Date('2025-05-31');
+    const result = getWeekDates(date);
+
+    assertDate(result[0], new Date('2025-05-25'));
+    assertDate(result[1], new Date('2025-05-26'));
+    assertDate(result[2], new Date('2025-05-27'));
+    assertDate(result[3], new Date('2025-05-28'));
+    assertDate(result[4], new Date('2025-05-29'));
+    assertDate(result[5], new Date('2025-05-30'));
+    assertDate(result[6], new Date('2025-05-31'));
+  });
 });
 
-describe('getWeeksAtMonth', () => {
-  it('2025년 7월 1일의 올바른 주 정보를 반환해야 한다', () => {});
+/** @description 주어진 날짜의 월의 모든 주를 반환한다  */
+describe('getWeeksAtMonth: 주어진 날짜의 월에 해당하는 모든 날짜를 반환한다', () => {
+  /** @description 2025년 7월 1일의 올바른 주 정보를 반환한다 */
+  it('2025년 7월 1일의에 해당하는 달의 모든 날짜를 반환한다', () => {
+    const date = new Date('2025-07-01');
+    const result = getWeeksAtMonth(date);
+    const datesArr = [
+      [null, null, 1, 2, 3, 4, 5],
+      [6, 7, 8, 9, 10, 11, 12],
+      [13, 14, 15, 16, 17, 18, 19],
+      [20, 21, 22, 23, 24, 25, 26],
+      [27, 28, 29, 30, 31, null, null],
+    ]; // 이런 경우 배열을 통째로 비교하는게 좋을지? 아니면 하나하나 비교하는게 좋을지?
+
+    for (let i = 0; i < result.length; i++) {
+      assertDates(result[i], datesArr[i]);
+    }
+  });
 });
 
-describe('getEventsForDay', () => {
-  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {});
+describe('getEventsForDay: 주어진 날짜에 해당하는 이벤트를 반환한다', () => {
+  const events: Event[] = [];
+  beforeEach(async () => {
+    events.push(
+      {
+        id: '1',
+        title: '기존 회의',
+        date: '2025-10-15',
+        startTime: '09:00',
+        endTime: '10:00',
+        description: '기존 팀 미팅',
+        location: '회의실 B',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      },
+      {
+        id: '2',
+        title: '새로운 회의',
+        date: '2025-05-01',
+        startTime: '10:00',
+        endTime: '12:00',
+        description: '새로운 팀 미팅',
+        location: '회의실 C',
+        category: '업무',
+        repeat: { type: 'none', interval: 0 },
+        notificationTime: 10,
+      }
+    );
+  });
 
-  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {});
+  it('특정 날짜(1일)에 해당하는 이벤트만 정확히 반환한다', () => {
+    const date = new Date('2025-05-01');
+    const result: Event[] = getEventsForDay(events, date.getDate());
 
-  it('날짜가 0일 경우 빈 배열을 반환한다', () => {});
+    assertEvents(result, [events[1]]);
+  });
 
-  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {});
+  it('해당 날짜에 이벤트가 없을 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-02');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
+
+  it('날짜가 0일 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-00');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
+
+  it('날짜가 32일 이상인 경우 빈 배열을 반환한다', () => {
+    const date = new Date('2025-05-32');
+    const result: Event[] = getEventsForDay(events, date.getDate());
+
+    assertEvents(result, []);
+  });
 });
 
-describe('formatWeek', () => {
-  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {});
+describe('formatWeek: 주어진 날짜의 주를 반환한다', () => {
+  it('월의 중간 날짜에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2025-07-15');
+    const result = formatWeek(date);
+    console.log(result);
 
-  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {});
+    expect(result).toBe('2025년 7월 15주');
+  });
+
+  it('월의 첫 주에 대해 올바른 주 정보를 반환한다', () => {
+    const date = new Date('2025-07-01');
+    const result = formatWeek(date);
+
+    expect(result).toBe('2025년 7월 1주');
+  });
 
   it('월의 마지막 주에 대해 올바른 주 정보를 반환한다', () => {});
 
