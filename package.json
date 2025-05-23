@@ -1,8 +1,9 @@
 {
-  "name": "assignment-7",
+  "name": "front_5th_chapter3-1",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://anveloper.github.io/front_5th_chapter3-1/",
   "scripts": {
     "server": "node server.js",
     "server:watch": "node --watch server.js",
@@ -46,10 +47,11 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.12",
     "eslint-plugin-vitest": "^0.2.6",
-    "vite-plugin-eslint": "^1.8.1",
+    "gitmoji-cli": "^9.5.0",
     "jsdom": "^25.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
+    "vite-plugin-eslint": "^1.8.1",
     "vitest": "^2.0.2"
   }
 }
